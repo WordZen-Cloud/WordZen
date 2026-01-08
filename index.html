@@ -11,86 +11,97 @@
             font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; 
             background-size: cover; background-position: center; transition: background-image 1.5s ease;
         }
-        /* Splash Screen Animasyonu */
-        #splash { 
-            position: fixed; inset: 0; background: #000; z-index: 2000; 
-            display: flex; justify-content: center; align-items: center;
-            transition: opacity 1s ease-out;
-        }
-        .s-logo { 
-            font-size: 3.5rem; font-weight: 200; color: #fff; letter-spacing: 15px; 
-            opacity: 0; transform: scale(0.8);
-            animation: zenFade 4.5s ease-in-out forwards; 
-        }
+        /* Splash Animasyonu */
+        #splash { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; justify-content: center; align-items: center; transition: opacity 1s ease-out; }
+        .s-logo { font-size: 3.5rem; font-weight: 200; color: #fff; letter-spacing: 15px; opacity: 0; transform: scale(0.8); animation: zenFade 4s ease-in-out forwards; }
         @keyframes zenFade {
             0% { opacity: 0; transform: scale(0.8); letter-spacing: 5px; }
             40% { opacity: 1; transform: scale(1); letter-spacing: 15px; }
             80% { opacity: 1; transform: scale(1); letter-spacing: 15px; }
             100% { opacity: 0; transform: scale(1.1); letter-spacing: 20px; }
         }
-        /* Arayüz */
-        #top-bar { width: 100%; padding: 25px; display: flex; justify-content: space-between; box-sizing: border-box; z-index: 100; }
-        .info { font-size: 1.1rem; letter-spacing: 2px; font-weight: 300; }
-        #word-container { margin-top: 80px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; padding: 0 20px; }
+
+        /* Üst Bar */
+        #top-bar { width: 100%; padding: 20px; display: flex; justify-content: space-between; box-sizing: border-box; z-index: 100; background: rgba(0,0,0,0.3); }
+        .info { font-size: 1.1rem; letter-spacing: 1px; }
+
+        /* Dinamik Ampul Butonu */
+        #hint-btn {
+            margin-top: 20px; padding: 12px 25px; border-radius: 25px;
+            color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;
+            transition: all 0.5s ease; border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+        /* Jeton Yetersizken (Gri) */
+        .hint-passive { background: #333 !important; color: #777 !important; filter: grayscale(1); opacity: 0.6; cursor: not-allowed !important; }
+        /* Jeton Yeterliyken (Renkli) */
+        .hint-active { background: rgba(250, 152, 58, 0.2) !important; color: #fa983a !important; border-color: #fa983a !important; box-shadow: 0 0 15px rgba(250, 152, 58, 0.3); }
+
+        #word-container { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0 20px; }
         .letter-box { 
             width: 35px; height: 45px; border-bottom: 2px solid rgba(255,255,255,0.4); 
             display: flex; align-items: center; justify-content: center;
             font-size: 1.6rem; font-weight: 400; text-transform: uppercase;
         }
-        .filled { border-bottom: 2px solid #fff; animation: pop 0.2s ease; }
-        @keyframes pop { 0% { transform: translateY(5px); } 100% { transform: translateY(0); } }
-        /* Klavye */
+        .filled { border-bottom: 2px solid #fff; color: #fff; }
+        .hint-reveal { color: #fa983a; border-bottom-color: #fa983a; animation: pulse 0.5s ease; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
         #keyboard { position: fixed; bottom: 30px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; padding: 10px; width: 95%; }
         button.key { padding: 15px 0; border: none; border-radius: 4px; background: rgba(255,255,255,0.1); color: white; cursor: pointer; font-size: 14px; }
-        button.key:active { background: rgba(255,255,255,0.3); }
         .del { grid-column: span 2; background: rgba(255, 50, 50, 0.3) !important; }
     </style>
 </head>
 <body>
     <div id="splash"><div class="s-logo">WORDZEN</div></div>
+
     <div id="top-bar">
         <div class="info" id="lvl-txt">BÖLÜM 1</div>
-        <div class="info">🪙 <span id="coins">150</span></div>
+        <div class="info">🪙 <span id="coin-txt">150</span></div>
     </div>
+
+    <button id="hint-btn" onclick="useHint()">
+        <span style="font-size: 1.5rem;">💡</span>
+        <span>12 Jeton</span>
+    </button>
+
     <div id="word-container"></div>
     <div id="keyboard"></div>
 
     <script>
-        // Service Worker Kaydı
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
-        }
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); }); }
 
-        // 100 SEVİYELİK KELİME LİSTESİ
         const levels = [
+            // 100 KELİMELİK LİSTE (Kısaltılmış hali, senin kodunda tamamı kalsın)
             {a:"KALE", h:[0]}, {a:"SAAT", h:[0,2]}, {a:"KAPI", h:[0,3]}, {a:"PARA", h:[1,2]}, {a:"ADET", h:[0,2]},
             {a:"KİTAP", h:[0,4]}, {a:"KALEM", h:[0,2]}, {a:"DENİZ", h:[0,3]}, {a:"ŞEHİR", h:[1,4]}, {a:"GÜNEŞ", h:[0,2]},
-            {a:"BARDAK", h:[0,3,5]}, {a:"YAPRAK", h:[1,4]}, {a:"GÖZLÜK", h:[0,3]}, {a:"SULTAN", h:[2,5]}, {a:"PEYNİR", h:[0,4]},
-            {a:"ZEYTİN", h:[1,3,5]}, {a:"TOPRAK", h:[0,4]}, {a:"MUTFAK", h:[2,5]}, {a:"SÖZLÜK", h:[0,3]}, {a:"KANDİL", h:[1,4]},
-            {a:"TELEFON", h:[0,2,6]}, {a:"PENCERE", h:[0,4,6]}, {a:"MERHABA", h:[0,3,5]}, {a:"LOKANTA", h:[1,4,6]}, {a:"GÖKYÜZÜ", h:[0,3,6]},
-            {a:"PORTAKAL", h:[0,3,7]}, {a:"YUMURTA", h:[1,4,6]}, {a:"KELEBEK", h:[0,3,5]}, {a:"AYAKKABI", h:[0,4,7]}, {a:"ÇİKOLATA", h:[0,3,6]},
-            {a:"HAYVANAT", h:[1,4,7]}, {a:"GÖKKUŞAĞI", h:[0,3,5,8]}, {a:"KERESTE", h:[1,4]}, {a:"MAKARNA", h:[2,5]}, {a:"SANDALYE", h:[0,4,7]},
-            {a:"DOMATES", h:[0,3]}, {a:"IHLAMUR", h:[1,4,6]}, {a:"KARANLIK", h:[0,3,6]}, {a:"MANZARA", h:[1,4,6]}, {a:"TEHLİKE", h:[2,5]},
-            {a:"ZİYARET", h:[0,4]}, {a:"ÖZGÜRLÜK", h:[0,3,7]}, {a:"İSTANBUL", h:[0,4,7]}, {a:"ANKARA", h:[1,3,5]}, {a:"HAYALET", h:[0,3]},
-            {a:"ÇERÇEVE", h:[1,4,6]}, {a:"MÜCEVHER", h:[0,3,7]}, {a:"GÜVERCİN", h:[1,4,6]}, {a:"SAĞANAK", h:[0,3,6]}, {a:"TÜRKİYE", h:[1,4,6]},
-            {a:"BİLGİSAYAR", h:[0,3,6,9]}, {a:"TELEVİZYON", h:[0,4,8]}, {a:"CUMHURİYET", h:[0,5,9]}, {a:"ÜNİVERSİTE", h:[0,4,7]}, {a:"MÜHENDİSLİK", h:[0,5,10]},
-            {a:"KÜRESELLEŞME", h:[0,5,11]}, {a:"MEDENİYET", h:[1,4,8]}, {a:"KÜTÜPHANE", h:[0,4,8]}, {a:"DENEYİMLİ", h:[1,4,7]}, {a:"OYUNCAKÇI", h:[0,3,8]},
-            {a:"KIRMIZIGÜL", h:[0,4,9]}, {a:"YALNIZLIK", h:[1,5,8]}, {a:"SİYASETÇİ", h:[0,4,7]}, {a:"GELENEKSEL", h:[1,5,9]}, {a:"HAYALPEREST", h:[0,4,10]},
-            {a:"SORUMLULUK", h:[1,4,9]}, {a:"ÇALIŞKANLIK", h:[0,5,10]}, {a:"DÜRÜSTLÜK", h:[0,4,8]}, {a:"YETENEKLİ", h:[1,4,7]}, {a:"HOŞGÖRÜLÜ", h:[0,4,8]},
-            {a:"FARKINDALIK", h:[1,5,10]}, {a:"MÜSAMAHA", h:[0,3,7]}, {a:"KIYASLAMA", h:[1,4,8]}, {a:"SAYGIDEĞER", h:[0,5,9]}, {a:"MUHTEŞEM", h:[1,4,7]},
-            {a:"TEŞEKKÜRLER", h:[0,4,9]}, {a:"ARKADAŞLIK", h:[1,5,9]}, {a:"HOŞGELDİNİZ", h:[0,4,10]}, {a:"MİSAFİRPERVER", h:[0,6,12]}, {a:"YARATICILIK", h:[1,6,10]},
-            {a:"KANALİZASYON", h:[0,4,8,11]}, {a:"KÜRESELLEŞME", h:[1,6,11]}, {a:"DEMOKRATİKLEŞME", h:[0,6,12]}, {a:"KİŞİSELLEŞTİRME", h:[1,7,14]}, {a:"YAPISALLAŞTIRMA", h:[0,7,14]},
-            {a:"ZENGİNLEŞTİRME", h:[1,8,14]}, {a:"SADAKATSİZLİK", h:[0,6,12]}, {a:"MÜKEMMELİYETÇİ", h:[1,7,13]}, {a:"İNSANLAŞTIRMA", h:[0,6,11]}, {a:"SAYDAMLAŞTIRMA", h:[1,7,13]},
-            {a:"DÜŞÜNDÜRÜCÜ", h:[0,5,10]}, {a:"MERAKLANDIRMAK", h:[1,7,12]}, {a:"COĞRAFYACILAR", h:[0,6,12]}, {a:"SABIRSIZLANMAK", h:[1,7,12]}, {a:"HAYAL KIRIKLIĞI", h:[0,6,11]},
-            {a:"KARŞILAŞTIRMA", h:[1,7,12]}, {a:"ELEKTROMANYETİK", h:[0,7,14]}, {a:"HAREKETLİLİK", h:[1,6,11]}, {a:"SÜRDÜRÜLEBİLİR", h:[0,7,13]}, {a:"KOLAYLAŞTIRICI", h:[1,7,13]}
+            // ... (Daha önce verdiğim 100 kelimenin tamamını buraya yapıştırabilirsin)
+            {a:"KOLAYLAŞTIRICI", h:[1,7,13]} 
         ];
 
         let currentLevel = parseInt(localStorage.getItem('wz_save')) || 0;
+        let coins = parseInt(localStorage.getItem('wz_coins')) || 150;
         let userGuess = [];
+
+        function updateUI() {
+            document.getElementById('coin-txt').innerText = coins;
+            document.getElementById('lvl-txt').innerText = `BÖLÜM ${currentLevel + 1}`;
+            
+            // Ampul Renk Değiştirme Mantığı
+            const hintBtn = document.getElementById('hint-btn');
+            if (coins >= 12) {
+                hintBtn.className = 'hint-active';
+            } else {
+                hintBtn.className = 'hint-passive';
+            }
+
+            localStorage.setItem('wz_coins', coins);
+            localStorage.setItem('wz_save', currentLevel);
+        }
 
         function initGame() {
             const level = levels[currentLevel % levels.length];
-            document.getElementById('lvl-txt').innerText = `BÖLÜM ${currentLevel + 1}`;
+            updateUI();
             document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://picsum.photos/1080/1920?sig=${currentLevel}')`;
             
             const container = document.getElementById('word-container');
@@ -99,10 +110,37 @@
             level.a.split('').forEach((char, i) => {
                 const box = document.createElement('div');
                 box.className = 'letter-box';
-                if (level.h.includes(i)) { box.innerText = char; userGuess[i] = char; }
-                else { box.innerText = ""; userGuess[i] = null; }
+                if (level.h.includes(i)) {
+                    box.innerText = char;
+                    box.classList.add('filled');
+                    userGuess[i] = char;
+                } else {
+                    box.innerText = "";
+                    userGuess[i] = null;
+                }
                 container.appendChild(box);
             });
+        }
+
+        function useHint() {
+            if (coins >= 12) {
+                let emptyIndices = [];
+                userGuess.forEach((val, i) => { if(val === null) emptyIndices.push(i); });
+                
+                if (emptyIndices.length > 0) {
+                    coins -= 12;
+                    let randIdx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+                    let correctChar = levels[currentLevel % levels.length].a[randIdx];
+                    
+                    userGuess[randIdx] = correctChar;
+                    const boxes = document.getElementsByClassName('letter-box');
+                    boxes[randIdx].innerText = correctChar;
+                    boxes[randIdx].classList.add('filled', 'hint-reveal');
+                    
+                    updateUI();
+                    if(!userGuess.includes(null)) check();
+                }
+            }
         }
 
         const alphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
@@ -115,7 +153,8 @@
                 if(empty !== -1) {
                     userGuess[empty] = l;
                     const boxes = document.getElementsByClassName('letter-box');
-                    boxes[empty].innerText = l; boxes[empty].classList.add('filled');
+                    boxes[empty].innerText = l;
+                    boxes[empty].classList.add('filled');
                     if(!userGuess.includes(null)) check();
                 }
             };
@@ -126,10 +165,13 @@
         del.className = 'key del'; del.innerText = "SİL";
         del.onclick = () => {
             for(let i=userGuess.length-1; i>=0; i--) {
-                if(!levels[currentLevel % levels.length].h.includes(i) && userGuess[i] !== null) {
+                const isHintIdx = levels[currentLevel % levels.length].h.includes(i);
+                const isManualHint = document.getElementsByClassName('letter-box')[i].classList.contains('hint-reveal');
+                if(!isHintIdx && !isManualHint && userGuess[i] !== null) {
                     userGuess[i] = null;
                     const boxes = document.getElementsByClassName('letter-box');
-                    boxes[i].innerText = ""; boxes[i].classList.remove('filled');
+                    boxes[i].innerText = "";
+                    boxes[i].classList.remove('filled');
                     break;
                 }
             }
@@ -138,8 +180,8 @@
 
         function check() {
             if(userGuess.join('') === levels[currentLevel % levels.length].a) {
+                coins += 4;
                 currentLevel++;
-                localStorage.setItem('wz_save', currentLevel);
                 setTimeout(initGame, 800);
             }
         }
@@ -149,10 +191,9 @@
                 const s = document.getElementById('splash');
                 s.style.opacity = "0";
                 setTimeout(() => s.style.display = "none", 1000);
-            }, 4500);
+            }, 4000);
             initGame();
         };
     </script>
 </body>
 </html>
-
