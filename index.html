@@ -6,194 +6,225 @@
     <link rel="manifest" href="manifest.json">
     <title>WordZen</title>
     <style>
+        :root { --neon-green: #00ff88; --neon-red: #ff3e3e; }
         body { 
             margin: 0; background: #000; color: white; overflow: hidden;
             font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; 
-            background-size: cover; background-position: center; transition: background-image 1.5s ease;
+            height: 100vh;
         }
-        /* Splash Animasyonu */
-        #splash { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; justify-content: center; align-items: center; transition: opacity 1s ease-out; }
-        .s-logo { font-size: 3.5rem; font-weight: 200; color: #fff; letter-spacing: 15px; opacity: 0; transform: scale(0.8); animation: zenFade 4s ease-in-out forwards; }
+
+        /* 1. Giriş Animasyonu */
+        #splash { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; justify-content: center; align-items: center; transition: opacity 1s ease; }
+        .s-logo { font-size: 3rem; font-weight: 200; color: #fff; letter-spacing: 15px; opacity: 0; animation: zenFade 4s ease-in-out forwards; }
         @keyframes zenFade {
             0% { opacity: 0; transform: scale(0.8); letter-spacing: 5px; }
-            40% { opacity: 1; transform: scale(1); letter-spacing: 15px; }
-            80% { opacity: 1; transform: scale(1); letter-spacing: 15px; }
+            50% { opacity: 1; transform: scale(1); letter-spacing: 15px; }
             100% { opacity: 0; transform: scale(1.1); letter-spacing: 20px; }
         }
 
-        /* Üst Bar */
-        #top-bar { width: 100%; padding: 20px; display: flex; justify-content: space-between; box-sizing: border-box; z-index: 100; background: rgba(0,0,0,0.3); }
-        .info { font-size: 1.1rem; letter-spacing: 1px; }
-
-        /* Dinamik Ampul Butonu */
+        /* 2. Üst Bar */
+        #top-bar { width: 100%; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
         #hint-btn {
-            margin-top: 20px; padding: 12px 25px; border-radius: 25px;
-            color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;
-            transition: all 0.5s ease; border: 1px solid rgba(255, 255, 255, 0.2);
-            font-weight: bold;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 15px; border-radius: 15px; color: #fff; cursor: pointer; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; font-size: 0.8rem;
         }
-        /* Jeton Yetersizken (Gri) */
-        .hint-passive { background: #333 !important; color: #777 !important; filter: grayscale(1); opacity: 0.6; cursor: not-allowed !important; }
-        /* Jeton Yeterliyken (Renkli) */
-        .hint-active { background: rgba(250, 152, 58, 0.2) !important; color: #fa983a !important; border-color: #fa983a !important; box-shadow: 0 0 15px rgba(250, 152, 58, 0.3); }
+        .hint-active { border-color: gold !important; color: gold !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        .hint-passive { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
 
-        #word-container { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0 20px; }
+        /* 3. Oyun Alanı */
+        #word-container { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0 10px; min-height: 60px; }
         .letter-box { 
-            width: 35px; height: 45px; border-bottom: 2px solid rgba(255,255,255,0.4); 
+            width: 38px; height: 50px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.6rem; font-weight: 400; text-transform: uppercase;
+            font-size: 1.8rem; font-weight: bold; background: rgba(255,255,255,0.02);
+            transition: 0.5s all;
         }
-        .filled { border-bottom: 2px solid #fff; color: #fff; }
-        .hint-reveal { color: #fa983a; border-bottom-color: #fa983a; animation: pulse 0.5s ease; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        .correct-neon { border-color: var(--neon-green) !important; box-shadow: 0 0 15px var(--neon-green); color: var(--neon-green); }
+        .wrong-neon { border-color: var(--neon-red) !important; box-shadow: 0 0 15px var(--neon-red); color: var(--neon-red); }
 
-        #keyboard { position: fixed; bottom: 30px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; padding: 10px; width: 95%; }
-        button.key { padding: 15px 0; border: none; border-radius: 4px; background: rgba(255,255,255,0.1); color: white; cursor: pointer; font-size: 14px; }
-        .del { grid-column: span 2; background: rgba(255, 50, 50, 0.3) !important; }
+        #next-btn {
+            display: none; margin-top: 20px; padding: 12px 30px; background: var(--neon-green);
+            color: #000; border: none; border-radius: 25px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 0 20px var(--neon-green); animation: pulse 1.5s infinite;
+        }
+
+        /* 4. Klavye */
+        #keyboard { margin-top: auto; margin-bottom: 20px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; padding: 10px; width: 95%; }
+        .key { height: 45px; border: none; border-radius: 6px; background: rgba(255,255,255,0.1); color: white; font-size: 1.1rem; cursor: pointer; }
+        .key:active { background: rgba(255,255,255,0.4); }
+        .del-key { grid-column: span 2; background: rgba(255, 50, 50, 0.2); }
+
+        footer { margin-bottom: 10px; font-size: 0.7rem; color: rgba(255,255,255,0.3); letter-spacing: 2px; }
+        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
     </style>
 </head>
 <body>
-    <div id="splash"><div class="s-logo">WORDZEN</div></div>
 
-    <div id="top-bar">
-        <div class="info" id="lvl-txt">BÖLÜM 1</div>
-        <div class="info">🪙 <span id="coin-txt">150</span></div>
-    </div>
+<div id="splash"><div class="s-logo">WORDZEN</div></div>
 
-    <button id="hint-btn" onclick="useHint()">
-        <span style="font-size: 1.5rem;">💡</span>
-        <span>12 Jeton</span>
-    </button>
+<div id="top-bar">
+    <div id="lvl-txt">BÖLÜM 1</div>
+    <div id="hint-btn" onclick="useHint()"><span>💡</span><span>12 Jeton</span></div>
+    <div style="font-size: 1.1rem;">🪙 <span id="coin-txt">0</span></div>
+</div>
 
-    <div id="word-container"></div>
-    <div id="keyboard"></div>
+<div id="word-container"></div>
+<button id="next-btn" onclick="nextLevel()">SONRAKİ BÖLÜM →</button>
 
-    <script>
-        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); }); }
+<div id="keyboard"></div>
 
-        const levels = [
-            // 100 KELİMELİK LİSTE (Kısaltılmış hali, senin kodunda tamamı kalsın)
-            {a:"KALE", h:[0]}, {a:"SAAT", h:[0,2]}, {a:"KAPI", h:[0,3]}, {a:"PARA", h:[1,2]}, {a:"ADET", h:[0,2]},
-            {a:"KİTAP", h:[0,4]}, {a:"KALEM", h:[0,2]}, {a:"DENİZ", h:[0,3]}, {a:"ŞEHİR", h:[1,4]}, {a:"GÜNEŞ", h:[0,2]},
-            // ... (Daha önce verdiğim 100 kelimenin tamamını buraya yapıştırabilirsin)
-            {a:"KOLAYLAŞTIRICI", h:[1,7,13]} 
-        ];
+<footer>© 2026 WORDZEN - NO COPYRIGHT</footer>
 
-        let currentLevel = parseInt(localStorage.getItem('wz_save')) || 0;
-        let coins = parseInt(localStorage.getItem('wz_coins')) || 150;
-        let userGuess = [];
+<audio id="snd-clap" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
-        function updateUI() {
-            document.getElementById('coin-txt').innerText = coins;
-            document.getElementById('lvl-txt').innerText = `BÖLÜM ${currentLevel + 1}`;
-            
-            // Ampul Renk Değiştirme Mantığı
-            const hintBtn = document.getElementById('hint-btn');
-            if (coins >= 12) {
-                hintBtn.className = 'hint-active';
+<script>
+    // 100 Kelimelik Listeni Buraya Koy (Örnek olarak birkaç tane ekledim)
+    const levels = [
+        {a:"KALE", h:[0]}, {a:"SAAT", h:[0,2]}, {a:"KİTAP", h:[0,4]},
+        {a:"TELEFON", h:[0,3,6]}, {a:"BİLGİSAYAR", h:[0,5,9]}, {a:"KANALİZASYON", h:[0,4,8,11]}
+        // ... Buraya 100 kelimeyi tamamla
+    ];
+
+    // KAYIT SİSTEMİ (localStorage kullanımı)
+    // Uygulama her açıldığında tarayıcının hafızasına bakar
+    let currentLevel = parseInt(localStorage.getItem('wordzen_level')) || 0;
+    let coins = parseInt(localStorage.getItem('wordzen_coins')) || 150;
+    let userGuess = [];
+    let isLocked = false;
+
+    function initGame() {
+        isLocked = false;
+        document.getElementById('next-btn').style.display = "none";
+        
+        // Seviye bilgisini çek ve ekranı güncelle
+        const level = levels[currentLevel % levels.length];
+        document.getElementById('coin-txt').innerText = coins;
+        document.getElementById('lvl-txt').innerText = `BÖLÜM ${currentLevel + 1}`;
+        
+        const container = document.getElementById('word-container');
+        container.innerHTML = ""; userGuess = [];
+
+        level.a.split('').forEach((char, i) => {
+            const box = document.createElement('div');
+            box.className = 'letter-box';
+            if (level.h.includes(i)) {
+                box.innerText = char;
+                box.classList.add('correct-neon');
+                userGuess[i] = char;
             } else {
-                hintBtn.className = 'hint-passive';
+                userGuess[i] = null;
             }
-
-            localStorage.setItem('wz_coins', coins);
-            localStorage.setItem('wz_save', currentLevel);
-        }
-
-        function initGame() {
-            const level = levels[currentLevel % levels.length];
-            updateUI();
-            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://picsum.photos/1080/1920?sig=${currentLevel}')`;
-            
-            const container = document.getElementById('word-container');
-            container.innerHTML = ""; userGuess = [];
-
-            level.a.split('').forEach((char, i) => {
-                const box = document.createElement('div');
-                box.className = 'letter-box';
-                if (level.h.includes(i)) {
-                    box.innerText = char;
-                    box.classList.add('filled');
-                    userGuess[i] = char;
-                } else {
-                    box.innerText = "";
-                    userGuess[i] = null;
-                }
-                container.appendChild(box);
-            });
-        }
-
-        function useHint() {
-            if (coins >= 12) {
-                let emptyIndices = [];
-                userGuess.forEach((val, i) => { if(val === null) emptyIndices.push(i); });
-                
-                if (emptyIndices.length > 0) {
-                    coins -= 12;
-                    let randIdx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-                    let correctChar = levels[currentLevel % levels.length].a[randIdx];
-                    
-                    userGuess[randIdx] = correctChar;
-                    const boxes = document.getElementsByClassName('letter-box');
-                    boxes[randIdx].innerText = correctChar;
-                    boxes[randIdx].classList.add('filled', 'hint-reveal');
-                    
-                    updateUI();
-                    if(!userGuess.includes(null)) check();
-                }
-            }
-        }
-
-        const alphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
-        const kbd = document.getElementById('keyboard');
-        alphabet.split('').forEach(l => {
-            const b = document.createElement('button');
-            b.className = 'key'; b.innerText = l;
-            b.onclick = () => {
-                let empty = userGuess.indexOf(null);
-                if(empty !== -1) {
-                    userGuess[empty] = l;
-                    const boxes = document.getElementsByClassName('letter-box');
-                    boxes[empty].innerText = l;
-                    boxes[empty].classList.add('filled');
-                    if(!userGuess.includes(null)) check();
-                }
-            };
-            kbd.appendChild(b);
+            container.appendChild(box);
         });
+        updateHintBtn();
+    }
 
-        const del = document.createElement('button');
-        del.className = 'key del'; del.innerText = "SİL";
-        del.onclick = () => {
-            for(let i=userGuess.length-1; i>=0; i--) {
-                const isHintIdx = levels[currentLevel % levels.length].h.includes(i);
-                const isManualHint = document.getElementsByClassName('letter-box')[i].classList.contains('hint-reveal');
-                if(!isHintIdx && !isManualHint && userGuess[i] !== null) {
-                    userGuess[i] = null;
-                    const boxes = document.getElementsByClassName('letter-box');
-                    boxes[i].innerText = "";
-                    boxes[i].classList.remove('filled');
-                    break;
-                }
+    function updateHintBtn() {
+        const btn = document.getElementById('hint-btn');
+        btn.className = (coins >= 12) ? 'hint-active' : 'hint-passive';
+    }
+
+    // Her değişiklikte verileri hafızaya kaydet
+    function saveData() {
+        localStorage.setItem('wordzen_level', currentLevel);
+        localStorage.setItem('wordzen_coins', coins);
+    }
+
+    function useHint() {
+        if (isLocked || coins < 12) return;
+        let emptyIndices = userGuess.map((v, i) => v === null ? i : null).filter(v => v !== null);
+        if (emptyIndices.length > 0) {
+            coins -= 12;
+            let rand = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            let char = levels[currentLevel % levels.length].a[rand];
+            userGuess[rand] = char;
+            const boxes = document.getElementsByClassName('letter-box');
+            boxes[rand].innerText = char;
+            boxes[rand].classList.add('correct-neon');
+            saveData(); // Kaydet
+            updateUI();
+            if(!userGuess.includes(null)) check();
+        }
+    }
+
+    const alphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
+    const kbd = document.getElementById('keyboard');
+    alphabet.split('').forEach(l => {
+        const b = document.createElement('button');
+        b.className = 'key'; b.innerText = l;
+        b.onclick = () => {
+            if(isLocked) return;
+            let empty = userGuess.indexOf(null);
+            if(empty !== -1) {
+                userGuess[empty] = l;
+                const boxes = document.getElementsByClassName('letter-box');
+                boxes[empty].innerText = l;
+                if(!userGuess.includes(null)) check();
             }
         };
-        kbd.appendChild(del);
+        kbd.appendChild(b);
+    });
 
-        function check() {
-            if(userGuess.join('') === levels[currentLevel % levels.length].a) {
-                coins += 4;
-                currentLevel++;
-                setTimeout(initGame, 800);
+    const del = document.createElement('button');
+    del.className = 'key del-key'; del.innerText = "SİL";
+    del.onclick = () => {
+        if(isLocked) return;
+        for(let i=userGuess.length-1; i>=0; i--) {
+            if(!levels[currentLevel % levels.length].h.includes(i) && userGuess[i] !== null) {
+                userGuess[i] = null;
+                document.getElementsByClassName('letter-box')[i].innerText = "";
+                break;
             }
         }
+    };
+    kbd.appendChild(del);
 
-        window.onload = () => {
+    function check() {
+        isLocked = true;
+        const boxes = document.getElementsByClassName('letter-box');
+        const correctWord = levels[currentLevel % levels.length].a;
+
+        if(userGuess.join('') === correctWord) {
+            Array.from(boxes).forEach(b => b.classList.add('correct-neon'));
+            document.getElementById('snd-clap').play();
+            coins += 4;
+            saveData(); // Doğru bildiğinde jetonu ve seviye ilerlemesini hazırla
+            document.getElementById('next-btn').style.display = "block";
+        } else {
+            Array.from(boxes).forEach(b => b.classList.add('wrong-neon'));
             setTimeout(() => {
-                const s = document.getElementById('splash');
-                s.style.opacity = "0";
-                setTimeout(() => s.style.display = "none", 1000);
-            }, 4000);
-            initGame();
-        };
-    </script>
+                Array.from(boxes).forEach((b, i) => {
+                    if(!levels[currentLevel % levels.length].h.includes(i)) {
+                        b.classList.remove('wrong-neon');
+                        b.innerText = "";
+                        userGuess[i] = null;
+                    }
+                });
+                isLocked = false;
+            }, 1000);
+        }
+        updateUI();
+    }
+
+    function nextLevel() {
+        currentLevel++;
+        saveData(); // Sonraki bölüme geçince seviyeyi kaydet
+        initGame();
+    }
+
+    function updateUI() {
+        document.getElementById('coin-txt').innerText = coins;
+        updateHintBtn();
+    }
+
+    window.onload = () => {
+        setTimeout(() => { 
+            document.getElementById('splash').style.opacity = "0"; 
+            setTimeout(() => document.getElementById('splash').style.display = "none", 1000); 
+        }, 4000);
+        initGame();
+    };
+</script>
 </body>
 </html>
