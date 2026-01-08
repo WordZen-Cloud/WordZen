@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="manifest" href="manifest.json">
     <title>WordZen</title>
     <style>
@@ -10,10 +10,10 @@
         body { 
             margin: 0; background: #000; color: white; overflow: hidden;
             font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; 
-            height: 100vh;
+            height: 100vh; width: 100%; position: fixed; 
         }
 
-        /* 1. Giriş Animasyonu */
+        /* Giriş Animasyonu */
         #splash { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; justify-content: center; align-items: center; transition: opacity 1s ease; }
         .s-logo { font-size: 3rem; font-weight: 200; color: #fff; letter-spacing: 15px; opacity: 0; animation: zenFade 4s ease-in-out forwards; }
         @keyframes zenFade {
@@ -22,7 +22,6 @@
             100% { opacity: 0; transform: scale(1.1); letter-spacing: 20px; }
         }
 
-        /* 2. Üst Bar */
         #top-bar { width: 100%; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
         #hint-btn {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.2);
@@ -32,75 +31,70 @@
         .hint-active { border-color: gold !important; color: gold !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
         .hint-passive { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
 
-        /* 3. Oyun Alanı */
-        #word-container { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0 10px; min-height: 60px; }
+        #word-container { margin-top: 50px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0 10px; min-height: 100px; cursor: pointer; }
         .letter-box { 
-            width: 38px; height: 50px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+            width: 35px; height: 45px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; font-weight: bold; background: rgba(255,255,255,0.02);
-            transition: 0.5s all;
+            font-size: 1.5rem; font-weight: bold; background: rgba(255,255,255,0.02);
+            transition: 0.3s all; text-transform: uppercase;
         }
         .correct-neon { border-color: var(--neon-green) !important; box-shadow: 0 0 15px var(--neon-green); color: var(--neon-green); }
         .wrong-neon { border-color: var(--neon-red) !important; box-shadow: 0 0 15px var(--neon-red); color: var(--neon-red); }
 
         #next-btn {
-            display: none; margin-top: 20px; padding: 12px 30px; background: var(--neon-green);
+            display: none; margin: 30px 0; padding: 12px 30px; background: var(--neon-green);
             color: #000; border: none; border-radius: 25px; font-weight: bold; cursor: pointer;
             box-shadow: 0 0 20px var(--neon-green); animation: pulse 1.5s infinite;
         }
 
-        /* 4. Klavye */
-        #keyboard { margin-top: auto; margin-bottom: 20px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; padding: 10px; width: 95%; }
-        .key { height: 45px; border: none; border-radius: 6px; background: rgba(255,255,255,0.1); color: white; font-size: 1.1rem; cursor: pointer; }
-        .key:active { background: rgba(255,255,255,0.4); }
-        .del-key { grid-column: span 2; background: rgba(255, 50, 50, 0.2); }
+        #hidden-input { position: absolute; opacity: 0; pointer-events: none; top: -100px; }
 
-        footer { margin-bottom: 10px; font-size: 0.7rem; color: rgba(255,255,255,0.3); letter-spacing: 2px; }
+        footer { position: fixed; bottom: 10px; font-size: 0.7rem; color: rgba(255,255,255,0.3); letter-spacing: 2px; }
         @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
     </style>
 </head>
-<body>
+<body onclick="focusInput()">
 
 <div id="splash"><div class="s-logo">WORDZEN</div></div>
 
 <div id="top-bar">
     <div id="lvl-txt">BÖLÜM 1</div>
-    <div id="hint-btn" onclick="useHint()"><span>💡</span><span>12 Jeton</span></div>
+    <div id="hint-btn" onclick="useHint(event)"><span>💡</span><span>12 Jeton</span></div>
     <div style="font-size: 1.1rem;">🪙 <span id="coin-txt">0</span></div>
 </div>
 
 <div id="word-container"></div>
 <button id="next-btn" onclick="nextLevel()">SONRAKİ BÖLÜM →</button>
 
-<div id="keyboard"></div>
+<input type="text" id="hidden-input" autocomplete="off">
 
 <footer>© 2026 WORDZEN - NO COPYRIGHT</footer>
 
 <audio id="snd-clap" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
 <script>
-    // 100 Kelimelik Listeni Buraya Koy (Örnek olarak birkaç tane ekledim)
     const levels = [
-        {a:"KALE", h:[0]}, {a:"SAAT", h:[0,2]}, {a:"KİTAP", h:[0,4]},
-        {a:"TELEFON", h:[0,3,6]}, {a:"BİLGİSAYAR", h:[0,5,9]}, {a:"KANALİZASYON", h:[0,4,8,11]}
-        // ... Buraya 100 kelimeyi tamamla
+        {a:"ADA", h:[0]}, {a:"KAPI", h:[0,2]}, {a:"KİTAP", h:[0,3]},
+        {a:"LÜGAT", h:[1,4]}, {a:"BARDAK", h:[0,2,4]}, {a:"GÖZLÜK", h:[1,3,5]},
+        {a:"MERHABA", h:[0,2,5]}, {a:"AYAKKABI", h:[0,2,4,6]}, {a:"ÇİKOLATA", h:[0,2,4,7]},
+        {a:"BİLGİSAYAR", h:[0,2,4,6,8]}
     ];
 
-    // KAYIT SİSTEMİ (localStorage kullanımı)
-    // Uygulama her açıldığında tarayıcının hafızasına bakar
+    // Jeton başlangıcı herkes için 0 yapıldı
     let currentLevel = parseInt(localStorage.getItem('wordzen_level')) || 0;
-    let coins = parseInt(localStorage.getItem('wordzen_coins')) || 150;
+    let coins = parseInt(localStorage.getItem('wordzen_coins')) || 0; 
     let userGuess = [];
     let isLocked = false;
+    const hiddenInput = document.getElementById('hidden-input');
+
+    function focusInput() { if(!isLocked) hiddenInput.focus(); }
 
     function initGame() {
         isLocked = false;
+        hiddenInput.value = "";
         document.getElementById('next-btn').style.display = "none";
-        
-        // Seviye bilgisini çek ve ekranı güncelle
         const level = levels[currentLevel % levels.length];
-        document.getElementById('coin-txt').innerText = coins;
-        document.getElementById('lvl-txt').innerText = `BÖLÜM ${currentLevel + 1}`;
+        updateUI();
         
         const container = document.getElementById('word-container');
         container.innerHTML = ""; userGuess = [];
@@ -117,71 +111,40 @@
             }
             container.appendChild(box);
         });
-        updateHintBtn();
+        focusInput();
     }
 
-    function updateHintBtn() {
-        const btn = document.getElementById('hint-btn');
-        btn.className = (coins >= 12) ? 'hint-active' : 'hint-passive';
-    }
+    hiddenInput.oninput = (e) => {
+        if(isLocked) return;
+        let char = e.target.value.slice(-1).toUpperCase();
+        let trChars = {'i':'İ', 'ı':'I'};
+        char = trChars[char.toLowerCase()] || char;
 
-    // Her değişiklikte verileri hafızaya kaydet
-    function saveData() {
-        localStorage.setItem('wordzen_level', currentLevel);
-        localStorage.setItem('wordzen_coins', coins);
-    }
-
-    function useHint() {
-        if (isLocked || coins < 12) return;
-        let emptyIndices = userGuess.map((v, i) => v === null ? i : null).filter(v => v !== null);
-        if (emptyIndices.length > 0) {
-            coins -= 12;
-            let rand = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-            let char = levels[currentLevel % levels.length].a[rand];
-            userGuess[rand] = char;
-            const boxes = document.getElementsByClassName('letter-box');
-            boxes[rand].innerText = char;
-            boxes[rand].classList.add('correct-neon');
-            saveData(); // Kaydet
-            updateUI();
+        let emptyIdx = userGuess.indexOf(null);
+        if(emptyIdx !== -1 && /[A-ZÇĞİÖŞÜ]/.test(char)) {
+            userGuess[emptyIdx] = char;
+            document.getElementsByClassName('letter-box')[emptyIdx].innerText = char;
             if(!userGuess.includes(null)) check();
         }
-    }
+        hiddenInput.value = "";
+    };
 
-    const alphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
-    const kbd = document.getElementById('keyboard');
-    alphabet.split('').forEach(l => {
-        const b = document.createElement('button');
-        b.className = 'key'; b.innerText = l;
-        b.onclick = () => {
-            if(isLocked) return;
-            let empty = userGuess.indexOf(null);
-            if(empty !== -1) {
-                userGuess[empty] = l;
-                const boxes = document.getElementsByClassName('letter-box');
-                boxes[empty].innerText = l;
-                if(!userGuess.includes(null)) check();
-            }
-        };
-        kbd.appendChild(b);
-    });
-
-    const del = document.createElement('button');
-    del.className = 'key del-key'; del.innerText = "SİL";
-    del.onclick = () => {
-        if(isLocked) return;
-        for(let i=userGuess.length-1; i>=0; i--) {
-            if(!levels[currentLevel % levels.length].h.includes(i) && userGuess[i] !== null) {
-                userGuess[i] = null;
-                document.getElementsByClassName('letter-box')[i].innerText = "";
-                break;
+    hiddenInput.onkeydown = (e) => {
+        if(e.key === "Backspace") {
+            for(let i=userGuess.length-1; i>=0; i--) {
+                const isFixed = levels[currentLevel % levels.length].h.includes(i);
+                if(!isFixed && userGuess[i] !== null) {
+                    userGuess[i] = null;
+                    document.getElementsByClassName('letter-box')[i].innerText = "";
+                    break;
+                }
             }
         }
     };
-    kbd.appendChild(del);
 
     function check() {
         isLocked = true;
+        hiddenInput.blur();
         const boxes = document.getElementsByClassName('letter-box');
         const correctWord = levels[currentLevel % levels.length].a;
 
@@ -189,7 +152,7 @@
             Array.from(boxes).forEach(b => b.classList.add('correct-neon'));
             document.getElementById('snd-clap').play();
             coins += 4;
-            saveData(); // Doğru bildiğinde jetonu ve seviye ilerlemesini hazırla
+            saveData();
             document.getElementById('next-btn').style.display = "block";
         } else {
             Array.from(boxes).forEach(b => b.classList.add('wrong-neon'));
@@ -202,26 +165,55 @@
                     }
                 });
                 isLocked = false;
+                focusInput();
             }, 1000);
         }
         updateUI();
     }
 
+    function useHint(e) {
+        e.stopPropagation();
+        if (isLocked || coins < 12) return;
+        let emptyIndices = userGuess.map((v, i) => v === null ? i : null).filter(v => v !== null);
+        if (emptyIndices.length > 0) {
+            coins -= 12;
+            let rand = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            let char = levels[currentLevel % levels.length].a[rand];
+            userGuess[rand] = char;
+            const boxes = document.getElementsByClassName('letter-box');
+            boxes[rand].innerText = char;
+            boxes[rand].classList.add('correct-neon');
+            saveData();
+            updateUI();
+            if(!userGuess.includes(null)) check();
+        }
+    }
+
     function nextLevel() {
         currentLevel++;
-        saveData(); // Sonraki bölüme geçince seviyeyi kaydet
+        saveData();
         initGame();
+    }
+
+    function saveData() {
+        localStorage.setItem('wordzen_level', currentLevel);
+        localStorage.setItem('wordzen_coins', coins);
     }
 
     function updateUI() {
         document.getElementById('coin-txt').innerText = coins;
-        updateHintBtn();
+        document.getElementById('lvl-txt').innerText = `BÖLÜM ${currentLevel + 1}`;
+        const btn = document.getElementById('hint-btn');
+        btn.className = (coins >= 12) ? 'hint-active' : 'hint-passive';
     }
 
     window.onload = () => {
         setTimeout(() => { 
             document.getElementById('splash').style.opacity = "0"; 
-            setTimeout(() => document.getElementById('splash').style.display = "none", 1000); 
+            setTimeout(() => {
+                document.getElementById('splash').style.display = "none";
+                focusInput();
+            }, 1000); 
         }, 4000);
         initGame();
     };
