@@ -6,30 +6,43 @@
     <link rel="manifest" href="manifest.json">
     <title>WordZen</title>
     <style>
-        :root { --neon-green: #00ff88; --neon-red: #ff3e3e; --neon-gold: #ffd700; }
+        :root { --neon-green: #00ff88; --neon-red: #ff3e3e; --neon-gold: #ffd700; --neon-blue: #00d4ff; }
         body { 
             margin: 0; background: #000; color: white; overflow: hidden;
             font-family: 'Segoe UI', Roboto, sans-serif; display: flex; flex-direction: column; align-items: center; 
             height: 100vh; width: 100%; position: fixed;
         }
 
-        /* 1. Splash & Logo */
-        #splash { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; justify-content: center; align-items: center; transition: opacity 1s ease; }
-        
-        /* Nefes Alan Kırmızı Neon Logo (En üstte) */
+        /* 1. Giriş Animasyonu (Siyah Arka Plan - Beyaz WordZen Yazısı) */
+        #splash { 
+            position: fixed; inset: 0; background: #000; z-index: 2000; 
+            display: flex; justify-content: center; align-items: center; 
+            transition: opacity 1s ease; 
+        }
+        .s-logo { 
+            font-size: 3rem; font-weight: 200; color: #fff; letter-spacing: 15px; 
+            opacity: 0; animation: zenFade 4s ease-in-out forwards; 
+        }
+        @keyframes zenFade {
+            0% { opacity: 0; transform: scale(0.8); letter-spacing: 5px; }
+            50% { opacity: 1; transform: scale(1); letter-spacing: 15px; }
+            100% { opacity: 0; transform: scale(1.1); letter-spacing: 20px; }
+        }
+
+        /* 2. Oyun İçi Mavi Neon Logo (Sabit Durur, Sadece Işığı Nefes Alır) */
         #header-logo {
             margin-top: 20px; font-size: 2.2rem; font-weight: 200; letter-spacing: 10px;
-            color: var(--neon-red); text-shadow: 0 0 20px var(--neon-red);
-            animation: breath 3s infinite ease-in-out;
+            color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue);
+            animation: blueBreath 3s infinite ease-in-out;
+            user-select: none;
+        }
+        @keyframes blueBreath {
+            0%, 100% { opacity: 0.5; text-shadow: 0 0 10px var(--neon-blue); }
+            50% { opacity: 1; text-shadow: 0 0 30px var(--neon-blue), 0 0 50px var(--neon-blue); }
         }
 
-        @keyframes breath {
-            0%, 100% { opacity: 0.5; transform: scale(0.95); text-shadow: 0 0 10px var(--neon-red); }
-            50% { opacity: 1; transform: scale(1); text-shadow: 0 0 30px var(--neon-red), 0 0 50px var(--neon-red); }
-        }
-
-        /* 2. Üst Bar */
-        #top-bar { width: 100%; padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; }
+        /* 3. Arayüz ve Kart Sistemi */
+        #top-bar { width: 100%; padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
         #hint-btn {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.2);
             padding: 5px 12px; border-radius: 12px; color: #fff; cursor: pointer;
@@ -37,18 +50,17 @@
         }
         .hint-active { border-color: var(--neon-gold) !important; color: var(--neon-gold) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
 
-        /* 3. Bölüm Kartı (Ortadan bir tık aşağıda) */
         #level-card {
-            margin-top: 40px; padding: 15px 40px; border-radius: 20px;
+            margin-top: 35px; padding: 12px 35px; border-radius: 20px;
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
         }
-        #level-title { font-size: 0.8rem; letter-spacing: 3px; color: #aaa; margin-bottom: 5px; }
-        #level-status { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        #level-title { font-size: 0.75rem; letter-spacing: 3px; color: #aaa; margin-bottom: 5px; }
+        #level-status { font-size: 1.1rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
         .status-easy { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); }
         .status-hard { color: var(--neon-red); text-shadow: 0 0 10px var(--neon-red); }
 
-        /* 4. Kelime Kutuları ve İmleç */
+        /* 4. Kelime Kutuları ve Yanıp Sönen İmleç */
         #word-container { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0 10px; cursor: pointer; }
         .letter-box { 
             width: 38px; height: 52px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px;
@@ -71,13 +83,15 @@
 
         #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
         footer { position: fixed; bottom: 15px; font-size: 0.6rem; color: rgba(255,255,255,0.2); letter-spacing: 3px; }
+        .correct-neon { border-color: var(--neon-green) !important; box-shadow: 0 0 15px var(--neon-green); color: var(--neon-green); }
+        .wrong-neon { border-color: var(--neon-red) !important; box-shadow: 0 0 15px var(--neon-red); color: var(--neon-red); }
     </style>
 </head>
 <body onclick="focusInput()">
 
-<div id="splash"><div style="font-size:3rem; font-weight:200; letter-spacing:15px;">WORDZEN</div></div>
+<div id="splash"><div class="s-logo">WordZen</div></div>
 
-<div id="header-logo">WORDZEN</div>
+<div id="header-logo">WordZen</div>
 
 <div id="top-bar">
     <div style="font-size: 1.2rem;">🪙 <span id="coin-txt">0</span></div>
@@ -94,7 +108,7 @@
 
 <input type="text" id="hidden-input" autocomplete="off" spellcheck="false">
 
-<footer>© 2026 WORDZEN - NO COPYRIGHT</footer>
+<footer>© 2026 WordZen - NO COPYRIGHT</footer>
 
 <audio id="snd-clap" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
@@ -120,14 +134,12 @@
         document.getElementById('next-btn').style.display = "none";
         const level = levels[currentLevel % levels.length];
         
-        // Kart Güncelleme
         document.getElementById('lvl-num').innerText = currentLevel + 1;
         const statusEl = document.getElementById('level-status');
         statusEl.innerText = level.s;
         statusEl.className = (level.s === "ZOR" || level.s === "EFSANE") ? "status-hard" : "status-easy";
 
         updateUI();
-        
         const container = document.getElementById('word-container');
         container.innerHTML = ""; userGuess = [];
 
@@ -147,26 +159,17 @@
         focusInput();
     }
 
-    function updateCursor() {
-        const boxes = document.getElementsByClassName('letter-box');
-        Array.from(boxes).forEach(b => b.classList.remove('active-box'));
-        let emptyIdx = userGuess.indexOf(null);
-        if (emptyIdx !== -1 && !isLocked) {
-            boxes[emptyIdx].classList.add('active-box');
-        }
-    }
-
     hiddenInput.oninput = (e) => {
         if(isLocked) return;
-        let char = e.target.value.slice(-1).toUpperCase();
-        const tr = {'i':'İ', 'ı':'I'};
-        char = tr[char.toLowerCase()] || char;
+        let char = e.target.value.slice(-1);
+        if (char === 'i' || char === 'İ') char = 'İ';
+        else if (char === 'ı' || char === 'I') char = 'I';
+        else char = char.toUpperCase();
 
         let emptyIdx = userGuess.indexOf(null);
         if(emptyIdx !== -1 && /[A-ZÇĞİÖŞÜ]/.test(char)) {
             userGuess[emptyIdx] = char;
-            const boxes = document.getElementsByClassName('letter-box');
-            boxes[emptyIdx].innerText = char;
+            document.getElementsByClassName('letter-box')[emptyIdx].innerText = char;
             updateCursor();
             if(!userGuess.includes(null)) check();
         }
@@ -185,6 +188,13 @@
             }
         }
     };
+
+    function updateCursor() {
+        const boxes = document.getElementsByClassName('letter-box');
+        Array.from(boxes).forEach(b => b.classList.remove('active-box'));
+        let emptyIdx = userGuess.indexOf(null);
+        if (emptyIdx !== -1 && !isLocked) { boxes[emptyIdx].classList.add('active-box'); }
+    }
 
     function check() {
         isLocked = true;
