@@ -11,20 +11,24 @@
             display: flex; flex-direction: column; align-items: center; height: 100vh;
         }
 
-        /* NEON LOGO */
         #header-logo {
             margin-top: 25px; font-size: 2.8rem; font-weight: 300; letter-spacing: 6px; 
             color: #00d4ff; text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff;
             font-family: 'Courier New', monospace; text-transform: uppercase;
         }
 
-        /* AMPUL VE JETON */
-        .stats-area { margin-top: 5px; text-align: center; }
-        .stat-box { font-size: 1.1rem; font-weight: bold; color: #ffcc00; }
+        .top-right-panel {
+            position: absolute; top: 20px; right: 20px;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 5px;
+        }
+        .stat-item {
+            background: rgba(0, 0, 0, 0.6); padding: 5px 15px; border-radius: 15px;
+            border: 1px solid rgba(255, 204, 0, 0.4); color: #ffcc00;
+            font-weight: bold; font-size: 1rem; backdrop-filter: blur(5px);
+        }
 
-        /* KUTUCUKLAR */
         #word-display {
-            display: flex; gap: 8px; margin-top: 30px; flex-wrap: wrap; justify-content: center; width: 90%;
+            display: flex; gap: 8px; margin-top: 40px; flex-wrap: wrap; justify-content: center; width: 90%;
         }
         .letter-box {
             width: 42px; height: 52px; background: rgba(255, 255, 255, 0.85); 
@@ -32,35 +36,37 @@
             font-size: 1.8rem; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
-        /* İPUCU PANELİ */
         #clue-container {
-            margin-top: 30px; width: 85%; background: rgba(0, 0, 0, 0.6);
-            padding: 15px; border-radius: 15px; border: 1px solid rgba(0, 212, 255, 0.3);
+            margin-top: 30px; width: 85%; background: rgba(0, 0, 0, 0.7);
+            padding: 20px; border-radius: 15px; border-left: 5px solid #00d4ff;
             text-align: center; backdrop-filter: blur(5px);
         }
-        #clue-text { color: #fff; font-size: 1.1rem; font-style: italic; }
+        #clue-text { color: #fff; font-size: 1.1rem; font-style: italic; line-height: 1.4; }
 
-        /* --- ÖZEL MODAL PANELLER (ALERT YERİNE) --- */
+        /* --- PANELLERİN KONUMU GÜNCELLENDİ (KLAVYE ÜSTÜ) --- */
         .custom-modal {
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 280px; background: rgba(15, 15, 15, 0.95); border: 2px solid #00d4ff;
+            display: none; position: fixed; 
+            top: 35%; /* %50'den %35'e çekildi - Daha Yukarıda */
+            left: 50%; transform: translate(-50%, -50%);
+            width: 280px; background: rgba(15, 15, 15, 0.98); border: 2px solid #00d4ff;
             border-radius: 20px; text-align: center; z-index: 1000; padding: 25px;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5); color: white;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.6); color: white;
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         @keyframes popIn { from { scale: 0.5; opacity: 0; } to { scale: 1; opacity: 1; } }
 
         .modal-btn {
-            margin: 10px; padding: 10px 25px; border-radius: 50px; border: none;
-            font-weight: bold; cursor: pointer; text-transform: uppercase;
+            margin: 10px; padding: 12px 30px; border-radius: 50px; border: none; font-weight: 900;
         }
         .btn-confirm { background: #00d4ff; color: #000; }
         .btn-cancel { background: transparent; border: 1px solid #ff4444; color: #ff4444; }
 
         #skip-btn {
-            background: transparent; border: 1.5px solid #ffcc00;
-            color: #ffcc00; padding: 10px 25px; border-radius: 50px;
-            margin-top: auto; margin-bottom: 40px; font-weight: bold;
+            background: #ffcc00; border: none; color: #000;
+            padding: 15px 40px; border-radius: 50px; font-weight: 900;
+            margin-top: auto; margin-bottom: 50px; cursor: pointer;
+            font-size: 1rem; text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(255, 204, 0, 0.4);
         }
 
         #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
@@ -71,7 +77,7 @@
     <div id="win-modal" class="custom-modal">
         <h2 style="color: #00d4ff; margin-top: 0;">MÜKEMMEL!</h2>
         <p>Kelimeyi Doğru Bildin</p>
-        <div style="font-size: 1.5rem; color: #ffcc00;">+10 🪙</div>
+        <div style="font-size: 1.8rem; color: #ffcc00;">+5 🪙</div>
     </div>
 
     <div id="skip-modal" class="custom-modal">
@@ -89,20 +95,20 @@
 
     <div id="header-logo">WordZen</div>
 
-    <div class="stats-area">
-        <div style="font-size: 1.4rem;">💡</div>
-        <div class="stat-box"><span id="coin-count">0</span> Jeton</div>
-        <div style="font-size: 0.9rem; opacity: 0.7; color: white;">Bölüm: <span id="lvl-txt">1</span></div>
+    <div class="top-right-panel">
+        <div class="stat-item">💡 <span id="coin-count">0</span></div>
+        <div class="stat-item" style="color: #00d4ff; border-color: #00d4ff;">LVL: <span id="lvl-txt">1</span></div>
     </div>
     
     <div id="word-display"></div>
 
     <div id="clue-container">
-        <div style="color: #00d4ff; font-size: 0.8rem; margin-bottom: 5px; font-weight: bold;">İPUCU:</div>
+        <div style="color: #00d4ff; font-size: 0.8rem; margin-bottom: 8px; font-weight: bold; letter-spacing: 2px;">ANLAM:</div>
         <div id="clue-text">Yükleniyor...</div>
     </div>
 
     <button id="skip-btn" onclick="openSkipModal()">SEVİYEYİ ATLA (15 🪙)</button>
+    
     <input type="text" id="hidden-input" autocomplete="off" autofocus>
 
     <script>
@@ -111,10 +117,8 @@
         
         const levels = [
             {a:"ADA", m:"Dört tarafı sularla çevrili kara parçası."},
-            {a:"KALEM", m:"Yazı yazmaya yarayan araç."},
-            {a:"KİTAP", m:"Okumak için yazılmış, basılmış ciltli eser."},
-            {a:"ELMA", m:"Tatlı ve kütür kütür bir meyve."},
-            {a:"GÜNEŞ", m:"Dünyamızı ısıtan ve aydınlatan en büyük yıldız."},{a: "ADA", m: "dört tarafı suyla çevrili kara."}, {a: "AĞAÇ", m: "gövdesi odun olan bitki."}, {a: "AKIL", m: "düşünme ve anlama yeteneği."}, {a: "ALTIN", m: "değerli sarı maden."}, {a: "ANNE", m: "çocuk doğuran kadın."}, {a: "ARABA", m: "tekerlekli taşıt."}, {a: "ATEŞ", m: "yanma sonucu oluşan ısı ve ışık."}, {a: "AYNA", m: "yansıtıcı cam."}, {a: "BALIK", m: "suda yaşayan omurgalı."}, {a: "BEBEK", m: "küçük çocuk."}, {a: "BEYİN", m: "sinir sisteminin merkezi."}, {a: "BİLGİ", m: "öğrenilen şey."}, {a: "BULUT", m: "gökyüzündeki su buharı."}, {a: "ÇANTA", m: "eşya taşımaya yarayan araç."}, {a: "ÇİÇEK", m: "bitkinin üreme organı."}, {a: "ÇOCUK", m: "küçük yaştaki insan."}, {a: "DENİZ", m: "geniş tuzlu su kütlesi."}, {a: "DEFTER", m: "yazı yazılan kağıtlar."}, {a: "DOST", m: "samimi arkadaş."}, {a: "DUVAR", m: "yapıların dik yüzeyi."}, {a: "ELMA", m: "bir tür meyve."}, {a: "EV", m: "yaşanılan yapı."}, {a: "FENER", m: "ışık veren araç."}, {a: "GEMİ", m: "denizde giden taşıt."}, {a: "GÖZ", m: "görme organı."}, {a: "GÜNEŞ", m: "dünyayı aydınlatan yıldız."}, {a: "HAVA", m: "atmosfer."}, {a: "HAYAT", m: "yaşama süreci."}, {a: "IRMAK", m: "büyük akarsu."}, {a: "IŞIK", m: "görmeyi sağlayan enerji."}, {a: "KALEM", m: "yazı yazma aracı."}, {a: "KAPI", m: "giriş çıkış bölümü."}, {a: "KEDİ", m: "evcil hayvan."}, {a: "KİTAP", m: "basılı eser."}, {a: "KÖPRÜ", m: "iki yeri bağlayan yapı."}, {a: "KUŞ", m: "uçabilen hayvan."}, {a: "MASA", m: "üstüne eşya konulan mobilya."}, {a: "OKUL", m: "eğitim verilen yer."}, {a: "OYUN", m: "eğlence amacıyla yapılan etkinlik."}, {a: "PENCERE", m: "ışık alan açıklık."}, {a: "SAAT", m: "zaman ölçen araç."}, {a: "SU", m: "yaşam için gerekli sıvı."}, {a: "TAŞ", m: "sert doğal madde."}, {a: "TOP", m: "yuvarlak oyun aracı."}, {a: "UYKU", m: "dinlenme hali."}, {a: "YAZI", m: "harflerle anlatım."}, {a: "YILDIZ", m: "gökteki ışıklı cisim."}, {a: "YOL", m: "ulaşım yolu."}, {a: "KUM", m: "ince taneli toprak parçası."}, {a: "FENER", m: "ışık veren alet."}, {a: "MUTFAK", m: "yemek yapılan yer."}, {a: "BİBER", m: "acı veya tatlı baharat."}, {a: "SAKIZ", m: "çiğnenen tatlı madde."}, {a: "ÇATI", m: "binanın üst örtüsü."}, {a: "YASTIK", m: "baş altına konan yumuşak eşya."}, {a: "KİRPİ", m: "dikenli küçük hayvan."}, {a: "OYUNCAK", m: "çocukların oynadığı eşya."}, {a: "ÇAY", m: "sıcak içecek."}, {a: "GÖL", m: "karada biriken su."}, {a: "KART", m: "bilgi veya ödeme aracı."}, {a: "MÜZİK", m: "sesle yapılan sanat."}, {a: "SİNEK", m: "uçan küçük böcek."}, {a: "BALON", m: "gazla şişen oyuncak."}, {a: "YOL", m: "ulaşım yapılan yer."}, {a: "KİTAP", m: "okunmak için basılı eser."}, {a: "PENCERE", m: "ışık ve hava alan açıklık."}, {a: "ÇANTA", m: "eşya taşımaya yarayan araç."}, {a: "SAAT", m: "zamanı gösteren araç."}, {a: "BÜYÜKADA", m: "istanbulda bir ada."}, {a: "MAYMUN", m: "memeli hayvan."}, {a: "KÖPRÜ", m: "iki yeri bağlayan yapı."}, {a: "HAVA", m: "yaşam için gerekli gaz."}, {a: "KÖPEK", m: "evcil hayvan."}, {a: "ÇORAP", m: "ayağı örten giysi."}, {a: "TAŞ", m: "sert doğal madde."}, {a: "BİLGİSAYAR", m: "veri işleyen cihaz."}, {a: "FOTOĞRAF", m: "resim veya görüntü kaydı."}, {a: "MOTOR", m: "araçların hareket etmesini sağlayan makine."}, {a: "ŞEMSİYE", m: "yağmurdan koruyan araç."}, {a: "LAMB", m: "ışık veren nesne."}, {a: "BİYOLOJİ", m: "canlıları inceleyen bilim."}, {a: "TAVŞAN", m: "kemirgen türü hayvan."}, {a: "ŞEHİR", m: "çok kişinin yaşadığı yer."}, {a: "KUYRUK", m: "hayvanın arka kısmı."}, {a: "YILDIZ", m: "gökyüzündeki parlak cisim."}, {a: "YUMURTA", m: "tavuk ve kuşların ürünü."}, {a: "ELMA", m: "yemeye uygun meyve."}, {a: "BİBERON", m: "bebek besleme aracı."}, {a: "ÇÖP", m: "atık madde."}, {a: "MUTLULUK", m: "iyi hissetme durumu."}, {a: "KAPİ", m: "geçiş için açılan yer."}, {a: "IRMAK", m: "büyük akarsu."}, {a: "GÖZLÜK", m: "görmeyi kolaylaştıran araç."}, {a: "ÇİZİM", m: "resim yapma işi."}, {a: "AYAKKABI", m: "ayak koruyucu giysi."}, {a: "TÜRKİYE", m: "ülke adı."}, {a: "BİRLİK", m: "bir araya gelme durumu."}, {a: "ÇORBA", m: "sıvı yemek."}, {a: "KUMANDA", m: "cihazı kontrol eden araç."}, {a: "KÖY", m: "küçük yerleşim yeri."}, {a: "KUAFÖR", m: "saç bakım hizmeti veren yer."}, {a: "PİZZA", m: "hamur üzerine malzeme konan yiyecek."}, {a: "ŞEKER", m: "tatlı madde."}, {a: "MAYO", m: "yüzmede giyilen giysi."}, {a: "BAYRAK", m: "ülke simgesi."}, {a: "OYUNCAK", m: "çocukların oynadığı eşya."}, {a: "MÜZE", m: "eserlerin sergilendiği yer."}, {a: "TÜNEL", m: "yer altından geçen yol."}, {a: "KİLİT", m: "kapıyı kapayan araç."}, {a: "BANDANA", m: "başa takılan giysi."}, {a: "KAFES", m: "hayvanı sınırlayan yapı."}, {a: "YAY", m: "ok atmada kullanılan araç."}, {a: "ÇİMENTO", m: "yapılarda kullanılan malzeme."}, {a: "TRAFO", m: "elektrik enerjisini dönüştüren cihaz."}, {a: "FIRIN", m: "yiyecek pişirme aracı."}, {a: "RADYO", m: "ses ile bilgi veren cihaz."}, {a: "KABLO", m: "elektrik veya veri taşıyan tel."}, {a: "TELEFON", m: "ses ile iletişim aracı."}, {a: "KASABA", m: "şehirden küçük yerleşim yeri."}, {a: "KAHVE", m: "içecek türü."}, {a: "BASKETBOL", m: "top ile oynanan spor."}, {a: "PASTANE", m: "tatlı ve yiyecek yapılan yer."}, {a: "TAVUK", m: "kümes hayvanı."}, {a: "KARTON", m: "kalın kağıt türü."}, {a: "KİRPİ", m: "dikenli küçük hayvan."}, {a: "GÜL", m: "çiçek türü."} 
+            {a:"KALEM", m:"Yazı yazmaya yarayan, içine mürekkep veya kömür konulan araç."},
+            {a:"ELMA", m:"Gülgillerden, çiçekleri pembe veya beyaz bir ağacın tatlı meyvesi."}, {a: "AĞAÇ", m: "gövdesi odun olan bitki."}, {a: "AKIL", m: "düşünme ve anlama yeteneği."}, {a: "ALTIN", m: "değerli sarı maden."}, {a: "ANNE", m: "çocuk doğuran kadın."}, {a: "ARABA", m: "tekerlekli taşıt."}, {a: "ATEŞ", m: "yanma sonucu oluşan ısı ve ışık."}, {a: "AYNA", m: "yansıtıcı cam."}, {a: "BALIK", m: "suda yaşayan omurgalı."}, {a: "BEBEK", m: "küçük çocuk."}, {a: "BEYİN", m: "sinir sisteminin merkezi."}, {a: "BİLGİ", m: "öğrenilen şey."}, {a: "BULUT", m: "gökyüzündeki su buharı."}, {a: "ÇANTA", m: "eşya taşımaya yarayan araç."}, {a: "ÇİÇEK", m: "bitkinin üreme organı."}, {a: "ÇOCUK", m: "küçük yaştaki insan."}, {a: "DENİZ", m: "geniş tuzlu su kütlesi."}, {a: "DEFTER", m: "yazı yazılan kağıtlar."}, {a: "DOST", m: "samimi arkadaş."}, {a: "DUVAR", m: "yapıların dik yüzeyi."}, {a: "ELMA", m: "bir tür meyve."}, {a: "EV", m: "yaşanılan yapı."}, {a: "FENER", m: "ışık veren araç."}, {a: "GEMİ", m: "denizde giden taşıt."}, {a: "GÖZ", m: "görme organı."}, {a: "GÜNEŞ", m: "dünyayı aydınlatan yıldız."}, {a: "HAVA", m: "atmosfer."}, {a: "HAYAT", m: "yaşama süreci."}, {a: "IRMAK", m: "büyük akarsu."}, {a: "IŞIK", m: "görmeyi sağlayan enerji."}, {a: "KALEM", m: "yazı yazma aracı."}, {a: "KAPI", m: "giriş çıkış bölümü."}, {a: "KEDİ", m: "evcil hayvan."}, {a: "KİTAP", m: "basılı eser."}, {a: "KÖPRÜ", m: "iki yeri bağlayan yapı."}, {a: "KUŞ", m: "uçabilen hayvan."}, {a: "MASA", m: "üstüne eşya konulan mobilya."}, {a: "OKUL", m: "eğitim verilen yer."}, {a: "OYUN", m: "eğlence amacıyla yapılan etkinlik."}, {a: "PENCERE", m: "ışık alan açıklık."}, {a: "SAAT", m: "zaman ölçen araç."}, {a: "SU", m: "yaşam için gerekli sıvı."}, {a: "TAŞ", m: "sert doğal madde."}, {a: "TOP", m: "yuvarlak oyun aracı."}, {a: "UYKU", m: "dinlenme hali."}, {a: "YAZI", m: "harflerle anlatım."}, {a: "YILDIZ", m: "gökteki ışıklı cisim."}, {a: "YOL", m: "ulaşım yolu."}, {a: "KUM", m: "ince taneli toprak parçası."}, {a: "FENER", m: "ışık veren alet."}, {a: "MUTFAK", m: "yemek yapılan yer."}, {a: "BİBER", m: "acı veya tatlı baharat."}, {a: "SAKIZ", m: "çiğnenen tatlı madde."}, {a: "ÇATI", m: "binanın üst örtüsü."}, {a: "YASTIK", m: "baş altına konan yumuşak eşya."}, {a: "KİRPİ", m: "dikenli küçük hayvan."}, {a: "OYUNCAK", m: "çocukların oynadığı eşya."}, {a: "ÇAY", m: "sıcak içecek."}, {a: "GÖL", m: "karada biriken su."}, {a: "KART", m: "bilgi veya ödeme aracı."}, {a: "MÜZİK", m: "sesle yapılan sanat."}, {a: "SİNEK", m: "uçan küçük böcek."}, {a: "BALON", m: "gazla şişen oyuncak."}, {a: "YOL", m: "ulaşım yapılan yer."}, {a: "KİTAP", m: "okunmak için basılı eser."}, {a: "PENCERE", m: "ışık ve hava alan açıklık."}, {a: "ÇANTA", m: "eşya taşımaya yarayan araç."}, {a: "SAAT", m: "zamanı gösteren araç."}, {a: "BÜYÜKADA", m: "istanbulda bir ada."}, {a: "MAYMUN", m: "memeli hayvan."}, {a: "KÖPRÜ", m: "iki yeri bağlayan yapı."}, {a: "HAVA", m: "yaşam için gerekli gaz."}, {a: "KÖPEK", m: "evcil hayvan."}, {a: "ÇORAP", m: "ayağı örten giysi."}, {a: "TAŞ", m: "sert doğal madde."}, {a: "BİLGİSAYAR", m: "veri işleyen cihaz."}, {a: "FOTOĞRAF", m: "resim veya görüntü kaydı."}, {a: "MOTOR", m: "araçların hareket etmesini sağlayan makine."}, {a: "ŞEMSİYE", m: "yağmurdan koruyan araç."}, {a: "LAMB", m: "ışık veren nesne."}, {a: "BİYOLOJİ", m: "canlıları inceleyen bilim."}, {a: "TAVŞAN", m: "kemirgen türü hayvan."}, {a: "ŞEHİR", m: "çok kişinin yaşadığı yer."}, {a: "KUYRUK", m: "hayvanın arka kısmı."}, {a: "YILDIZ", m: "gökyüzündeki parlak cisim."}, {a: "YUMURTA", m: "tavuk ve kuşların ürünü."}, {a: "ELMA", m: "yemeye uygun meyve."}, {a: "BİBERON", m: "bebek besleme aracı."}, {a: "ÇÖP", m: "atık madde."}, {a: "MUTLULUK", m: "iyi hissetme durumu."}, {a: "KAPİ", m: "geçiş için açılan yer."}, {a: "IRMAK", m: "büyük akarsu."}, {a: "GÖZLÜK", m: "görmeyi kolaylaştıran araç."}, {a: "ÇİZİM", m: "resim yapma işi."}, {a: "AYAKKABI", m: "ayak koruyucu giysi."}, {a: "TÜRKİYE", m: "ülke adı."}, {a: "BİRLİK", m: "bir araya gelme durumu."}, {a: "ÇORBA", m: "sıvı yemek."}, {a: "KUMANDA", m: "cihazı kontrol eden araç."}, {a: "KÖY", m: "küçük yerleşim yeri."}, {a: "KUAFÖR", m: "saç bakım hizmeti veren yer."}, {a: "PİZZA", m: "hamur üzerine malzeme konan yiyecek."}, {a: "ŞEKER", m: "tatlı madde."}, {a: "MAYO", m: "yüzmede giyilen giysi."}, {a: "BAYRAK", m: "ülke simgesi."}, {a: "OYUNCAK", m: "çocukların oynadığı eşya."}, {a: "MÜZE", m: "eserlerin sergilendiği yer."}, {a: "TÜNEL", m: "yer altından geçen yol."}, {a: "KİLİT", m: "kapıyı kapayan araç."}, {a: "BANDANA", m: "başa takılan giysi."}, {a: "KAFES", m: "hayvanı sınırlayan yapı."}, {a: "YAY", m: "ok atmada kullanılan araç."}, {a: "ÇİMENTO", m: "yapılarda kullanılan malzeme."}, {a: "TRAFO", m: "elektrik enerjisini dönüştüren cihaz."}, {a: "FIRIN", m: "yiyecek pişirme aracı."}, {a: "RADYO", m: "ses ile bilgi veren cihaz."}, {a: "KABLO", m: "elektrik veya veri taşıyan tel."}, {a: "TELEFON", m: "ses ile iletişim aracı."}, {a: "KASABA", m: "şehirden küçük yerleşim yeri."}, {a: "KAHVE", m: "içecek türü."}, {a: "BASKETBOL", m: "top ile oynanan spor."}, {a: "PASTANE", m: "tatlı ve yiyecek yapılan yer."}, {a: "TAVUK", m: "kümes hayvanı."}, {a: "KARTON", m: "kalın kağıt türü."}, {a: "KİRPİ", m: "dikenli küçük hayvan."}, {a: "GÜL", m: "çiçek türü."} 
         ];
 
         function updateBackground() {
