@@ -5,108 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>WordZen</title>
     <style>
-        :root { 
-            --neon-blue: #00d4ff; 
-            --neon-green: #00ff88;
-            --neon-gold: #ffd700;
-            /* Şeffaf Beyaz (Buzlu Cam) */
-            --glass-white: rgba(255, 255, 255, 0.85); 
-        }
-        
-        body { 
-            margin: 0; background: #000; color: white; overflow: hidden;
-            font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; 
-            height: 100vh; width: 100%; position: fixed;
+        body {
+            margin: 0; padding: 0; overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            background-color: #000; /* Arka plan resmin bunun üzerine binecek */
+            background-size: cover; background-position: center;
+            color: white; display: flex; flex-direction: column; align-items: center; height: 100vh;
         }
 
-        /* --- LOGO (EN KALIN HALİ) --- */
         #header-logo {
-            margin-top: 40px; 
-            font-size: 3.2rem; 
-            font-weight: 900; /* En kalın */
-            letter-spacing: 12px; 
-            color: var(--neon-blue); 
-            text-shadow: 0 0 20px var(--neon-blue);
-            text-transform: uppercase;
+            margin-top: 40px; font-size: 3rem; font-weight: 900; letter-spacing: 8px; 
+            color: #00d4ff; text-shadow: 0 0 20px #00d4ff; text-transform: uppercase;
         }
 
-        /* --- KUTUCUK TASARIMI --- */
-        .letter-box { 
-            width: 50px; 
-            height: 60px; 
-            border-radius: 12px;
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center;
-            font-size: 2.2rem; 
-            font-weight: 900; /* Harfler kalın ve net */
-            margin: 6px;
-            /* Şeffaf Beyaz Arka Plan */
-            background: var(--glass-white); 
-            /* Siyah Harf Rengi */
-            color: #000; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.4);
-            transition: transform 0.2s;
+        .stat-box {
+            background: rgba(0, 0, 0, 0.6); padding: 10px 20px; border-radius: 20px;
+            backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: bold; font-size: 1.2rem; margin-top: 20px;
         }
 
-        /* Doğru bilinen veya ipucu olan harf efekti */
-        .correct {
-            background: #fff; /* Tam beyaz */
-            border: 3px solid var(--neon-green);
-            box-shadow: 0 0 15px var(--neon-green);
+        #word-display {
+            display: flex; gap: 10px; margin-top: 60px; flex-wrap: wrap; justify-content: center;
         }
 
-        /* --- MODAL (ONAY KUTUSU) --- */
-        #custom-modal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(10px);
+        .letter-box {
+            width: 50px; height: 60px; 
+            background: rgba(255, 255, 255, 0.9); /* Şeffaf Beyaz */
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            color: #000; /* Siyah Metin */
+            font-size: 2rem; font-weight: 900;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-        .modal-content {
-            background: rgba(40, 40, 40, 0.95); border: 2px solid var(--neon-blue);
-            padding: 30px; border-radius: 25px; text-align: center; width: 80%; max-width: 350px;
-        }
-        .m-btn { padding: 15px; border-radius: 15px; border: none; font-weight: bold; flex: 1; cursor: pointer; margin: 5px; }
-        .m-btn-yes { background: var(--neon-green); color: #000; }
-        .m-btn-no { background: #444; color: #fff; }
 
         #skip-btn {
-            background: rgba(255, 215, 0, 0.1); border: 2px solid var(--neon-gold);
-            color: var(--neon-gold); padding: 15px 35px; border-radius: 50px;
-            font-weight: 900; margin-top: 50px; cursor: pointer;
+            background: rgba(0, 0, 0, 0.5); border: 2px solid #ffcc00;
+            color: #ffcc00; padding: 15px 35px; border-radius: 50px;
+            font-weight: bold; margin-top: 50px; cursor: pointer;
         }
 
-        #top-bar { margin-top: 20px; font-size: 1.4rem; font-weight: bold; }
         #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body onclick="document.getElementById('hidden-input').focus()">
 
-    <div id="custom-modal">
-        <div class="modal-content">
-            <div id="modal-msg" style="font-size: 1.3rem; margin-bottom: 20px;"></div>
-            <div style="display: flex;" id="modal-actions"></div>
-        </div>
-    </div>
-
     <div id="header-logo">WordZen</div>
-
-    <div id="top-bar">🪙 <span id="coin-txt">0</span></div>
-
-    <div id="word-container" style="margin-top: 40px; display: flex; justify-content: center; flex-wrap: wrap;"></div>
-
-    <button id="skip-btn" onclick="askSkip()">SEVİYEYİ ATLA (15 🪙)</button>
-
+    <div class="stat-box">🪙 <span id="coin-count">0</span></div>
+    <div id="word-display"></div>
+    <button id="skip-btn" onclick="askSkip()">Seviyeyi Atla (15 🪙)</button>
     <input type="text" id="hidden-input" autocomplete="off">
 
     <script>
         let coins = parseInt(localStorage.getItem('wordzen_coins')) || 30;
         let currentLevel = 0;
-        
-        // Buraya Chat GPT'den alacağın o efsane listeyi ekleyeceksin
+        let typedWord = "";
+
+        // ChatGPT'den alacağın o karışık listeyi buraya koyacaksın kanka
         const levels = [
             {a:"ELMA", h:[0,2], s:"KOLAY"},
-            {a:"KULAK", h:[1,3], s:"ORTA"},        {a:"ADA", h:[0], s:"KOLAY"}, {a:"ARI", h:[1], s:"KOLAY"}, {a:"ÜTÜ", h:[0], s:"KOLAY"}, {a:"EGE", h:[1], s:"KOLAY"}, {a:"JET", h:[2], s:"KOLAY"},
+            {a:"KULAK", h:[1,3], s:"ORTA"},
+            {a:"ASLAN", h:[0,4], s:"ORTA"},        {a:"ADA", h:[0], s:"KOLAY"}, {a:"ARI", h:[1], s:"KOLAY"}, {a:"ÜTÜ", h:[0], s:"KOLAY"}, {a:"EGE", h:[1], s:"KOLAY"}, {a:"JET", h:[2], s:"KOLAY"},
         {a:"KAPI", h:[0,2], s:"KOLAY"}, {a:"MASA", h:[1,3], s:"KOLAY"}, {a:"KUZU", h:[0,2], s:"KOLAY"}, {a:"OKUL", h:[1,3], s:"KOLAY"}, {a:"ELMA", h:[0,2], s:"KOLAY"},
         {a:"KİTAP", h:[0,3], s:"ORTA"}, {a:"KALEM", h:[1,4], s:"ORTA"}, {a:"DENİZ", h:[0,2], s:"ORTA"}, {a:"GÜNEŞ", h:[1,3], s:"ORTA"}, {a:"LÜGAT", h:[1,4], s:"ZOR"},
         {a:"BARDAK", h:[0,2,4], s:"ORTA"}, {a:"GÖZLÜK", h:[1,3,5], s:"ZOR"}, {a:"TOPRAK", h:[0,3,5], s:"ORTA"}, {a:"YAPRAK", h:[1,4], s:"ORTA"}, {a:"SÖZLÜK", h:[0,2,4], s:"ZOR"},
@@ -192,58 +149,76 @@
   {a:"FİKİR", h:[0,2], s:"ORTA"},
   {a:"KAPAK", h:[0,2], s:"ORTA"},
   {a:"KAZAN", h:[0,3], s:"ORTA"},
-   ];
-
-        function updateUI() {
-            document.getElementById('coin-txt').innerText = coins;
-            localStorage.setItem('wordzen_coins', coins);
-        }
-
-        function showModal(msg, type, onConfirm = null) {
-            const modal = document.getElementById('custom-modal');
-            const msgDiv = document.getElementById('modal-msg');
-            const actions = document.getElementById('modal-actions');
-            msgDiv.innerHTML = msg;
-            actions.innerHTML = "";
-
-            if (type === 'confirm') {
-                actions.innerHTML = `
-                    <button class="m-btn m-btn-no" onclick="closeModal()">HAYIR</button>
-                    <button class="m-btn m-btn-yes" id="confirm-yes">EVET</button>
-                `;
-                document.getElementById('confirm-yes').onclick = () => { onConfirm(); closeModal(); };
-            } else {
-                actions.innerHTML = `<button class="m-btn m-btn-yes" onclick="closeModal()">TAMAM</button>`;
-            }
-            modal.style.display = "flex";
-        }
-
-        function closeModal() { document.getElementById('custom-modal').style.display = "none"; }
-
-        function askSkip() {
-            if (coins < 15) {
-                showModal("🪙 Jetonun yetersiz!", "alert");
-            } else {
-                showModal("Emin misin? 15 Jeton harcanacak.", "confirm", () => {
-                    coins -= 15; currentLevel++; updateUI(); initGame();
-                });
-            }
-        }
+        ];
 
         function initGame() {
-            const container = document.getElementById('word-container');
+            const container = document.getElementById('word-display');
             container.innerHTML = "";
             const levelData = levels[currentLevel % levels.length];
+            typedWord = ""; 
+            
             levelData.a.split('').forEach((char, i) => {
                 const box = document.createElement('div');
                 box.className = 'letter-box';
+                box.id = 'box-' + i;
+                // İpucu harfleri göster
                 if(levelData.h.includes(i)) {
                     box.innerText = char;
-                    box.classList.add('correct');
                 }
                 container.appendChild(box);
             });
             updateUI();
+        }
+
+        document.getElementById('hidden-input').addEventListener('input', (e) => {
+            const levelData = levels[currentLevel % levels.length];
+            const input = e.target.value.toUpperCase();
+            e.target.value = ""; // Inputu temizle
+            
+            // Sadece harf girilmesini sağla ve kelimeyi tamamla
+            if(input.match(/[A-ZĞÜŞİÖÇ]/)) {
+                // Boş olan ilk kutuyu bul ve doldur
+                for(let i=0; i < levelData.a.length; i++) {
+                    const box = document.getElementById('box-' + i);
+                    if(box.innerText === "") {
+                        box.innerText = input;
+                        checkWin();
+                        break;
+                    }
+                }
+            }
+        });
+
+        function checkWin() {
+            const levelData = levels[currentLevel % levels.length];
+            let currentWord = "";
+            for(let i=0; i < levelData.a.length; i++) {
+                currentWord += document.getElementById('box-' + i).innerText;
+            }
+
+            if(currentWord === levelData.a) {
+                setTimeout(() => {
+                    alert("Tebrikler! +10 Jeton kazandın.");
+                    coins += 10;
+                    currentLevel++;
+                    initGame();
+                }, 300);
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('coin-count').innerText = coins;
+            localStorage.setItem('wordzen_coins', coins);
+        }
+
+        function askSkip() {
+            if (coins < 15) {
+                alert("Yeterli jetonun yok!");
+            } else if (confirm("15 Jeton harcayarak geçmek istiyor musun?")) {
+                coins -= 15;
+                currentLevel++;
+                initGame();
+            }
         }
 
         window.onload = () => { initGame(); document.getElementById('hidden-input').focus(); };
