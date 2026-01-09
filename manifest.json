@@ -1,17 +1,16 @@
 {
-  "name": "WordZen",
+  "name": "WordZen Online",
   "short_name": "WordZen",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#000000",
-  "orientation": "portrait",
+  "theme_color": "#00d4ff",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/5260/5260461.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
-
