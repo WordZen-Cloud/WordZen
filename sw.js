@@ -1,4 +1,4 @@
-const cacheName = 'wordzen-v100';
+const CACHE_NAME = 'wordzen-v2';
 const assets = [
   './',
   './index.html',
@@ -6,18 +6,9 @@ const assets = [
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(cacheName).then(cache => {
-      return cache.addAll(assets);
-    })
-  );
+  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(assets)));
 });
 
 self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(res => {
-      return res || fetch(e.request);
-    })
-  );
+  e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
 });
-
