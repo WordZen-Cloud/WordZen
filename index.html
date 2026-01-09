@@ -31,45 +31,55 @@
             100% { opacity: 0; transform: scale(1.1); letter-spacing: 20px; }
         }
 
-        /* 2. LOGO */
+        /* 2. LOGO (GELİŞTİRİLMİŞ) */
         #header-logo {
-            margin-top: 20px; font-size: 2.2rem; font-weight: 200; letter-spacing: 10px;
-            color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue);
+            margin-top: 20px; font-size: 2.8rem; font-weight: 200; letter-spacing: 12px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 15px var(--neon-blue), 0 0 30px rgba(0,0,0,0.9), 2px 2px 5px #000;
             animation: blueBreath 3s infinite ease-in-out;
-            user-select: none;
+            user-select: none; z-index: 10;
         }
         @keyframes blueBreath {
-            0%, 100% { opacity: 0.5; text-shadow: 0 0 10px var(--neon-blue); }
-            50% { opacity: 1; text-shadow: 0 0 30px var(--neon-blue), 0 0 50px var(--neon-blue); }
+            0%, 100% { opacity: 0.7; text-shadow: 0 0 10px var(--neon-blue), 0 0 20px #000; }
+            50% { opacity: 1; text-shadow: 0 0 25px var(--neon-blue), 0 0 40px var(--neon-blue), 0 0 20px #000; }
         }
 
-        /* 3. ARAYÜZ VE JOKER BUTONU */
+        /* 3. ARAYÜZ VE JOKERLER */
         #top-bar { width: 100%; padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
+        
         #hint-btn {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.2);
             padding: 5px 12px; border-radius: 12px; color: #fff; cursor: pointer;
             display: flex; flex-direction: column; align-items: center; font-size: 0.7rem;
+            backdrop-filter: blur(5px);
         }
         .hint-active { border-color: var(--neon-gold) !important; color: var(--neon-gold) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
 
-        /* YENİ ŞIK JOKER BUTONU */
+        /* GERÇEKÇİ JOKER BUTONU */
         #skipBtn {
-            background: rgba(255, 165, 0, 0.1);
-            border: 1px solid orange;
-            color: orange;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: 0.3s;
-            box-shadow: 0 0 10px rgba(255, 165, 0, 0.2);
+            background: rgba(255, 165, 0, 0.15); border: 1.5px solid rgba(255, 165, 0, 0.5);
+            color: #ffb433; padding: 10px 25px; border-radius: 50px;
+            font-size: 0.85rem; font-weight: bold; letter-spacing: 1px; cursor: pointer;
+            margin-top: 15px; backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); transition: all 0.3s;
         }
-        #skipBtn:active { transform: scale(0.9); background: orange; color: black; }
+        #skipBtn:active { transform: scale(0.9); background: rgba(255, 165, 0, 0.4); }
 
+        /* 1v1 PANELİ */
+        #pvp-header { 
+            display: none; width: 100%; padding: 5px 20px; background: rgba(0, 212, 255, 0.1); 
+            border-bottom: 1px solid var(--neon-blue); justify-content: space-around; font-weight: bold;
+        }
+        .active-player { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); transform: scale(1.1); }
+
+        #pvp-toggle {
+            background: rgba(0, 212, 255, 0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue);
+            padding: 5px 15px; border-radius: 10px; font-size: 0.7rem; margin-top: 5px; cursor: pointer;
+        }
+
+        /* DİĞER KARTLAR */
         #level-card {
-            margin-top: 25px; padding: 12px 35px; border-radius: 20px;
+            margin-top: 15px; padding: 12px 35px; border-radius: 20px;
             background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center; backdrop-filter: blur(5px);
         }
@@ -78,7 +88,7 @@
         .status-easy { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); }
         .status-hard { color: var(--neon-red); text-shadow: 0 0 10px var(--neon-red); }
 
-        #word-container { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0 15px; cursor: pointer; }
+        #word-container { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0 15px; }
         .letter-box { 
             width: 35px; height: 48px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
@@ -106,7 +116,15 @@
 <body onclick="focusInput()">
 
 <div id="splash"><div class="s-logo">WordZen</div></div>
+
+<div id="pvp-header">
+    <div id="p1-ui">P1: <span id="p1-score">0</span></div>
+    <div id="pvp-msg">SIRA: OYUNCU 1</div>
+    <div id="p2-ui">P2: <span id="p2-score">0</span></div>
+</div>
+
 <div id="header-logo">WordZen</div>
+<button id="pvp-toggle" onclick="togglePVP()">⚔️ 1V1 MODU: KAPALI</button>
 
 <div id="top-bar">
     <div style="font-size: 1.2rem;">🪙 <span id="coin-txt">0</span></div>
@@ -121,6 +139,8 @@
 </div>
 
 <div id="word-container"></div>
+<div id="word-meaning"></div>
+
 <button id="next-btn" onclick="nextLevel()">SONRAKİ BÖLÜM →</button>
 
 <input type="text" id="hidden-input" autocomplete="off" spellcheck="false">
@@ -136,26 +156,17 @@
         {a:"BARDAK", h:[0,2,4], s:"ORTA"}, {a:"GÖZLÜK", h:[1,3,5], s:"ZOR"}, {a:"TOPRAK", h:[0,3,5], s:"ORTA"}, {a:"YAPRAK", h:[1,4], s:"ORTA"}, {a:"SÖZLÜK", h:[0,2,4], s:"ZOR"},
         {a:"MERHABA", h:[0,2,5], s:"ORTA"}, {a:"TELEFON", h:[1,3,6], s:"ORTA"}, {a:"PENCERE", h:[0,3,5], s:"ORTA"}, {a:"KAYISI", h:[1,4], s:"ORTA"}, {a:"KESTANE", h:[0,3,6], s:"ORTA"},
         {a:"AYAKKABI", h:[0,2,4,6], s:"GELİŞMİŞ"}, {a:"BİSİKLET", h:[1,4,7], s:"GELİŞMİŞ"}, {a:"DOMATES", h:[0,3,5], s:"ORTA"}, {a:"ZÜRAFA", h:[1,4], s:"ZOR"}, {a:"KELEBEK", h:[0,3,6], s:"ORTA"},
-        {a:"ÇİKOLATA", h:[0,2,4,7], s:"İLERİ"}, {a:"MANDALİNA", h:[1,4,7], s:"İLERİ"}, {a:"MİNARE", h:[0,2], s:"ORTA"}, {a:"ŞEMSİYE", h:[1,4,6], s:"ORTA"}, {a:"LOKANTA", h:[0,3,5], s:"ORTA"},
-        {a:"BİLGİSAYAR", h:[0,2,4,6,8], s:"EFSANE"}, {a:"KÜTÜPHANE", h:[1,4,7], s:"İLERİ"}, {a:"DİKKATLİ", h:[0,3,6], s:"ORTA"}, {a:"TEKNOLOJİ", h:[1,4,8], s:"EFSANE"}, {a:"PSİKOLOJİ", h:[0,4,7], s:"EFSANE"},
-        {a:"AVUKAT", h:[1,4], s:"ORTA"}, {a:"BAKKAL", h:[0,3], s:"ORTA"}, {a:"CEVİZ", h:[1,3], s:"ORTA"}, {a:"ÇADIR", h:[0,4], s:"ORTA"}, {a:"DAVUL", h:[1,3], s:"ORTA"},
-        {a:"FENER", h:[0,2], s:"ORTA"}, {a:"GAZETE", h:[1,4], s:"ORTA"}, {a:"HAMAK", h:[0,3], s:"ORTA"}, {a:"IHLAMUR", h:[1,4,6], s:"ZOR"}, {a:"İSKELE", h:[0,3,5], s:"ORTA"},
-        {a:"JİLET", h:[1,3], s:"ZOR"}, {a:"KAVUN", h:[0,4], s:"ORTA"}, {a:"LAMBA", h:[1,3], s:"ORTA"}, {a:"MAKAS", h:[0,4], s:"ORTA"}, {a:"NANE", h:[1,3], s:"KOLAY"},
-        {a:"ÖRDEK", h:[0,3], s:"ORTA"}, {a:"PASTANE", h:[1,4,6], s:"ORTA"}, {a:"RADYO", h:[0,4], s:"ORTA"}, {a:"SABUN", h:[1,3], s:"ORTA"}, {a:"TEPSİ", h:[0,4], s:"ORTA"},
-        {a:"UÇURTMA", h:[1,4,6], s:"ZOR"}, {a:"ÜZÜM", h:[1,3], s:"KOLAY"}, {a:"VİŞNE", h:[0,4], s:"ORTA"}, {a:"YALAN", h:[1,3], s:"KOLAY"}, {a:"ZEYTİN", h:[0,3,5], s:"ORTA"},
-        {a:"AHTAPOT", h:[0,3,6], s:"ZOR"}, {a:"BALİNA", h:[1,4], s:"ORTA"}, {a:"CİĞER", h:[0,3], s:"ORTA"}, {a:"ÇAKMAK", h:[1,4], s:"ORTA"}, {a:"DOKTOR", h:[0,3,5], s:"ORTA"},
-        {a:"ELBİSE", h:[1,4], s:"ORTA"}, {a:"FABRİKA", h:[0,3,6], s:"ZOR"}, {a:"GARSON", h:[1,4], s:"ORTA"}, {a:"HAVUZ", h:[0,3], s:"ORTA"}, {a:"İTFAİYE", h:[1,4,6], s:"ZOR"},
-        {a:"KAMYON", h:[0,3,5], s:"ORTA"}, {a:"LEĞEN", h:[1,3], s:"ORTA"}, {a:"MERCEK", h:[0,3,5], s:"ORTA"}, {a:"NODÜL", h:[1,4], s:"ZOR"}, {a:"ORMAN", h:[0,3], s:"ORTA"},
-        {a:"PİJAMA", h:[1,4], s:"ORTA"}, {a:"REÇEL", h:[0,3], s:"ORTA"}, {a:"SİNCAP", h:[1,4], s:"ORTA"}, {a:"TAVŞAN", h:[0,3,5], s:"ORTA"}, {a:"UYGULAMA", h:[1,4,7], s:"EFSANE"},
-        {a:"ÜNİVERSİTE", h:[0,3,6,9], s:"EFSANE"}, {a:"VALİZ", h:[1,3], s:"ORTA"}, {a:"YOĞURT", h:[0,3,5], s:"ORTA"}, {a:"ZANAAT", h:[1,4], s:"ZOR"}, {a:"ANTRENMAN", h:[0,4,8], s:"EFSANE"},
-        {a:"BAŞARI", h:[1,4], s:"ORTA"}, {a:"COĞRAFYA", h:[0,3,6], s:"ZOR"}, {a:"DONDURMA", h:[1,4,7], s:"İLERİ"}, {a:"EJDERHA", h:[0,3,6], s:"ZOR"}, {a:"FOTOĞRAF", h:[1,4,7], s:"İLERİ"},
-        {a:"GÖKKUŞAĞI", h:[0,3,6,8], s:"EFSANE"}, {a:"HAYALET", h:[1,4], s:"ORTA"}, {a:"ISPANAK", h:[0,3,6], s:"ORTA"}, {a:"İSTASYON", h:[1,4,7], s:"İLERİ"}, {a:"KÜREK", h:[0,3], s:"ORTA"}
+        {a:"ÇİKOLATA", h:[0,2,4,7], s:"İLERİ"}, {a:"MANDALİNA", h:[1,4,7], s:"İLERİ"}, {a:"MİNARE", h:[0,2], s:"ORTA"}, {a:"ŞEMSİYE", h:[1,4,6], s:"ORTA"}, {a:"LOKANTA", h:[0,3,5], s:"ORTA"}
     ];
 
     let currentLevel = parseInt(localStorage.getItem('wordzen_level')) || 0;
     let coins = parseInt(localStorage.getItem('wordzen_coins')) || 0; 
     let userGuess = [];
     let isLocked = false;
+    let pvpMode = false;
+    let currentPlayer = 1;
+    let p1Score = 0;
+    let p2Score = 0;
     const hiddenInput = document.getElementById('hidden-input');
 
     function focusInput() { if(!isLocked) hiddenInput.focus(); }
@@ -172,7 +183,7 @@
         statusEl.className = (levelData.s === "ZOR" || levelData.s === "EFSANE" || levelData.s === "İLERİ") ? "status-hard" : "status-easy";
 
         updateUI();
-        updateMyBackground(); // Arka planı her level başında kontrol et
+        updateMyBackground();
         const container = document.getElementById('word-container');
         container.innerHTML = ""; userGuess = [];
 
@@ -192,7 +203,29 @@
         focusInput();
     }
 
-    // ARKA PLAN SİSTEMİ
+    function togglePVP() {
+        pvpMode = !pvpMode;
+        const btn = document.getElementById('pvp-toggle');
+        const header = document.getElementById('pvp-header');
+        if(pvpMode) {
+            btn.innerText = "⚔️ 1V1 MODU: AÇIK";
+            header.style.display = "flex";
+            p1Score = 0; p2Score = 0;
+            updatePVPUI();
+        } else {
+            btn.innerText = "⚔️ 1V1 MODU: KAPALI";
+            header.style.display = "none";
+        }
+    }
+
+    function updatePVPUI() {
+        document.getElementById('p1-score').innerText = p1Score;
+        document.getElementById('p2-score').innerText = p2Score;
+        document.getElementById('pvp-msg').innerText = "SIRA: OYUNCU " + currentPlayer;
+        document.getElementById('p1-ui').className = (currentPlayer === 1) ? "active-player" : "";
+        document.getElementById('p2-ui').className = (currentPlayer === 2) ? "active-player" : "";
+    }
+
     function updateMyBackground() {
         let backgrounds = ["bg1.jpg", "bg2.jpg", "bg3.jpg", "bg4.jpg", "bg5.jpg", "bg6.jpg", "bg7.jpg", "bg8.jpg", "bg9.jpg", "bg10.jpg"];
         let bgIndex = Math.floor(currentLevel / 10);
@@ -200,7 +233,6 @@
         document.body.style.backgroundImage = "url('" + backgrounds[bgIndex] + "')";
     }
 
-    // JOKER: SEVİYE ATLA
     function skipLevel() {
         if (isLocked) return;
         if (coins >= 15) {
@@ -208,10 +240,7 @@
             currentLevel++;
             saveData();
             initGame();
-            alert("15 Jeton Karşılığı Seviye Atlandı!");
-        } else {
-            alert("Yeterli jetonun yok!");
-        }
+        } else { alert("Yeterli jetonun yok!"); }
     }
 
     hiddenInput.oninput = (e) => {
@@ -259,16 +288,23 @@
 
         if(userGuess.join('') === correctWord) {
             Array.from(boxes).forEach(b => { b.classList.add('correct-neon'); b.classList.remove('active-box'); });
-            
-            // Alkış sesi ve 1.5 sn sonra durdurma
             let clap = document.getElementById('snd-clap');
-            clap.currentTime = 0;
-            clap.play();
+            clap.currentTime = 0; clap.play();
             setTimeout(() => { clap.pause(); }, 1500);
 
-            coins += 4;
-            saveData();
-            document.getElementById('next-btn').style.display = "block";
+            if(pvpMode) {
+                if(currentPlayer === 1) p1Score++; else p2Score++;
+                setTimeout(() => { 
+                    currentPlayer = (currentPlayer === 1) ? 2 : 1;
+                    currentLevel++; 
+                    updatePVPUI();
+                    initGame(); 
+                }, 2000);
+            } else {
+                coins += 4;
+                saveData();
+                document.getElementById('next-btn').style.display = "block";
+            }
         } else {
             Array.from(boxes).forEach(b => b.classList.add('wrong-neon'));
             setTimeout(() => {
@@ -299,9 +335,7 @@
             const boxes = document.getElementsByClassName('letter-box');
             boxes[rand].innerText = char;
             boxes[rand].classList.add('correct-neon');
-            saveData();
-            updateUI();
-            updateCursor();
+            saveData(); updateUI(); updateCursor();
             if(!userGuess.includes(null)) check();
         }
     }
