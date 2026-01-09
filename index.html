@@ -10,17 +10,32 @@
     <style>
         :root { --neon-blue: #00d4ff; --neon-green: #00ff88; --neon-red: #ff3e3e; --neon-gold: #ffd700; }
         body { margin: 0; background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; flex-direction: column; align-items: center; height: 100vh; }
+        
+        /* Arka Plan */
         #bg { position: fixed; inset: 0; background-position: center; background-size: cover; opacity: 0.5; z-index: -1; transition: background 1.5s ease-in-out; }
-        #splash { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 1s; }
-        .btn { width: 260px; padding: 18px; margin: 10px; border: 2px solid var(--neon-blue); border-radius: 20px; background: rgba(0,0,0,0.6); color: #fff; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem; letter-spacing: 2px; }
-        .btn:active { transform: scale(0.95); background: var(--neon-blue); color: #000; }
+
+        /* Büyüyen Yazı Splash Ekranı */
+        #splash { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .zoom-text { font-size: 1.5rem; color: #fff; letter-spacing: 5px; font-weight: bold; text-transform: uppercase; animation: zoomInZen 2.5s ease-out forwards; }
+        @keyframes zoomInZen {
+            0% { transform: scale(0.5); opacity: 0; letter-spacing: 2px; }
+            40% { opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; letter-spacing: 25px; }
+        }
+
+        /* Menüler ve Butonlar */
         #menu-screen, #lobby-screen, #game-screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); }
-        .letter-box { width: 38px; height: 50px; border: 1px solid rgba(255,255,255,0.4); margin: 5px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; border-radius: 10px; background: rgba(0,0,0,0.5); }
+        .btn { width: 260px; padding: 18px; margin: 10px; border: 2px solid var(--neon-blue); border-radius: 20px; background: rgba(0,0,0,0.7); color: #fff; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem; letter-spacing: 2px; }
+        .btn:active { transform: scale(0.95); background: var(--neon-blue); color: #000; }
+
+        /* Oyun Kutuları */
+        .letter-box { width: 38px; height: 50px; border: 2px solid rgba(255,255,255,0.4); margin: 5px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; border-radius: 10px; background: rgba(0,0,0,0.6); }
         .correct { border-color: var(--neon-green); color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); }
+
+        /* Rakip ve Alt Bilgi */
         #rival-ui { width: 80%; margin-bottom: 30px; }
         .prog-bg { width: 100%; height: 10px; background: #222; border-radius: 5px; overflow: hidden; border: 1px solid #444; }
         #rival-fill { width: 0%; height: 100%; background: var(--neon-red); transition: 0.4s; }
-        #offline-ui { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:10000; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
         input { padding:15px; border-radius:10px; text-align:center; background:#111; color:white; border:1px solid var(--neon-blue); margin-bottom:10px; font-size:1.2rem; }
     </style>
 </head>
@@ -29,15 +44,9 @@
 <div id="bg"></div>
 <audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
-<div id="splash"><h1 style="font-size:3.5rem; letter-spacing:15px; text-shadow: 0 0 20px var(--neon-blue);">WordZen</h1></div>
+<div id="splash"><div class="zoom-text">WordZen</div></div>
 
-<div id="offline-ui">
-    <div style="font-size:80px;">📶<span style="color:red; font-weight:bold; position:absolute;">!</span></div>
-    <h2 style="color:var(--neon-red); margin-top:20px;">BAĞLANTI KESİLDİ</h2>
-    <p>Lütfen internetini kontrol et kanka.</p>
-</div>
-
-<div id="menu-screen" style="display:flex;">
+<div id="menu-screen">
     <h1 style="font-size:3.5rem; color:var(--neon-blue); margin-bottom:40px; text-shadow: 0 0 15px var(--neon-blue);">WordZen</h1>
     <button class="btn" onclick="initMode('normal')">TEK OYUNCU</button>
     <button class="btn" style="border-color:var(--neon-gold); color:var(--neon-gold);" onclick="showLobby()">1v1 ONLINE</button>
@@ -49,7 +58,6 @@
         <p>veya</p>
         <input type="text" id="join-input" placeholder="ODA KODU">
         <button class="btn" style="border-color:var(--neon-gold);" onclick="joinRoom()">ODAYA KATIL</button>
-        <button class="btn" style="border:none; font-size:0.8rem;" onclick="location.reload()">Geri Dön</button>
     </div>
     <div id="lobby-wait" style="display:none;">
         <p>ODA KODUN:</p>
@@ -72,6 +80,7 @@
 </div>
 
 <script>
+    // Firebase Ayarları
     const firebaseConfig = {
         apiKey: "AIzaSyD-iT8DyWapzSChkUtVHFytZVSS5Ec9HaA",
         authDomain: "wordzen-d82f1.firebaseapp.com",
@@ -84,6 +93,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Doğa Arka Planları (10 seviyede bir)
     const bgImages = [
         'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1200', // Orman
         'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200', // Deniz
@@ -93,11 +103,10 @@
     ];
 
     const library = [
-        {a:"ELMA", m:"Kırmızı veya yeşil renkli, sevilen meyve."},
-        {a:"GÜNEŞ", m:"Dünya'yı ısıtan ve aydınlatan yıldız."},
-        {a:"BİLGİSAYAR", m:"Elektronik veri işleme makinesi."},
+        {a:"ELMA", m:"Kırmızı veya yeşil renkli meyve."},
         {a:"DENİZ", m:"Tuzlu büyük su kütlesi."},
-        {a:"ORMAN", m:"Ağaçlarla kaplı geniş alan."} 
+        {a:"ORMAN", m:"Ağaçlarla kaplı geniş alan."},
+        {a:"GÜNEŞ", m:"Sıcak ışık kaynağımız."}, 
 {a: "PANDA", m: "büyük, siyah beyaz ayı türü."},
 {a: "KUMANDA", m: "cihazları uzaktan kontrol etme aracı."},
 {a: "ÇAMAŞIR", m: "yıkanacak giysi veya kumaş."},
@@ -307,9 +316,11 @@
     let currentLevel = parseInt(localStorage.getItem('wz_lvl')) || 0, coins = parseInt(localStorage.getItem('wz_coin')) || 20;
     let guess = [], musicPlayed = false;
 
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
-
-    function startMusic() { if(!musicPlayed) { document.getElementById('bg-music').play(); musicPlayed = true; } document.getElementById('hidden-input').focus(); }
+    // Otomatik Müzik ve Focus
+    function startMusic() { 
+        if(!musicPlayed) { document.getElementById('bg-music').play(); musicPlayed = true; } 
+        document.getElementById('hidden-input').focus(); 
+    }
 
     function updateBG() {
         let idx = Math.floor(currentLevel / 10);
@@ -317,6 +328,7 @@
         document.getElementById('bg').style.backgroundImage = `url('${bgImages[idx]}')`;
     }
 
+    // Mod Başlatıcı
     function initMode(m) {
         gameMode = m; updateBG();
         document.getElementById('menu-screen').style.display = 'none';
@@ -326,26 +338,33 @@
 
     function showLobby() { document.getElementById('menu-screen').style.display = 'none'; document.getElementById('lobby-screen').style.display = 'flex'; }
 
+    // Oda İşlemleri
     function createRoom() {
         roomCode = Math.floor(1000 + Math.random()*8999).toString();
         db.ref('rooms/'+roomCode).set({ p1: myId, p2: "", status: "waiting", p1P: 0, p2P: 0, wIdx: Math.floor(Math.random()*library.length) });
-        setupLobby(); listenRoom();
+        setupLobbyUI(); listenRoom();
     }
 
     function joinRoom() {
         roomCode = document.getElementById('join-input').value;
         db.ref('rooms/'+roomCode).once('value', s => {
-            if(s.exists() && s.val().p2 === "") { db.ref('rooms/'+roomCode).update({ p2: myId, status: "ready" }); setupLobby(); listenRoom(); }
-            else { alert("Kod hatalı veya oda dolu!"); }
+            if(s.exists() && s.val().p2 === "") { 
+                db.ref('rooms/'+roomCode).update({ p2: myId, status: "ready" }); 
+                setupLobbyUI(); listenRoom(); 
+            } else { alert("Hata!"); }
         });
     }
 
-    function setupLobby() { document.getElementById('lobby-init').style.display='none'; document.getElementById('lobby-wait').style.display='block'; document.getElementById('room-display').innerText=roomCode; }
+    function setupLobbyUI() { 
+        document.getElementById('lobby-init').style.display='none'; 
+        document.getElementById('lobby-wait').style.display='block'; 
+        document.getElementById('room-display').innerText=roomCode; 
+    }
 
     function listenRoom() {
         db.ref('rooms/'+roomCode).on('value', s => {
             const d = s.val(); if(!d) return;
-            if(d.p2) document.getElementById('room-status').innerText = "Rakip hazır! Oyunu başlatabilirsin.";
+            if(d.p2) document.getElementById('room-status').innerText = "Rakip geldi! Hazır.";
             if(d.p1 === myId && d.p2) document.getElementById('start-btn').style.display = 'block';
             if(d.status === "playing") {
                 gameMode = "1v1"; document.getElementById('lobby-screen').style.display = 'none';
@@ -353,7 +372,7 @@
                 document.getElementById('rival-ui').style.display = 'block';
                 let rP = (d.p1 === myId) ? d.p2P : d.p1P;
                 document.getElementById('rival-fill').style.width = rP + "%";
-                if(rP >= 100) { alert("MAALESEF RAKİP KAZANDI!"); location.reload(); }
+                if(rP >= 100) { alert("RAKİP KAZANDI!"); location.reload(); }
                 if(!guess.length) loadWord(d.wIdx);
             }
         });
@@ -361,11 +380,14 @@
 
     function triggerStart() { db.ref('rooms/'+roomCode).update({ status: "playing" }); }
 
+    // Oyun Mantığı
     function loadWord(idx = null) {
         let data = library[(idx !== null ? idx : currentLevel) % library.length];
         const area = document.getElementById('word-area'); area.innerHTML = "";
         guess = new Array(data.a.length).fill(null);
-        data.a.split('').forEach(() => { let b = document.createElement('div'); b.className = 'letter-box'; area.appendChild(b); });
+        data.a.split('').forEach(() => { 
+            let b = document.createElement('div'); b.className = 'letter-box'; area.appendChild(b); 
+        });
         document.getElementById('lvl-txt').innerText = currentLevel + 1;
         document.getElementById('coin-txt').innerText = coins;
         document.getElementById('meaning').innerText = "";
@@ -380,8 +402,7 @@
             let p = (guess.filter(x=>x).length / guess.length) * 100;
             if(gameMode === "1v1") {
                 db.ref('rooms/'+roomCode).once('value', s => {
-                    const roomData = s.val();
-                    if(roomData.p1 === myId) db.ref('rooms/'+roomCode).update({p1P: p});
+                    if(s.val().p1 === myId) db.ref('rooms/'+roomCode).update({p1P: p});
                     else db.ref('rooms/'+roomCode).update({p2P: p});
                 });
             }
@@ -398,33 +419,30 @@
                 coins += 5; currentLevel++; 
                 localStorage.setItem('wz_lvl', currentLevel); localStorage.setItem('wz_coin', coins);
                 document.getElementById('next-btn').style.display = "block";
-            } else {
-                db.ref('rooms/'+roomCode).once('value', s => {
-                    if(s.val().p1 === myId) db.ref('rooms/'+roomCode).update({p1P: 100});
-                    else db.ref('rooms/'+roomCode).update({p2P: 100});
-                });
-                alert("TEBRİKLER, KAZANDIN!"); location.reload();
-            }
-        } else {
+            } else { alert("KAZANDIN!"); location.reload(); }
+        } else { 
             setTimeout(() => {
-                const boxes = document.getElementsByClassName('letter-box');
-                Array.from(boxes).forEach(b => b.innerText = "");
-                guess = new Array(guess.length).fill(null);
-                if(gameMode === "1v1") {
-                    db.ref('rooms/'+roomCode).once('value', s => {
-                        if(s.val().p1 === myId) db.ref('rooms/'+roomCode).update({p1P: 0});
-                        else db.ref('rooms/'+roomCode).update({p2P: 0});
-                    });
-                }
+                Array.from(document.getElementsByClassName('letter-box')).forEach(b => b.innerText = "");
+                guess.fill(null);
             }, 800);
         }
     }
 
     function nextLevel() { updateBG(); loadWord(); }
 
-    window.onload = () => { setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => document.getElementById('splash').style.display = 'none', 1000); }, 2000); };
-    window.addEventListener('offline', () => { if(gameMode === '1v1') document.getElementById('offline-ui').style.display = 'flex'; });
-    window.addEventListener('online', () => document.getElementById('offline-ui').style.display = 'none');
+    // Splash'ı Kesin Kapatan Mekanizma
+    window.onload = () => {
+        setTimeout(() => {
+            const spl = document.getElementById('splash');
+            spl.style.transition = "opacity 0.8s";
+            spl.style.opacity = '0';
+            setTimeout(() => { 
+                spl.style.display = 'none'; 
+                document.getElementById('menu-screen').style.display = 'flex';
+                updateBG();
+            }, 800);
+        }, 3000);
+    };
 </script>
 </body>
 </html>
