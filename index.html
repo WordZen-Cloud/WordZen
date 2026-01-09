@@ -1,4 +1,3 @@
-Vordzen
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -97,6 +96,7 @@ Vordzen
     <div style="font-size: 1.2rem;">🪙 <span id="coin-txt">0</span></div>
     <div id="hint-btn" onclick="useHint(event)"><span>💡</span><span>12 Jeton</span></div>
 </div>
+<button id="skipBtn" onclick="skipLevel()">⏭️ Seviyeyi Geç (15 Jeton)</button>
 
 <div id="level-card">
     <div id="level-title">BÖLÜM <span id="lvl-num">1</span></div>
@@ -113,6 +113,61 @@ Vordzen
 <audio id="snd-clap" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
 
 <script>
+// --- SEVİYE ATLA (JOKER) BUTONUNUN KODU ---
+function skipLevel() {
+    // 1. Mevcut jeton miktarını ekrandaki sayıdan al
+    let coinElement = document.getElementById('coin-txt');
+    let currentCoins = parseInt(coinElement.innerText);
+
+    // 2. 15 jeton kontrolü
+    if (currentCoins >= 15) {
+        // Jetonu düş ve ekranda güncelle
+        currentCoins -= 15;
+        coinElement.innerText = currentCoins;
+        
+        // Jeton miktarını hafızaya (localStorage) kaydet
+        localStorage.setItem('coins', currentCoins);
+
+        // 3. Seviyeyi artır (Senin değişken adın 'level' ise)
+        level++;
+        localStorage.setItem('wz_level', level);
+        
+        // Ekrandaki bölüm numarasını güncelle (lvl-num)
+        let lvlNum = document.getElementById('lvl-num');
+        if(lvlNum) lvlNum.innerText = level + 1;
+
+        // 4. Arka planı kontrol et (Her 10 seviyede bir bg1, bg2 değişimi)
+        updateMyBackground();
+
+        // 5. Yeni kelimeyi yükle (Senin fonksiyonun adı loadWord ise)
+        loadWord();
+
+        alert("15 Jeton harcandı ve seviye atlandı!");
+    } else {
+        alert("Yeterli jetonun yok! Seviye atlamak için 15 jeton lazım.");
+    }
+}
+
+// --- ARKA PLAN DEĞİŞTİRME KODU ---
+function updateMyBackground() {
+    // Resimlerin bg1.jpg, bg2.jpg gibi kayıtlı olduğu liste
+ let backgrounds = [
+    "bg1.jpg", "bg2.jpg", "bg3.jpg", "bg4.jpg", "bg5.jpg", 
+    "bg6.jpg", "bg7.jpg", "bg8.jpg", "bg9.jpg", "bg10.jpg"
+];
+
+// Her 10 seviyede bir resim değişir (0-9: bg1, 10-19: bg2...)
+    let bgIndex = Math.floor(level / 10);
+    
+    // Liste dışına çıkarsa son resimde kal
+    if (bgIndex >= backgrounds.length) bgIndex = backgrounds.length - 1;
+
+    // Arka planı body'ye uygula
+    document.body.style.backgroundImage = "url('" + backgrounds[bgIndex] + "')";
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundAttachment = "fixed";
+}
+
     // TAM 100 KELİMELİK LİSTE (Zorluk Seviyeleri Dahil)
     const levels = [
         {a:"ADA", h:[0], s:"KOLAY"}, {a:"ARI", h:[1], s:"KOLAY"}, {a:"ÜTÜ", h:[0], s:"KOLAY"}, {a:"EGE", h:[1], s:"KOLAY"}, {a:"JET", h:[2], s:"KOLAY"},
