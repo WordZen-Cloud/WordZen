@@ -3,154 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json">
     <title>WordZen</title>
     <style>
-        :root { --neon-green: #00ff88; --neon-red: #ff3e3e; --neon-gold: #ffd700; --neon-blue: #00d4ff; }
+        :root { 
+            --neon-blue: #00d4ff; 
+            --neon-green: #00ff88;
+            --neon-gold: #ffd700;
+            /* Şeffaf Beyaz (Buzlu Cam) */
+            --glass-white: rgba(255, 255, 255, 0.85); 
+        }
+        
         body { 
             margin: 0; background: #000; color: white; overflow: hidden;
-            font-family: 'Segoe UI', Roboto, sans-serif; display: flex; flex-direction: column; align-items: center; 
+            font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; 
             height: 100vh; width: 100%; position: fixed;
-            background-size: cover; background-position: center; background-attachment: fixed;
-            transition: background-image 0.8s ease-in-out;
         }
 
-        /* 1. GİRİŞ ANİMASYONU */
-        #splash { 
-            position: fixed; inset: 0; background: #000; z-index: 2000; 
-            display: flex; justify-content: center; align-items: center; 
-            transition: opacity 1s ease; 
-        }
-        .s-logo { 
-            font-size: 3rem; font-weight: 200; color: #fff; letter-spacing: 15px; 
-            opacity: 0; animation: zenFade 4s ease-in-out forwards; 
-        }
-        @keyframes zenFade {
-            0% { opacity: 0; transform: scale(0.8); letter-spacing: 5px; }
-            50% { opacity: 1; transform: scale(1); letter-spacing: 15px; }
-            100% { opacity: 0; transform: scale(1.1); letter-spacing: 20px; }
-        }
-
-        /* 2. LOGO (GELİŞTİRİLMİŞ) */
+        /* --- LOGO (EN KALIN HALİ) --- */
         #header-logo {
-            margin-top: 20px; font-size: 2.8rem; font-weight: 200; letter-spacing: 12px;
-            color: var(--neon-blue);
-            text-shadow: 0 0 15px var(--neon-blue), 0 0 30px rgba(0,0,0,0.9), 2px 2px 5px #000;
-            animation: blueBreath 3s infinite ease-in-out;
-            user-select: none; z-index: 10;
-        }
-        @keyframes blueBreath {
-            0%, 100% { opacity: 0.7; text-shadow: 0 0 10px var(--neon-blue), 0 0 20px #000; }
-            50% { opacity: 1; text-shadow: 0 0 25px var(--neon-blue), 0 0 40px var(--neon-blue), 0 0 20px #000; }
+            margin-top: 40px; 
+            font-size: 3.2rem; 
+            font-weight: 900; /* En kalın */
+            letter-spacing: 12px; 
+            color: var(--neon-blue); 
+            text-shadow: 0 0 20px var(--neon-blue);
+            text-transform: uppercase;
         }
 
-        /* 3. ARAYÜZ VE JOKERLER */
-        #top-bar { width: 100%; padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
-        
-        #hint-btn {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.2);
-            padding: 5px 12px; border-radius: 12px; color: #fff; cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; font-size: 0.7rem;
-            backdrop-filter: blur(5px);
-        }
-        .hint-active { border-color: var(--neon-gold) !important; color: var(--neon-gold) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
-
-        /* GERÇEKÇİ JOKER BUTONU */
-        #skipBtn {
-            background: rgba(255, 165, 0, 0.15); border: 1.5px solid rgba(255, 165, 0, 0.5);
-            color: #ffb433; padding: 10px 25px; border-radius: 50px;
-            font-size: 0.85rem; font-weight: bold; letter-spacing: 1px; cursor: pointer;
-            margin-top: 15px; backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); transition: all 0.3s;
-        }
-        #skipBtn:active { transform: scale(0.9); background: rgba(255, 165, 0, 0.4); }
-
-        /* 1v1 PANELİ */
-        #pvp-header { 
-            display: none; width: 100%; padding: 5px 20px; background: rgba(0, 212, 255, 0.1); 
-            border-bottom: 1px solid var(--neon-blue); justify-content: space-around; font-weight: bold;
-        }
-        .active-player { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); transform: scale(1.1); }
-
-        #pvp-toggle {
-            background: rgba(0, 212, 255, 0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue);
-            padding: 5px 15px; border-radius: 10px; font-size: 0.7rem; margin-top: 5px; cursor: pointer;
-        }
-
-        /* DİĞER KARTLAR */
-        #level-card {
-            margin-top: 15px; padding: 12px 35px; border-radius: 20px;
-            background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center; backdrop-filter: blur(5px);
-        }
-        #level-title { font-size: 0.75rem; letter-spacing: 3px; color: #aaa; margin-bottom: 5px; }
-        #level-status { font-size: 1.1rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
-        .status-easy { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); }
-        .status-hard { color: var(--neon-red); text-shadow: 0 0 10px var(--neon-red); }
-
-        #word-container { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0 15px; }
+        /* --- KUTUCUK TASARIMI --- */
         .letter-box { 
-            width: 35px; height: 48px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.6rem; font-weight: bold; background: rgba(0,0,0,0.3);
-            position: relative; transition: 0.3s;
+            width: 50px; 
+            height: 60px; 
+            border-radius: 12px;
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            font-size: 2.2rem; 
+            font-weight: 900; /* Harfler kalın ve net */
+            margin: 6px;
+            /* Şeffaf Beyaz Arka Plan */
+            background: var(--glass-white); 
+            /* Siyah Harf Rengi */
+            color: #000; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.4);
+            transition: transform 0.2s;
         }
-        .active-box::after {
-            content: ''; position: absolute; bottom: 8px; width: 60%; height: 2px;
-            background: var(--neon-green); animation: blink 1s infinite;
-        }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        #next-btn {
-            display: none; margin-top: 25px; padding: 12px 40px; background: var(--neon-green);
-            color: #000; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 0 20px var(--neon-green);
+        /* Doğru bilinen veya ipucu olan harf efekti */
+        .correct {
+            background: #fff; /* Tam beyaz */
+            border: 3px solid var(--neon-green);
+            box-shadow: 0 0 15px var(--neon-green);
         }
 
+        /* --- MODAL (ONAY KUTUSU) --- */
+        #custom-modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            background: rgba(40, 40, 40, 0.95); border: 2px solid var(--neon-blue);
+            padding: 30px; border-radius: 25px; text-align: center; width: 80%; max-width: 350px;
+        }
+        .m-btn { padding: 15px; border-radius: 15px; border: none; font-weight: bold; flex: 1; cursor: pointer; margin: 5px; }
+        .m-btn-yes { background: var(--neon-green); color: #000; }
+        .m-btn-no { background: #444; color: #fff; }
+
+        #skip-btn {
+            background: rgba(255, 215, 0, 0.1); border: 2px solid var(--neon-gold);
+            color: var(--neon-gold); padding: 15px 35px; border-radius: 50px;
+            font-weight: 900; margin-top: 50px; cursor: pointer;
+        }
+
+        #top-bar { margin-top: 20px; font-size: 1.4rem; font-weight: bold; }
         #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
-        footer { position: fixed; bottom: 10px; font-size: 0.6rem; color: rgba(255,255,255,0.2); letter-spacing: 3px; }
-        .correct-neon { border-color: var(--neon-green) !important; box-shadow: 0 0 15px var(--neon-green); color: var(--neon-green); }
-        .wrong-neon { border-color: var(--neon-red) !important; box-shadow: 0 0 15px var(--neon-red); color: var(--neon-red); }
     </style>
 </head>
-<body onclick="focusInput()">
+<body onclick="document.getElementById('hidden-input').focus()">
 
-<div id="splash"><div class="s-logo">WordZen</div></div>
+    <div id="custom-modal">
+        <div class="modal-content">
+            <div id="modal-msg" style="font-size: 1.3rem; margin-bottom: 20px;"></div>
+            <div style="display: flex;" id="modal-actions"></div>
+        </div>
+    </div>
 
-<div id="pvp-header">
-    <div id="p1-ui">P1: <span id="p1-score">0</span></div>
-    <div id="pvp-msg">SIRA: OYUNCU 1</div>
-    <div id="p2-ui">P2: <span id="p2-score">0</span></div>
-</div>
+    <div id="header-logo">WordZen</div>
 
-<div id="header-logo">WordZen</div>
-<button id="pvp-toggle" onclick="togglePVP()">⚔️ 1V1 MODU: KAPALI</button>
+    <div id="top-bar">🪙 <span id="coin-txt">0</span></div>
 
-<div id="top-bar">
-    <div style="font-size: 1.2rem;">🪙 <span id="coin-txt">0</span></div>
-    <div id="hint-btn" onclick="useHint(event)"><span>💡</span><span>12 Jeton</span></div>
-</div>
+    <div id="word-container" style="margin-top: 40px; display: flex; justify-content: center; flex-wrap: wrap;"></div>
 
-<button id="skipBtn" onclick="skipLevel()">⏭️ Seviyeyi Geç (15 Jeton)</button>
+    <button id="skip-btn" onclick="askSkip()">SEVİYEYİ ATLA (15 🪙)</button>
 
-<div id="level-card">
-    <div id="level-title">BÖLÜM <span id="lvl-num">1</span></div>
-    <div id="level-status" class="status-easy">KOLAY</div>
-</div>
+    <input type="text" id="hidden-input" autocomplete="off">
 
-<div id="word-container"></div>
-<div id="word-meaning"></div>
-
-<button id="next-btn" onclick="nextLevel()">SONRAKİ BÖLÜM →</button>
-
-<input type="text" id="hidden-input" autocomplete="off" spellcheck="false">
-<footer>© 2026 WordZen - NO COPYRIGHT</footer>
-
-<audio id="snd-clap" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
-
-<script>
-    const levels = [
-        {a:"ADA", h:[0], s:"KOLAY"}, {a:"ARI", h:[1], s:"KOLAY"}, {a:"ÜTÜ", h:[0], s:"KOLAY"}, {a:"EGE", h:[1], s:"KOLAY"}, {a:"JET", h:[2], s:"KOLAY"},
+    <script>
+        let coins = parseInt(localStorage.getItem('wordzen_coins')) || 30;
+        let currentLevel = 0;
+        
+        // Buraya Chat GPT'den alacağın o efsane listeyi ekleyeceksin
+        const levels = [
+            {a:"ELMA", h:[0,2], s:"KOLAY"},
+            {a:"KULAK", h:[1,3], s:"ORTA"},        {a:"ADA", h:[0], s:"KOLAY"}, {a:"ARI", h:[1], s:"KOLAY"}, {a:"ÜTÜ", h:[0], s:"KOLAY"}, {a:"EGE", h:[1], s:"KOLAY"}, {a:"JET", h:[2], s:"KOLAY"},
         {a:"KAPI", h:[0,2], s:"KOLAY"}, {a:"MASA", h:[1,3], s:"KOLAY"}, {a:"KUZU", h:[0,2], s:"KOLAY"}, {a:"OKUL", h:[1,3], s:"KOLAY"}, {a:"ELMA", h:[0,2], s:"KOLAY"},
         {a:"KİTAP", h:[0,3], s:"ORTA"}, {a:"KALEM", h:[1,4], s:"ORTA"}, {a:"DENİZ", h:[0,2], s:"ORTA"}, {a:"GÜNEŞ", h:[1,3], s:"ORTA"}, {a:"LÜGAT", h:[1,4], s:"ZOR"},
         {a:"BARDAK", h:[0,2,4], s:"ORTA"}, {a:"GÖZLÜK", h:[1,3,5], s:"ZOR"}, {a:"TOPRAK", h:[0,3,5], s:"ORTA"}, {a:"YAPRAK", h:[1,4], s:"ORTA"}, {a:"SÖZLÜK", h:[0,2,4], s:"ZOR"},
@@ -209,8 +165,6 @@
   {a:"KOMBİNE", h:[0,3], s:"ZOR"},
   {a:"RAKAM", h:[0,2], s:"ORTA"},
   {a:"FIRIN", h:[0,3], s:"ORTA"},
- 
-  
   {a:"BAKIR", h:[0,3], s:"ORTA"},
   {a:"SÜREÇ", h:[0,3], s:"ZOR"},
   {a:"KIRMIZI", h:[0,4], s:"ZOR"},
@@ -229,215 +183,70 @@
   {a:"VANA", h:[0,2], s:"KOLAY"},
   {a:"SÜT", h:[0], s:"KOLAY"},
   {a:"PENSE", h:[0,2], s:"ORTA"},
-  
   {a:"KOMPRESÖR", h:[0,5,8], s:"ZOR"},
   {a:"TABELA", h:[0,3], s:"ZOR"},
   {a:"TERMOS", h:[0,3], s:"ZOR"},
- 
   {a:"MANYETİK", h:[0,4,7], s:"ZOR"},
   {a:"TAHTA", h:[0,3], s:"ORTA"},
   {a:"PRATİK", h:[0,3], s:"ZOR"},
   {a:"FİKİR", h:[0,2], s:"ORTA"},
   {a:"KAPAK", h:[0,2], s:"ORTA"},
   {a:"KAZAN", h:[0,3], s:"ORTA"},
-];
+   ];
 
-    let currentLevel = parseInt(localStorage.getItem('wordzen_level')) || 0;
-    let coins = parseInt(localStorage.getItem('wordzen_coins')) || 0; 
-    let userGuess = [];
-    let isLocked = false;
-    let pvpMode = false;
-    let currentPlayer = 1;
-    let p1Score = 0;
-    let p2Score = 0;
-    const hiddenInput = document.getElementById('hidden-input');
+        function updateUI() {
+            document.getElementById('coin-txt').innerText = coins;
+            localStorage.setItem('wordzen_coins', coins);
+        }
 
-    function focusInput() { if(!isLocked) hiddenInput.focus(); }
+        function showModal(msg, type, onConfirm = null) {
+            const modal = document.getElementById('custom-modal');
+            const msgDiv = document.getElementById('modal-msg');
+            const actions = document.getElementById('modal-actions');
+            msgDiv.innerHTML = msg;
+            actions.innerHTML = "";
 
-    function initGame() {
-        isLocked = false;
-        hiddenInput.value = "";
-        document.getElementById('next-btn').style.display = "none";
-        const levelData = levels[currentLevel % levels.length];
-
-        document.getElementById('lvl-num').innerText = currentLevel + 1;
-        const statusEl = document.getElementById('level-status');
-        statusEl.innerText = levelData.s;
-        statusEl.className = (levelData.s === "ZOR" || levelData.s === "EFSANE" || levelData.s === "İLERİ") ? "status-hard" : "status-easy";
-
-        updateUI();
-        updateMyBackground();
-        const container = document.getElementById('word-container');
-        container.innerHTML = ""; userGuess = [];
-
-        levelData.a.split('').forEach((char, i) => {
-            const box = document.createElement('div');
-            box.className = 'letter-box';
-            if (levelData.h.includes(i)) {
-                box.innerText = char;
-                box.classList.add('correct-neon');
-                userGuess[i] = char;
+            if (type === 'confirm') {
+                actions.innerHTML = `
+                    <button class="m-btn m-btn-no" onclick="closeModal()">HAYIR</button>
+                    <button class="m-btn m-btn-yes" id="confirm-yes">EVET</button>
+                `;
+                document.getElementById('confirm-yes').onclick = () => { onConfirm(); closeModal(); };
             } else {
-                userGuess[i] = null;
+                actions.innerHTML = `<button class="m-btn m-btn-yes" onclick="closeModal()">TAMAM</button>`;
             }
-            container.appendChild(box);
-        });
-        updateCursor();
-        focusInput();
-    }
-
-    function togglePVP() {
-        pvpMode = !pvpMode;
-        const btn = document.getElementById('pvp-toggle');
-        const header = document.getElementById('pvp-header');
-        if(pvpMode) {
-            btn.innerText = "⚔️ 1V1 MODU: AÇIK";
-            header.style.display = "flex";
-            p1Score = 0; p2Score = 0;
-            updatePVPUI();
-        } else {
-            btn.innerText = "⚔️ 1V1 MODU: KAPALI";
-            header.style.display = "none";
+            modal.style.display = "flex";
         }
-    }
 
-    function updatePVPUI() {
-        document.getElementById('p1-score').innerText = p1Score;
-        document.getElementById('p2-score').innerText = p2Score;
-        document.getElementById('pvp-msg').innerText = "SIRA: OYUNCU " + currentPlayer;
-        document.getElementById('p1-ui').className = (currentPlayer === 1) ? "active-player" : "";
-        document.getElementById('p2-ui').className = (currentPlayer === 2) ? "active-player" : "";
-    }
+        function closeModal() { document.getElementById('custom-modal').style.display = "none"; }
 
-    function updateMyBackground() {
-        let backgrounds = ["bg1.jpg", "bg2.jpg", "bg3.jpg", "bg4.jpg", "bg5.jpg", "bg6.jpg", "bg7.jpg", "bg8.jpg", "bg9.jpg", "bg10.jpg"];
-        let bgIndex = Math.floor(currentLevel / 10);
-        if (bgIndex >= backgrounds.length) bgIndex = backgrounds.length - 1;
-        document.body.style.backgroundImage = "url('" + backgrounds[bgIndex] + "')";
-    }
-
-    function skipLevel() {
-        if (isLocked) return;
-        if (coins >= 15) {
-            coins -= 15;
-            currentLevel++;
-            saveData();
-            initGame();
-        } else { alert("Yeterli jetonun yok!"); }
-    }
-
-    hiddenInput.oninput = (e) => {
-        if(isLocked) return;
-        let char = e.target.value.slice(-1);
-        if (char === 'i' || char === 'İ') char = 'İ';
-        else if (char === 'ı' || char === 'I') char = 'I';
-        else char = char.toUpperCase();
-
-        let emptyIdx = userGuess.indexOf(null);
-        if(emptyIdx !== -1 && /[A-ZÇĞİÖŞÜ]/.test(char)) {
-            userGuess[emptyIdx] = char;
-            document.getElementsByClassName('letter-box')[emptyIdx].innerText = char;
-            updateCursor();
-            if(!userGuess.includes(null)) check();
-        }
-        hiddenInput.value = "";
-    };
-
-    hiddenInput.onkeydown = (e) => {
-        if(e.key === "Backspace") {
-            for(let i=userGuess.length-1; i>=0; i--) {
-                if(!levels[currentLevel % levels.length].h.includes(i) && userGuess[i] !== null) {
-                    userGuess[i] = null;
-                    document.getElementsByClassName('letter-box')[i].innerText = "";
-                    updateCursor();
-                    break;
-                }
-            }
-        }
-    };
-
-    function updateCursor() {
-        const boxes = document.getElementsByClassName('letter-box');
-        Array.from(boxes).forEach(b => b.classList.remove('active-box'));
-        let emptyIdx = userGuess.indexOf(null);
-        if (emptyIdx !== -1 && !isLocked) { boxes[emptyIdx].classList.add('active-box'); }
-    }
-
-    function check() {
-        isLocked = true;
-        updateCursor();
-        const boxes = document.getElementsByClassName('letter-box');
-        const correctWord = levels[currentLevel % levels.length].a;
-
-        if(userGuess.join('') === correctWord) {
-            Array.from(boxes).forEach(b => { b.classList.add('correct-neon'); b.classList.remove('active-box'); });
-            let clap = document.getElementById('snd-clap');
-            clap.currentTime = 0; clap.play();
-            setTimeout(() => { clap.pause(); }, 1500);
-
-            if(pvpMode) {
-                if(currentPlayer === 1) p1Score++; else p2Score++;
-                setTimeout(() => { 
-                    currentPlayer = (currentPlayer === 1) ? 2 : 1;
-                    currentLevel++; 
-                    updatePVPUI();
-                    initGame(); 
-                }, 2000);
+        function askSkip() {
+            if (coins < 15) {
+                showModal("🪙 Jetonun yetersiz!", "alert");
             } else {
-                coins += 4;
-                saveData();
-                document.getElementById('next-btn').style.display = "block";
-            }
-        } else {
-            Array.from(boxes).forEach(b => b.classList.add('wrong-neon'));
-            setTimeout(() => {
-                Array.from(boxes).forEach((b, i) => {
-                    if(!levels[currentLevel % levels.length].h.includes(i)) {
-                        b.classList.remove('wrong-neon');
-                        b.innerText = "";
-                        userGuess[i] = null;
-                    }
+                showModal("Emin misin? 15 Jeton harcanacak.", "confirm", () => {
+                    coins -= 15; currentLevel++; updateUI(); initGame();
                 });
-                isLocked = false;
-                updateCursor();
-                focusInput();
-            }, 1000);
+            }
         }
-        updateUI();
-    }
 
-    function useHint(e) {
-        e.stopPropagation();
-        if (isLocked || coins < 12) return;
-        let emptyIndices = userGuess.map((v, i) => v === null ? i : null).filter(v => v !== null);
-        if (emptyIndices.length > 0) {
-            coins -= 12;
-            let rand = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-            let char = levels[currentLevel % levels.length].a[rand];
-            userGuess[rand] = char;
-            const boxes = document.getElementsByClassName('letter-box');
-            boxes[rand].innerText = char;
-            boxes[rand].classList.add('correct-neon');
-            saveData(); updateUI(); updateCursor();
-            if(!userGuess.includes(null)) check();
+        function initGame() {
+            const container = document.getElementById('word-container');
+            container.innerHTML = "";
+            const levelData = levels[currentLevel % levels.length];
+            levelData.a.split('').forEach((char, i) => {
+                const box = document.createElement('div');
+                box.className = 'letter-box';
+                if(levelData.h.includes(i)) {
+                    box.innerText = char;
+                    box.classList.add('correct');
+                }
+                container.appendChild(box);
+            });
+            updateUI();
         }
-    }
 
-    function nextLevel() { currentLevel++; saveData(); initGame(); }
-    function saveData() { localStorage.setItem('wordzen_level', currentLevel); localStorage.setItem('wordzen_coins', coins); }
-    function updateUI() {
-        document.getElementById('coin-txt').innerText = coins;
-        const btn = document.getElementById('hint-btn');
-        btn.className = (coins >= 12) ? 'hint-active' : 'hint-passive';
-    }
-
-    window.onload = () => {
-        setTimeout(() => { 
-            document.getElementById('splash').style.opacity = "0"; 
-            setTimeout(() => { document.getElementById('splash').style.display = "none"; focusInput(); }, 1000); 
-        }, 4000);
-        initGame();
-    };
-</script>
+        window.onload = () => { initGame(); document.getElementById('hidden-input').focus(); };
+    </script>
 </body>
 </html>
