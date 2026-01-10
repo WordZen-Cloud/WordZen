@@ -12,41 +12,46 @@
 
         /* SPLASH SCREEN */
         #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.8s; }
-        .splash-logo { font-size: 2.5rem; color: #fff; text-shadow: 0 0 20px #39FF14; animation: pulse 2s infinite; }
-        .loader-bar { width: 180px; height: 4px; background: #222; margin-top: 20px; border-radius: 10px; overflow: hidden; }
+        .splash-logo { font-size: 2.2rem; color: #fff; text-shadow: 0 0 20px #39FF14; animation: pulse 2s infinite; }
+        .loader-bar { width: 160px; height: 3px; background: #222; margin-top: 20px; border-radius: 10px; overflow: hidden; }
         #progress { width: 0%; height: 100%; background: #39FF14; transition: 0.3s; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         .fade-out { opacity: 0; visibility: hidden; }
 
         /* UI PANELLERİ */
         .info-panel { position: absolute; top: 20px; left: 20px; z-index: 1000; }
-        .info-item { background: rgba(0,0,0,0.8); color: #fff; padding: 8px 15px; border-radius: 12px; font-size: 0.7rem; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 5px; }
+        .info-item { background: rgba(0,0,0,0.8); color: #fff; padding: 8px 15px; border-radius: 12px; font-size: 0.65rem; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 5px; }
         
-        .coin-panel { position: absolute; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
-        #coin-display { background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 20px; color: #ffcc00; font-size: 1.1rem; border: 1px solid #ffcc00; }
+        .coin-panel { position: absolute; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+        #coin-display { background: rgba(0,0,0,0.8); padding: 8px 18px; border-radius: 20px; color: #ffcc00; font-size: 1rem; border: 1px solid #ffcc00; margin-bottom: 5px; }
         
-        .btn-round { width: 50px; height: 50px; border-radius: 50%; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; text-align: center; line-height: 1; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .btn-round { width: 52px; height: 52px; border-radius: 50%; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
         .btn-skip { background: #ff4b2b; color: #fff; }
         .btn-hint { background: #39FF14; color: #000; margin-top: 5px; }
 
-        #game-area { width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 130px; }
-        #header-logo { font-size: 2.2rem; color: #fff; letter-spacing: 4px; margin-bottom: 50px; cursor: pointer; text-shadow: 0 0 15px #39FF14; }
+        #game-area { width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 120px; }
+        #header-logo { font-size: 1.8rem; color: #fff; letter-spacing: 3px; margin-bottom: 40px; cursor: pointer; text-shadow: 0 0 10px #39FF14; }
 
-        #word-display { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; min-height: 60px; }
-        .letter-box { width: 45px; height: 55px; background: #fff; color: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        #word-display { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 35px; min-height: 55px; }
+        .letter-box { width: 42px; height: 52px; background: #fff; color: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
         /* MODALLAR */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.94); z-index: 9000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .modal-card { background: #111; padding: 30px; border-radius: 30px; border: 2px solid #39FF14; width: 310px; text-align: center; }
-        .modal-card input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 12px; margin-bottom: 10px; text-align: center; }
-        
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 9000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-card { background: #111; padding: 25px; border-radius: 30px; border: 1px solid #39FF14; width: 300px; text-align: center; animation: modalPop 0.3s ease-out; }
+        @keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .modal-card input { width: 100%; background: #000; border: 1px solid #222; color: #fff; padding: 12px; border-radius: 12px; margin-bottom: 10px; text-align: center; font-family: sans-serif; }
         .btn-modal { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 900; cursor: pointer; margin-top: 10px; font-size: 1rem; }
         .btn-confirm { background: #39FF14; color: #000; }
         .btn-cancel { background: transparent; color: #555; }
 
+        /* HEDİYE PANELİ ÖZEL STİL */
+        .gift-card { border: 2px solid #ffcc00 !important; box-shadow: 0 0 30px rgba(255, 204, 0, 0.3); }
+        #gift-amount { font-size: 2.2rem; color: #ffcc00; display: block; margin: 10px 0; text-shadow: 0 0 10px rgba(255,204,0,0.5); }
+
         #hidden-input { position: absolute; top: -1000px; opacity: 0; }
-        .shake { animation: shake 0.5s; background: #ff4b2b !important; color: #fff; }
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+        .shake { animation: shake 0.4s; background: #ff4b2b !important; color: #fff; }
+        @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }
     </style>
 </head>
 <body>
@@ -68,31 +73,36 @@
 
     <div class="coin-panel">
         <div id="coin-display">🪙 <span id="coin-count">...</span></div>
-        <button class="btn-round btn-skip" onclick="askSkipLevel()">PAS (25)</button>
-        <button class="btn-round btn-hint" onclick="useHint()">AMPÜL (10)</button>
+        <button class="btn-round btn-skip" onclick="askSkipLevel()">PAS<br>(25)</button>
+        <button class="btn-round btn-hint" onclick="useHint()">İPUCU<br>(10)</button>
     </div>
 
     <div id="game-area">
         <div id="header-logo" onclick="logoTrigger()">WordZen</div>
         <div id="word-display"></div>
-        <div id="clue-container" style="color:#fff; text-align:center; width:85%; padding:25px; background:rgba(255,255,255,0.05); border-radius:25px; border:1px solid rgba(255,255,255,0.1);">
+        <div id="clue-container" style="color:#fff; text-align:center; width:85%; padding:25px; background:rgba(255,255,255,0.04); border-radius:25px; border:1px solid rgba(255,255,255,0.08);">
             <div id="clue-text">...</div>
         </div>
     </div>
 
     <div id="gift-modal" class="modal-overlay">
-        <div class="modal-card" style="border-color: #ffcc00;">
-            <h2 style="color:#ffcc00">🎁 HEDİYE!</h2>
-            <p id="gift-msg" style="color:#fff; font-size:0.9rem; line-height:1.5;">Adminimiz tarafından size Jeton hediye edildi!</p>
-            <button class="btn-modal btn-confirm" style="background:#ffcc00" onclick="closeModal('gift-modal')">TEŞEKKÜRLER</button>
+        <div class="modal-card gift-card">
+            <div style="font-size: 4.5rem; margin-bottom: 10px;">🎁</div>
+            <h2 style="color:#ffcc00; margin:0; letter-spacing: 1px;">SÜRPRİZ!</h2>
+            <p style="color:#eee; font-size:0.9rem; line-height:1.5; margin-top:15px;">
+                Oyun geliştiricisi tarafından size
+                <span id="gift-amount">0</span>
+                Jeton hediye edildi!
+            </p>
+            <button class="btn-modal btn-confirm" style="background:#ffcc00; color:#000; margin-top:15px;" onclick="closeModal('gift-modal')">EYVALLAH!</button>
         </div>
     </div>
 
     <div id="admin-panel" class="modal-overlay">
         <div class="modal-card">
-            <h2 style="color:#39FF14">ADMİN PANELİ</h2>
+            <h2 style="color:#39FF14">YÖNETİM</h2>
             <input type="password" id="admin-pass" placeholder="ŞİFRE">
-            <input type="text" id="target-id" placeholder="OYUNCU ID">
+            <input type="text" id="target-id" placeholder="HEDEF OYUNCU ID">
             <input type="number" id="jeton-miktar" placeholder="MİKTAR">
             <button class="btn-modal btn-confirm" onclick="processAdmin()">GÖNDER</button>
             <button class="btn-modal btn-cancel" onclick="closeModal('admin-panel')">KAPAT</button>
@@ -101,9 +111,9 @@
 
     <div id="skip-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2 style="color:#ff4b2b">ATLA?</h2>
-            <p style="color:#ccc;">25 Jeton harcayarak bu bölümü geçmek istiyor musun?</p>
-            <button class="btn-modal btn-confirm" onclick="confirmSkip()">EVET</button>
+            <h2 style="color:#ff4b2b">ATLANSIN MI?</h2>
+            <p style="color:#ccc; font-size:0.85rem;">25 Jeton karşılığında bu kelimeyi geçmek istiyor musunuz?</p>
+            <button class="btn-modal btn-confirm" onclick="confirmSkip()">EVET, GEÇ</button>
             <button class="btn-modal btn-cancel" onclick="closeModal('skip-modal')">HAYIR</button>
         </div>
     </div>
@@ -112,7 +122,7 @@
         <div class="modal-card">
             <h2 style="color:#fff">BİLDİN!</h2>
             <p style="color:#39FF14">+5 Jeton Hesabında</p>
-            <button class="btn-modal btn-confirm" onclick="nextLevel()">SONRAKİ BÖLÜM</button>
+            <button class="btn-modal btn-confirm" onclick="nextLevel()">SONRAKİ</button>
         </div>
     </div>
 
@@ -214,16 +224,19 @@
             let i = setInterval(() => {
                 p += 25; document.getElementById('progress').style.width = p + '%';
                 if(p >= 100) { clearInterval(i); setTimeout(()=>document.getElementById('splash-screen').classList.add('fade-out'), 500); }
-            }, 150);
+            }, 100);
         };
 
         const userRef = ref(db, 'users/' + userId);
         onValue(userRef, (snap) => {
             const data = snap.val();
             if(data) {
-                // Eğer jeton miktarı admin tarafından arttırılmışsa hediye mesajı göster
+                // Hediye Jeton Kontrolü
                 if(lastKnownCoins > 0 && data.coins > lastKnownCoins) {
+                    const diff = data.coins - lastKnownCoins;
+                    document.getElementById('gift-amount').innerText = diff;
                     document.getElementById('gift-modal').style.display = 'flex';
+                    playSnd('snd-correct');
                 }
                 coins = data.coins;
                 lastKnownCoins = coins;
@@ -240,8 +253,12 @@
             document.getElementById('player-id').innerText = userId;
             const levelData = levels[currentLevel % levels.length];
             document.getElementById('clue-text').innerText = levelData.m;
-            let bgNum = Math.floor(currentLevel / 10) % 42 + 1;
-            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('bg${bgNum}.jpg')`;
+            
+            // 10 Seviyede Bir Arka Plan Döngüsü
+            let bgIndex = Math.floor(currentLevel / 10) % 42; 
+            let bgNum = bgIndex + 1; 
+            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('bg${bgNum}.jpg')`;
+            
             const container = document.getElementById('word-display');
             container.innerHTML = "";
             levelData.a.split('').forEach(() => {
@@ -249,7 +266,7 @@
             });
         }
 
-        // SILME VE YAZMA SİSTEMİ
+        // --- KLAVYE SİSTEMİ ---
         document.getElementById('hidden-input').onkeydown = (e) => {
             if (e.key === "Backspace") {
                 const boxes = document.querySelectorAll('.letter-box');
@@ -272,20 +289,20 @@
         function checkWin() {
             const levelData = levels[currentLevel % levels.length];
             let res = "";
-            const boxes = document.querySelectorAll('.letter-box');
-            boxes.forEach(b => res += b.innerText);
+            document.querySelectorAll('.letter-box').forEach(b => res += b.innerText);
             if(res.length === levelData.a.length) {
                 if(res === levelData.a) {
                     playSnd('snd-correct');
-                    boxes.forEach(b => b.style.background = "#39FF14");
+                    document.querySelectorAll('.letter-box').forEach(b => b.style.background = "#39FF14");
                     setTimeout(() => document.getElementById('win-modal').style.display='flex', 500);
                 } else {
                     playSnd('snd-wrong');
-                    boxes.forEach(b => { b.classList.add('shake'); setTimeout(() => { b.classList.remove('shake'); b.innerText = ""; }, 500); });
+                    document.querySelectorAll('.letter-box').forEach(b => { b.classList.add('shake'); setTimeout(() => { b.classList.remove('shake'); b.innerText = ""; }, 500); });
                 }
             }
         }
 
+        // --- BUTONLAR ---
         window.nextLevel = () => { update(userRef, { coins: coins + 5, level: currentLevel + 1 }); closeModal('win-modal'); };
         window.confirmSkip = () => { update(userRef, { coins: coins - 25, level: currentLevel + 1 }); closeModal('skip-modal'); };
         window.askSkipLevel = () => { if(coins < 25) return alert("Yetersiz Jeton!"); document.getElementById('skip-modal').style.display='flex'; };
@@ -298,7 +315,13 @@
             }
         };
 
-        window.logoTrigger = () => { logoCount++; if(logoCount >= 5) { document.getElementById('admin-panel').style.display='flex'; logoCount=0; } setTimeout(()=>logoCount=0, 3000); };
+        // --- ADMİN TETİK ---
+        window.logoTrigger = () => {
+            logoCount++;
+            if(logoCount >= 5) { document.getElementById('admin-panel').style.display='flex'; logoCount = 0; }
+            setTimeout(() => { logoCount = 0; }, 3000);
+        };
+
         window.processAdmin = async () => {
             const pass = document.getElementById('admin-pass').value;
             const tid = document.getElementById('target-id').value;
@@ -306,10 +329,15 @@
             if(pass === "zen123") {
                 const tRef = ref(db, 'users/' + tid);
                 const snap = await get(tRef);
-                if(snap.exists()) { update(tRef, { coins: snap.val().coins + mik }); alert("Jeton Gönderildi!"); closeModal('admin-panel'); }
-            }
+                if(snap.exists()) {
+                    update(tRef, { coins: snap.val().coins + mik });
+                    alert("Jetonlar Başarıyla Gönderildi!");
+                    closeModal('admin-panel');
+                } else { alert("ID Bulunamadı!"); }
+            } else { alert("Şifre Hatalı!"); }
         };
 
+        // --- KONTROLLER ---
         window.closeModal = (id) => document.getElementById(id).style.display='none';
         function playSnd(id) { let s = document.getElementById(id); if(s) { s.currentTime=0; s.play().catch(()=>{}); } }
         document.body.onclick = () => { document.getElementById('bg-music').play().catch(()=>{}); document.getElementById('hidden-input').focus(); };
