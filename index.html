@@ -3,67 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WordZen - Full Game</title>
+    <title>WordZen</title>
     <style>
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; font-family: 'Segoe UI', sans-serif;
-            background-color: #f0f4f7; /* Arka plan resmin bunun üzerine gelebilir */
+            overflow: hidden; font-family: sans-serif;
+            background-color: #ffffff;
         }
 
-        /* OYUN ALANI */
-        .game-screen {
+        /* ORTA ALAN: KELİMELER */
+        .game-area {
             display: flex; flex-direction: column; align-items: center;
-            justify-content: center; height: 80%; text-align: center;
+            justify-content: center; height: 70vh;
         }
 
-        .hint-box {
-            font-size: 20px; color: #576574; margin-bottom: 40px;
-            padding: 0 30px; font-weight: 500; min-height: 50px;
-        }
+        .hint { font-size: 18px; color: #7f8c8d; margin-bottom: 30px; padding: 0 20px; text-align: center; }
 
-        .word-display {
-            display: flex; gap: 10px; justify-content: center;
-        }
+        .word-row { display: flex; gap: 8px; }
 
         .tile {
-            width: 50px; height: 60px; background: white;
+            width: 45px; height: 55px; background: white;
             border-radius: 8px; display: flex; align-items: center;
-            justify-content: center; font-size: 28px; font-weight: 800;
-            color: #2c3e50; border-bottom: 4px solid #d1d8e0;
-            transition: all 0.1s; text-transform: uppercase;
+            justify-content: center; font-size: 24px; font-weight: bold;
+            color: #2c3e50; border: 2px solid #ecf0f1; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-transform: uppercase;
         }
 
-        .tile.filled { border-bottom-color: #3498db; transform: scale(1.05); }
-
-        /* SENİN İSTEDİĞİN SEMBOL VE SEVİYE TASARIMI (EN ALT) */
-        .wordzen-ui-footer {
-            position: fixed; bottom: 40px; left: 50%;
-            transform: translateX(-50%); text-align: center;
+        /* ALT ALAN: SEMBOL VE SEVİYE (SADE VE AYRI) */
+        .footer {
+            position: fixed; bottom: 40px; left: 0; right: 0;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        .modern-arrow svg { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+        .symbol { margin-bottom: 10px; opacity: 0.5; }
 
-        .level-text { font-size: 11px; font-weight: 800; color: #95a5a6; letter-spacing: 3px; }
+        .level-label { font-size: 12px; font-weight: bold; color: #bdc3c7; letter-spacing: 3px; }
 
-        .level-num { font-size: 45px; font-weight: 900; color: #2c3e50; line-height: 1; }
+        .level-num { font-size: 40px; font-weight: bold; color: #2c3e50; margin: 0; }
     </style>
 </head>
 <body>
 
-    <div class="game-screen">
-        <div id="hint" class="hint-box"></div>
-        <div id="word-row" class="word-display"></div>
+    <div class="game-area">
+        <div id="hint" class="hint"></div>
+        <div id="word-row" class="word-row"></div>
     </div>
 
-    <div class="wordzen-ui-footer">
-        <div class="modern-arrow">
-            <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
-                <path d="M4 18L12 12L4 6V18Z" fill="#2c3e50" fill-opacity="0.2" />
-                <path d="M12 18L20 12L12 6V18Z" fill="#2c3e50" />
+    <div class="footer">
+        <div class="symbol">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#2c3e50">
+                <path d="M13 19V5L22 12L13 19ZM2 19V5L11 12L2 19Z"/>
             </svg>
         </div>
-        <div class="level-text">LEVEL</div>
+        <div class="level-label">LEVEL</div>
         <div id="level-display" class="level-num">1</div>
     </div>
 
@@ -75,18 +67,17 @@
         let currentLevel = 0;
         let userInput = "";
 
-        function initLevel() {
+        function init() {
             const level = levels[currentLevel];
             document.getElementById('hint').innerText = level.m;
             document.getElementById('level-display').innerText = currentLevel + 1;
             userInput = "";
-            
             const row = document.getElementById('word-row');
             row.innerHTML = "";
-            for(let i=0; i < level.a.length; i++) {
+            for(let i=0; i<level.a.length; i++) {
                 const tile = document.createElement('div');
                 tile.className = 'tile';
-                tile.id = 'tile-' + i;
+                tile.id = 't-' + i;
                 row.appendChild(tile);
             }
         }
@@ -94,33 +85,20 @@
         window.addEventListener('keydown', (e) => {
             const level = levels[currentLevel];
             const key = e.key.toUpperCase();
-
-            // Harf girişi
-            if (/^[A-ZĞÜŞİÖÇ]$/.test(key) && userInput.length < level.a.length) {
-                const currentTile = document.getElementById('tile-' + userInput.length);
-                currentTile.innerText = key;
-                currentTile.classList.add('filled');
+            if(/^[A-ZĞÜŞİÖÇ]$/.test(key) && userInput.length < level.a.length) {
+                document.getElementById('t-' + userInput.length).innerText = key;
                 userInput += key;
-
-                if (userInput === level.a) {
-                    setTimeout(() => {
-                        currentLevel++;
-                        if(currentLevel < levels.length) initLevel();
-                        else alert("Tebrikler! Tüm seviyeleri bitirdiniz.");
-                    }, 500);
+                if(userInput === level.a) {
+                    setTimeout(() => { currentLevel++; init(); }, 500);
                 }
             }
-
-            // Geri silme
-            if (e.key === 'Backspace' && userInput.length > 0) {
+            if(e.key === 'Backspace' && userInput.length > 0) {
                 userInput = userInput.slice(0, -1);
-                const lastTile = document.getElementById('tile-' + userInput.length);
-                lastTile.innerText = "";
-                lastTile.classList.remove('filled');
+                document.getElementById('t-' + userInput.length).innerText = "";
             }
         });
 
-        initLevel();
+        init();
     </script>
 </body>
 </html>
