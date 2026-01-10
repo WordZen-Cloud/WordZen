@@ -8,41 +8,51 @@
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; font-family: sans-serif;
-            background-color: #ffffff;
+            transition: background 0.8s ease-in-out;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
         }
 
-        /* ORTA ALAN: KELİMELER */
+        /* OYUN ALANI (ORTA) */
         .game-area {
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; height: 70vh;
         }
 
-        .hint { font-size: 18px; color: #7f8c8d; margin-bottom: 30px; padding: 0 20px; text-align: center; }
+        .hint { 
+            font-size: 20px; color: #2c3e50; margin-bottom: 35px; 
+            text-align: center; padding: 0 20px; font-weight: 600; 
+            text-shadow: 0 1px 3px rgba(255,255,255,0.9); 
+        }
 
         .word-row { display: flex; gap: 8px; }
 
         .tile {
-            width: 45px; height: 55px; background: white;
-            border-radius: 8px; display: flex; align-items: center;
-            justify-content: center; font-size: 24px; font-weight: bold;
-            color: #2c3e50; border: 2px solid #ecf0f1; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            text-transform: uppercase;
+            width: 50px; height: 60px; background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px; display: flex; align-items: center;
+            justify-content: center; font-size: 26px; font-weight: bold;
+            color: #2c3e50; border: 1px solid #d1d8e0; border-bottom: 4px solid #bdc3c7;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-transform: uppercase;
         }
 
-        /* ALT ALAN: SEMBOL VE SEVİYE (SADE VE AYRI) */
+        /* ALT PANEL (SEMBOL VE SEVİYE) */
         .footer {
-            position: fixed; bottom: 40px; left: 0; right: 0;
+            position: fixed; bottom: 45px; left: 0; right: 0;
             display: flex; flex-direction: column; align-items: center;
+            pointer-events: none;
         }
 
-        .symbol { margin-bottom: 10px; opacity: 0.5; }
-
-        .level-label { font-size: 12px; font-weight: bold; color: #bdc3c7; letter-spacing: 3px; }
-
-        .level-num { font-size: 40px; font-weight: bold; color: #2c3e50; margin: 0; }
+        .symbol { margin-bottom: 12px; opacity: 0.8; }
+        .level-label { font-size: 12px; font-weight: bold; color: #7f8c8d; letter-spacing: 4px; }
+        .level-num { font-size: 45px; font-weight: 900; color: #2c3e50; margin: 0; line-height: 1; }
     </style>
 </head>
-<body>
+<body id="game-body">
+
+    <audio id="bgMusic" loop src="music.mp3"></audio>
+    <audio id="clickSound" src="click.mp3"></audio>
+    <audio id="winSound" src="success.mp3"></audio>
 
     <div class="game-area">
         <div id="hint" class="hint"></div>
@@ -51,7 +61,7 @@
 
     <div class="footer">
         <div class="symbol">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="#2c3e50">
+            <svg width="45" height="45" viewBox="0 0 24 24" fill="#2c3e50">
                 <path d="M13 19V5L22 12L13 19ZM2 19V5L11 12L2 19Z"/>
             </svg>
         </div>
@@ -65,38 +75,48 @@
         ];
 
         let currentLevel = 0;
-        let userInput = "";
+        let input = "";
+        const maxBg = 42;
+
+        function updateBg() {
+            let num = (currentLevel % maxBg) + 1;
+            document.getElementById('game-body').style.backgroundImage = `url('bg${num}.jpg')`;
+        }
 
         function init() {
             const level = levels[currentLevel];
             document.getElementById('hint').innerText = level.m;
             document.getElementById('level-display').innerText = currentLevel + 1;
-            userInput = "";
+            updateBg();
+            input = "";
             const row = document.getElementById('word-row');
             row.innerHTML = "";
             for(let i=0; i<level.a.length; i++) {
-                const tile = document.createElement('div');
-                tile.className = 'tile';
-                tile.id = 't-' + i;
-                row.appendChild(tile);
+                const t = document.createElement('div');
+                t.className = 'tile'; t.id = 't-' + i;
+                row.appendChild(t);
             }
         }
 
-        window.addEventListener('keydown', (e) => {
+        window.onclick = () => { document.getElementById('bgMusic').play().catch(()=>{}); };
+
+        window.onkeydown = (e) => {
             const level = levels[currentLevel];
-            const key = e.key.toUpperCase();
-            if(/^[A-ZĞÜŞİÖÇ]$/.test(key) && userInput.length < level.a.length) {
-                document.getElementById('t-' + userInput.length).innerText = key;
-                userInput += key;
-                if(userInput === level.a) {
-                    setTimeout(() => { currentLevel++; init(); }, 500);
+            const k = e.key.toUpperCase();
+            if(/^[A-ZĞÜŞİÖÇ]$/.test(k) && input.length < level.a.length) {
+                document.getElementById('clickSound').play().catch(()=>{});
+                document.getElementById('t-' + input.length).innerText = k;
+                input += k;
+                if(input === level.a) {
+                    document.getElementById('winSound').play().catch(()=>{});
+                    setTimeout(() => { currentLevel++; if(currentLevel < levels.length) init(); }, 600);
                 }
             }
-            if(e.key === 'Backspace' && userInput.length > 0) {
-                userInput = userInput.slice(0, -1);
-                document.getElementById('t-' + userInput.length).innerText = "";
+            if(e.key === 'Backspace' && input.length > 0) {
+                input = input.slice(0, -1);
+                document.getElementById('t-' + input.length).innerText = "";
             }
-        });
+        };
 
         init();
     </script>
