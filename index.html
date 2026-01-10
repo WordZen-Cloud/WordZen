@@ -8,70 +8,110 @@
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
         html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Montserrat', sans-serif; }
-        body { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1519681393784-d120267973ba'); background-size: cover; background-position: center; display: flex; flex-direction: column; align-items: center; }
+        body { background-size: cover; background-position: center; display: flex; flex-direction: column; align-items: center; transition: background 1.5s ease-in-out; }
 
-        .info-panel { position: absolute; top: 15px; left: 15px; display: flex; flex-direction: column; gap: 5px; z-index: 1000; }
-        .info-item { background: rgba(0,0,0,0.7); color: #fff; padding: 5px 12px; border-radius: 10px; font-size: 0.7rem; border: 1px solid rgba(255,255,255,0.1); letter-spacing: 1px; }
-        .lvl-tag { color: #39FF14; font-weight: 900; }
+        /* SPLASH SCREEN (AÇILIŞ ANİMASYONU) */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999;
+            transition: opacity 1s ease, visibility 1s;
+        }
+        .splash-logo {
+            font-size: 4rem; color: #fff; letter-spacing: 10px;
+            text-shadow: 0 0 25px #39FF14; animation: splashPulse 2s infinite;
+        }
+        .loader-bar { width: 220px; height: 5px; background: #1a1a1a; border-radius: 10px; margin-top: 25px; overflow: hidden; }
+        #progress { width: 0%; height: 100%; background: #39FF14; box-shadow: 0 0 15px #39FF14; transition: width 0.4s; }
+        @keyframes splashPulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.08); opacity: 1; } }
+        .fade-out { opacity: 0; visibility: hidden; }
 
-        .coin-panel { position: absolute; top: 15px; right: 15px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 1000; }
-        #coin-display { background: rgba(0,0,0,0.8); padding: 8px 15px; border-radius: 15px; color: #ffcc00; font-size: 1rem; border: 1px solid #ffcc00; }
-        #free-coin-btn { background: #39FF14; color: #000; padding: 8px 12px; border-radius: 12px; font-size: 0.7rem; font-weight: 900; animation: pulse 2s infinite; border: none; cursor: pointer; }
+        /* OYUN UI TASARIMI */
+        .info-panel { position: absolute; top: 20px; left: 20px; z-index: 1000; }
+        .info-item { background: rgba(0,0,0,0.7); color: #fff; padding: 7px 15px; border-radius: 12px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 5px; }
+        .coin-panel { position: absolute; top: 20px; right: 20px; z-index: 1000; text-align: right; }
+        #coin-display { background: rgba(0,0,0,0.8); padding: 10px 18px; border-radius: 15px; color: #ffcc00; font-size: 1.2rem; border: 1px solid #ffcc00; }
 
-        #game-area { width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 130px; }
-        #header-logo { font-size: 2.8rem; color: #fff; letter-spacing: 5px; margin-bottom: 30px; cursor: pointer; text-shadow: 0 0 20px rgba(57, 255, 20, 0.4); }
-        #word-display { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; width: 90%; margin-bottom: 30px; }
-        .letter-box { width: 45px; height: 55px; background: #fff; color: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; position: relative; }
-        .cursor::after { content: ''; position: absolute; bottom: 8px; width: 50%; height: 3px; background: #000; animation: blink 0.8s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
-        #clue-container { width: 85%; min-height: 80px; background: rgba(0,0,0,0.7); padding: 20px; border-radius: 20px; color: #fff; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        #game-area { width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 150px; }
+        #header-logo { font-size: 3.5rem; color: #fff; letter-spacing: 7px; margin-bottom: 40px; cursor: pointer; text-shadow: 0 0 20px rgba(57,255,20,0.5); user-select: none; }
+        
+        #word-display { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 90%; margin-bottom: 40px; }
+        .letter-box { 
+            width: 55px; height: 65px; background: #fff; color: #000; border-radius: 15px; 
+            display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 900; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+        }
+        @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        .custom-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; background: #111; border-radius: 25px; padding: 25px; border: 2px solid #333; z-index: 2000; text-align: center; }
-        .btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: 900; margin-top: 10px; cursor: pointer; }
+        #clue-container { 
+            width: 85%; min-height: 100px; background: rgba(0,0,0,0.75); padding: 30px; border-radius: 25px; 
+            color: #fff; text-align: center; border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(8px);
+        }
+
+        /* ADMİN VE KAZANMA PANELİ */
+        #admin-auth { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.95); z-index: 5000; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .auth-card { background: #111; padding: 40px; border-radius: 30px; border: 2px solid #39FF14; text-align: center; width: 320px; }
+        .auth-card input { width: 100%; padding: 15px; margin: 20px 0; border-radius: 12px; border: none; font-size: 1.5rem; text-align: center; }
+
+        .btn { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 900; cursor: pointer; font-size: 1rem; margin-top: 10px; }
         .btn-yes { background: #39FF14; color: #000; }
-        .btn-no { background: #ff4b2b; color: #fff; }
+        
+        #win-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; background: #111; border-radius: 30px; padding: 40px; border: 2px solid #39FF14; z-index: 2000; text-align: center; }
         
         #hidden-input { position: absolute; top: -1000px; opacity: 0; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        .correct-neon { background: #39FF14 !important; box-shadow: 0 0 15px #39FF14; transition: 0.3s; }
+        .shake { animation: shake 0.5s; background: #ff4b2b !important; color: #fff; }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
     </style>
 </head>
-<body onclick="enableFullScreenAndFocus()">
+<body>
+
+    <div id="splash-screen">
+        <div class="splash-logo">WordZen</div>
+        <div class="loader-bar"><div id="progress"></div></div>
+    </div>
+
+    <audio id="bg-music" src="fon-muzigi.mp3" loop></audio>
+    <audio id="snd-correct" src="dogru.mp3"></audio>
+    <audio id="snd-wrong" src="yanlis.mp3"></audio>
+    <audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 
     <div class="info-panel">
-        <div class="info-item">SEVİYE: <span id="lvl-txt" class="lvl-tag">...</span></div>
+        <div class="info-item">BÖLÜM: <span id="lvl-txt" style="color:#39FF14;">1</span></div>
         <div class="info-item">ID: <span id="player-id">...</span></div>
     </div>
 
     <div class="coin-panel">
-        <div id="coin-display">🪙 <span id="coin-count">0</span></div>
-        <button id="free-coin-btn" onclick="watchAdForCoins()">🎁 +25 JETON</button>
-        <button class="btn" style="background:rgba(255,255,255,0.1); color:#fff; font-size:0.6rem; padding:5px;" onclick="useHint()">İPUCU (10)</button>
+        <div id="coin-display">🪙 <span id="coin-count">30</span></div>
+        <button class="btn btn-yes" style="font-size:0.7rem; padding:10px; margin-top:10px;" onclick="useHint()">İPUCU (10)</button>
     </div>
 
     <div id="game-area">
-        <div id="header-logo">WordZen</div>
+        <div id="header-logo" onclick="logoClick()">WordZen</div>
         <div id="word-display"></div>
-        <div id="clue-container"><div id="clue-text">Yükleniyor...</div></div>
+        <div id="clue-container"><div id="clue-text">...</div></div>
     </div>
 
-    <div id="admin-panel" class="custom-modal" style="border-color: #39FF14;">
-        <h3 style="color: #39FF14;">ADMİN PANELİ</h3>
-        <input type="text" id="target-id" placeholder="Oyuncu ID" style="width:100%; padding:10px; margin-bottom:10px;">
-        <input type="number" id="admin-coin" placeholder="Jeton Miktarı" style="width:100%; padding:10px; margin-bottom:10px;">
-        <button class="btn btn-yes" onclick="sendCoins()">GÖNDER</button>
-        <button class="btn btn-no" onclick="closeAdmin()">KAPAT</button>
+    <div id="admin-auth">
+        <div class="auth-card">
+            <h2 style="color:#39FF14">ADMİN GİRİŞİ</h2>
+            <input type="password" id="admin-pass-input" placeholder="••••">
+            <button class="btn btn-yes" onclick="checkAdminPass()">GİRİŞ</button>
+            <button class="btn" style="background:transparent; color:#555" onclick="closeAuth()">KAPAT</button>
+        </div>
     </div>
 
-    <div id="win-modal" class="custom-modal">
-        <h2 style="color:#fff;">TEBRİKLER!</h2>
+    <div id="win-modal">
+        <h2 style="color:#fff">TEBRİKLER!</h2>
+        <p style="color:#39FF14">+5 JETON KAZANDIN</p>
         <button class="btn btn-yes" onclick="nextLevel()">SONRAKİ BÖLÜM</button>
     </div>
 
     <input type="text" id="hidden-input" autocomplete="off" spellcheck="false">
 
     <script type="module">
-        // FIREBASE AYARLARIN (TAMAMI DÜZELTİLDİ)
         const firebaseConfig = {
             apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
             authDomain: "wordzen-2e052.firebaseapp.com",
@@ -82,10 +122,8 @@
             appId: "1:309225718128:web:8a38717b4b6fc8f3a18fb5"
         };
 
-        const REWARDED_AD_ID = "ca-app-pub-3940256099942544/5224354917"; // Google Test Reklam ID'si
-
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, update, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
@@ -94,7 +132,7 @@
         localStorage.setItem('wordzen_id', userId);
         let coins = 30;
         let currentLevel = 0;
-        let adminClicks = 0;
+        let logoClicks = 0;
 
         const levels = [
             // Buraya istediğin kadar kelime ekle...
@@ -162,37 +200,51 @@
 {a: "ZARF", m: "mektup konulan kağıt."}
         ];
 
-        window.enableFullScreenAndFocus = function() {
+        // SPLASH SCREEN & BAŞLATMA
+        window.onload = () => {
+            let prg = document.getElementById('progress');
+            let w = 0;
+            let iv = setInterval(() => {
+                w += Math.random() * 20;
+                if(w >= 100) {
+                    w = 100; clearInterval(iv);
+                    setTimeout(() => { document.getElementById('splash-screen').classList.add('fade-out'); }, 1000);
+                }
+                prg.style.width = w + '%';
+            }, 150);
+        };
+
+        document.body.onclick = () => {
+            document.getElementById('bg-music').play().catch(()=>{});
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
             document.getElementById('hidden-input').focus();
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-            }
         };
 
         const userRef = ref(db, 'users/' + userId);
         onValue(userRef, (snap) => {
             const data = snap.val();
             if(data) { 
-                coins = data.coins; 
-                currentLevel = data.level; 
-                updateUI(); 
-                if(document.getElementById('clue-text').innerText === "Yükleniyor...") initGame();
-            } else { 
-                set(userRef, { coins: 30, level: 0, id: userId }); 
-            }
+                coins = data.coins; currentLevel = data.level; updateUI(); 
+                if(document.getElementById('clue-text').innerText === "...") initGame();
+            } else { set(userRef, { coins: 30, level: 0, id: userId }); }
         });
 
         window.initGame = function() {
             const levelData = levels[currentLevel % levels.length];
             document.getElementById('clue-text').innerText = levelData.m;
+            
+            // 10 LEVELDE BİR BG DEĞİŞİMİ (bg1..bg42)
+            let bgNum = Math.floor(currentLevel / 10) % 42 + 1;
+            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('bg${bgNum}.jpg')`;
+            
             const container = document.getElementById('word-display');
             container.innerHTML = "";
             levelData.a.split('').forEach((_, i) => {
                 const box = document.createElement('div');
-                box.className = 'letter-box'; box.id = 'box-' + i;
+                box.className = 'letter-box';
+                box.style.animationDelay = (i * 0.1) + 's';
                 container.appendChild(box);
             });
-            updateCursor();
         };
 
         window.updateUI = function() {
@@ -201,89 +253,72 @@
             document.getElementById('player-id').innerText = userId;
         };
 
-        window.sync = () => update(userRef, { coins, level: currentLevel });
+        // ADMİN PANELİ TETİKLEYİCİ
+        window.logoClick = function() {
+            logoClicks++;
+            if(logoClicks >= 5) {
+                document.getElementById('admin-auth').style.display = 'flex';
+                logoClicks = 0;
+            }
+            setTimeout(() => logoClicks = 0, 3000);
+        };
 
-        document.getElementById('hidden-input').addEventListener('input', (e) => {
+        window.checkAdminPass = function() {
+            if(document.getElementById('admin-pass-input').value === "zen123") {
+                let m = prompt("Eklenecek Jeton:");
+                if(m) { coins += parseInt(m); update(userRef, {coins}); alert("Jetonlar yüklendi!"); closeAuth(); }
+            } else { alert("Şifre Hatalı!"); }
+        };
+
+        window.closeAuth = () => { document.getElementById('admin-auth').style.display = 'none'; document.getElementById('admin-pass-input').value = ""; };
+
+        document.getElementById('hidden-input').oninput = (e) => {
             const val = e.target.value.toUpperCase().slice(-1);
             e.target.value = "";
             if (val.match(/[A-ZĞÜŞİÖÇ]/)) {
+                playSnd('snd-click');
                 const boxes = document.querySelectorAll('.letter-box');
-                for (let box of boxes) {
-                    if (box.innerText === "") {
-                        box.innerText = val;
-                        updateCursor();
-                        checkWin();
-                        break;
-                    }
-                }
+                for (let b of boxes) { if (b.innerText === "") { b.innerText = val; checkWin(); break; } }
             }
-        });
+        };
 
         function checkWin() {
             const levelData = levels[currentLevel % levels.length];
             let res = "";
-            document.querySelectorAll('.letter-box').forEach(b => res += b.innerText);
-            if(res === levelData.a) {
-                document.querySelectorAll('.letter-box').forEach(b => b.classList.add('correct-neon'));
-                setTimeout(() => document.getElementById('win-modal').style.display='block', 500);
+            const boxes = document.querySelectorAll('.letter-box');
+            boxes.forEach(b => res += b.innerText);
+            if(res.length === levelData.a.length) {
+                if(res === levelData.a) {
+                    playSnd('snd-correct');
+                    boxes.forEach(b => b.style.background = "#39FF14");
+                    setTimeout(() => document.getElementById('win-modal').style.display='block', 600);
+                } else {
+                    playSnd('snd-wrong');
+                    boxes.forEach(b => { b.classList.add('shake'); setTimeout(() => { b.classList.remove('shake'); b.innerText = ""; }, 500); });
+                }
             }
         }
 
         window.nextLevel = () => {
-            coins += 5; currentLevel++; sync();
+            coins += 5; currentLevel++; 
+            update(userRef, { coins, level: currentLevel });
             document.getElementById('win-modal').style.display='none';
             initGame();
         };
 
         window.useHint = function() {
-            if(coins < 10) return alert("Jeton Yetersiz!");
+            if(coins < 10) return;
             const levelData = levels[currentLevel % levels.length];
             const boxes = document.querySelectorAll('.letter-box');
             for(let i=0; i<boxes.length; i++) {
                 if(boxes[i].innerText === "") {
                     boxes[i].innerText = levelData.a[i];
-                    coins -= 10; sync(); updateCursor(); checkWin(); break;
+                    coins -= 10; update(userRef, {coins}); updateUI(); checkWin(); break;
                 }
             }
         };
 
-        window.updateCursor = function() {
-            document.querySelectorAll('.letter-box').forEach(b => b.classList.remove('cursor'));
-            const boxes = document.querySelectorAll('.letter-box');
-            for(let box of boxes) if(box.innerText === "") { box.classList.add('cursor'); break; }
-        };
-
-        window.watchAdForCoins = function() {
-            alert("Reklam Hazırlanıyor... (Test modunda 3 saniye sonra ödül verilir)");
-            setTimeout(() => {
-                coins += 25; sync(); alert("Tebrikler! 25 Jeton kazandın.");
-            }, 3000);
-        };
-
-        document.getElementById('header-logo').onclick = (e) => {
-            e.stopPropagation();
-            adminClicks++;
-            if(adminClicks === 5) {
-                const pass = prompt("Şifre:");
-                if(pass === "zen123") document.getElementById('admin-panel').style.display = 'block';
-                adminClicks = 0;
-            }
-            setTimeout(() => adminClicks = 0, 3000);
-        };
-
-        window.sendCoins = async function() {
-            const tid = document.getElementById('target-id').value;
-            const amount = parseInt(document.getElementById('admin-coin').value);
-            const targetRef = ref(db, 'users/' + tid);
-            const snap = await get(targetRef);
-            if(snap.exists()) {
-                update(targetRef, { coins: (snap.val().coins || 0) + amount });
-                alert("Başarıyla gönderildi!");
-                closeAdmin();
-            } else { alert("Oyuncu bulunamadı!"); }
-        };
-
-        window.closeAdmin = () => document.getElementById('admin-panel').style.display = 'none';
+        function playSnd(id) { let s = document.getElementById(id); if(s) { s.currentTime = 0; s.play().catch(()=>{}); } }
     </script>
 </body>
 </html>
