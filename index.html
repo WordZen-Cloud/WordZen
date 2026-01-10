@@ -9,12 +9,24 @@
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; font-family: sans-serif;
             transition: background 0.8s ease-in-out;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
+            background-position: center; background-repeat: no-repeat; background-size: cover;
         }
 
-        /* OYUN ALANI (ORTA) */
+        /* ANİMASYONLAR */
+        @keyframes jump {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .jump { animation: jump 0.5s ease; }
+        .shake { animation: shake 0.3s ease; }
+
         .game-area {
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; height: 70vh;
@@ -34,16 +46,16 @@
             justify-content: center; font-size: 26px; font-weight: bold;
             color: #2c3e50; border: 1px solid #d1d8e0; border-bottom: 4px solid #bdc3c7;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-transform: uppercase;
+            transition: all 0.1s;
         }
 
-        /* ALT PANEL (SEMBOL VE SEVİYE) */
         .footer {
             position: fixed; bottom: 45px; left: 0; right: 0;
             display: flex; flex-direction: column; align-items: center;
             pointer-events: none;
         }
 
-        .symbol { margin-bottom: 12px; opacity: 0.8; }
+        .symbol { margin-bottom: 15px; opacity: 0.8; }
         .level-label { font-size: 12px; font-weight: bold; color: #7f8c8d; letter-spacing: 4px; }
         .level-num { font-size: 45px; font-weight: 900; color: #2c3e50; margin: 0; line-height: 1; }
     </style>
@@ -52,7 +64,8 @@
 
     <audio id="bgMusic" loop src="music.mp3"></audio>
     <audio id="clickSound" src="click.mp3"></audio>
-    <audio id="winSound" src="success.mp3"></audio>
+    <audio id="trueSound" src="dogru.mp3"></audio>
+    <audio id="falseSound" src="yanlis.mp3"></audio>
 
     <div class="game-area">
         <div id="hint" class="hint"></div>
@@ -103,13 +116,29 @@
         window.onkeydown = (e) => {
             const level = levels[currentLevel];
             const k = e.key.toUpperCase();
+            
             if(/^[A-ZĞÜŞİÖÇ]$/.test(k) && input.length < level.a.length) {
                 document.getElementById('clickSound').play().catch(()=>{});
-                document.getElementById('t-' + input.length).innerText = k;
+                const currentTile = document.getElementById('t-' + input.length);
+                currentTile.innerText = k;
                 input += k;
-                if(input === level.a) {
-                    document.getElementById('winSound').play().catch(()=>{});
-                    setTimeout(() => { currentLevel++; if(currentLevel < levels.length) init(); }, 600);
+
+                if(input.length === level.a.length) {
+                    if(input === level.a) {
+                        document.getElementById('trueSound').play().catch(()=>{});
+                        // BAŞARI ANİMASYONU (Zıplama)
+                        document.querySelectorAll('.tile').forEach(t => t.classList.add('jump'));
+                        setTimeout(() => { 
+                            currentLevel++; 
+                            if(currentLevel < levels.length) init(); 
+                        }, 700);
+                    } else {
+                        document.getElementById('falseSound').play().catch(()=>{});
+                        // HATA ANİMASYONU (Sallanma)
+                        const row = document.getElementById('word-row');
+                        row.classList.add('shake');
+                        setTimeout(() => row.classList.remove('shake'), 300);
+                    }
                 }
             }
             if(e.key === 'Backspace' && input.length > 0) {
