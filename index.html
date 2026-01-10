@@ -4,154 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>WordZen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
-        * { -webkit-tap-highlight-color: transparent; outline: none; }
+        * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Montserrat', sans-serif; }
+        body { background-size: cover; background-position: center; display: flex; flex-direction: column; align-items: center; transition: background-image 1.5s ease-in-out; }
+
+        /* GİRİŞ ANİMASYONU */
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 1.2s ease; }
+        .splash-logo { font-size: 3.5rem; color: #fff; letter-spacing: 10px; text-transform: uppercase; animation: intro-zoom 3s ease-in-out infinite; }
+        @keyframes intro-zoom { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1); opacity: 1; text-shadow: 0 0 30px #fff; } 100% { transform: scale(1.1); opacity: 0; } }
+
+        #header-logo { margin-top: 25px; font-size: 2rem; color: #fff; letter-spacing: 6px; font-weight: 800; text-transform: uppercase; }
+
+        /* SAĞ PANEL (AMPUL VE GEÇ BUTONU) */
+        .top-panel { position: absolute; top: 20px; right: 15px; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; z-index: 100; }
+        .stat-item { background: rgba(255, 255, 255, 0.15); padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; font-weight: bold; font-size: 1rem; backdrop-filter: blur(10px); }
         
-        html, body {
-            width: 100%; height: 100%; margin: 0; padding: 0;
-            overflow: hidden; background: #000;
-            -webkit-user-select: none; user-select: none;
-        }
+        #hint-btn { cursor: pointer; border-color: #ffcc00; color: #ffcc00; }
+        #skip-btn-trigger { cursor: pointer; border-color: #ff4b2b; color: #ff4b2b; font-size: 0.8rem; background: rgba(255, 75, 43, 0.1); }
 
-        body {
-            background-size: cover; background-position: center;
-            display: flex; flex-direction: column; align-items: center;
-            transition: background-image 1.2s ease-in-out;
-        }
+        #word-display { display: flex; gap: 8px; margin-top: 50px; flex-wrap: wrap; justify-content: center; width: 95%; }
+        .letter-box { width: 44px; height: 55px; background: #fff; color: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
-        /* 🎬 GİRİŞ ANİMASYONU */
-        #splash-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999; display: flex; align-items: center; 
-            justify-content: center; transition: opacity 1.2s ease;
-        }
-        .splash-logo { 
-            font-size: 4.5rem; color: #fff; 
-            font-family: 'Brush Script MT', cursive; 
-            animation: intro-pulse 2.2s ease-in-out infinite;
-        }
-        @keyframes intro-pulse {
-            0%, 100% { transform: scale(0.9); opacity: 0.7; }
-            50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 30px #fff; }
-        }
+        #clue-container { margin-top: 40px; width: 88%; min-height: 90px; background: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 25px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; font-size: 1.1rem; backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: center; }
 
-        #header-logo { margin-top: 20px; font-size: 2.2rem; color: #00d4ff; text-shadow: 0 0 10px #00d4ff; font-family: 'Courier New', monospace; letter-spacing: 4px; }
-
-        .top-panel {
-            position: absolute; top: 15px; right: 15px;
-            display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100;
-        }
-        .stat-item {
-            background: rgba(0, 0, 0, 0.8); padding: 6px 14px; border-radius: 20px;
-            border: 1px solid #ffcc00; color: #ffcc00; font-weight: bold; font-size: 1rem;
-        }
-
-        #word-display { display: flex; gap: 8px; margin-top: 60px; flex-wrap: wrap; justify-content: center; width: 95%; }
-        .letter-box {
-            width: 42px; height: 52px; background: #fff; color: #000;
-            border-radius: 10px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; font-weight: 900; position: relative;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        /* SİYAH İMLEÇ */
-        .cursor::after {
-            content: ''; position: absolute; bottom: 8px; width: 60%; height: 3px;
-            background: #000; animation: blink 0.8s infinite;
-        }
-        @keyframes blink { 50% { opacity: 0; } }
-
-        .correct-neon { background: #39FF14 !important; box-shadow: 0 0 20px #39FF14; }
-        .wrong-neon { border: 2px solid #ff0000 !important; box-shadow: 0 0 15px #ff0000; }
-
-        /* ANLAM KUTUSU */
-        #clue-container {
-            margin-top: 30px; width: 85%; min-height: 80px;
-            background: rgba(0, 0, 0, 0.75); padding: 15px; border-radius: 18px;
-            text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff; font-size: 1.2rem; backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        /* MODALLAR */
-        .custom-modal {
-            display: none; position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%);
-            width: 300px; background: #111; border: 1px solid #fff;
-            border-radius: 25px; text-align: center; z-index: 2000; padding: 30px;
-        }
-        .btn-green { background: #39FF14; color: #000; border: none; padding: 15px; border-radius: 15px; font-weight: 900; width: 100%; font-size: 1.1rem; cursor: pointer; }
+        /* ŞIK MODALLAR (ONAY VE TEBRİKLER) */
+        .custom-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; background: rgba(20, 20, 20, 0.95); border: 1px solid rgba(255,255,255,0.2); border-radius: 30px; text-align: center; z-index: 2000; padding: 30px; backdrop-filter: blur(15px); }
+        .modal-btns { display: flex; gap: 10px; margin-top: 25px; }
+        .btn { flex: 1; padding: 15px; border-radius: 15px; border: none; font-weight: 900; cursor: pointer; font-size: 1rem; }
+        .btn-yes { background: #39FF14; color: #000; }
+        .btn-no { background: #ff4b2b; color: #fff; }
+        .btn-next { background: #fff; color: #000; width: 100%; }
 
         #hidden-input { position: absolute; top: -200px; opacity: 0; }
+        .cursor::after { content: ''; position: absolute; bottom: 8px; width: 50%; height: 3px; background: #000; animation: blink 0.8s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .correct-neon { background: #39FF14 !important; box-shadow: 0 0 20px #39FF14; transition: 0.5s; }
     </style>
 </head>
-<body onclick="handleFirstClick()">
+<body onclick="handleGlobalClick()">
 
     <div id="splash-screen"><div class="splash-logo">WordZen</div></div>
-    
     <div id="header-logo">WordZen</div>
 
     <div class="top-panel">
-        <div class="stat-item" onclick="useHint()">💡 <span id="coin-count">0</span></div>
-        <div class="stat-item" style="color: #00d4ff; border-color: #00d4ff;">LVL: <span id="lvl-txt">1</span></div>
+        <div class="stat-item" style="border-color: #fff;">🪙 <span id="coin-count">0</span></div>
+        <div class="stat-item" id="hint-btn" onclick="useHint()">💡 İPUCU (10)</div>
+        <div class="stat-item" id="skip-btn-trigger" onclick="openSkipModal()">⏭️ GEÇ (25)</div>
+        <div class="stat-item" style="font-size: 0.8rem; opacity: 0.7;">LVL: <span id="lvl-txt">1</span></div>
     </div>
     
     <div id="word-display" onclick="focusInput()"></div>
     <div id="clue-container"><div id="clue-text">...</div></div>
 
+    <div id="skip-modal" class="custom-modal">
+        <h3 style="color: #fff;">BÖLÜMÜ GEÇ?</h3>
+        <p style="color: #aaa;">25 Jeton karşılığında cevabı görüp geçmek istiyor musun?</p>
+        <div class="modal-btns">
+            <button class="btn btn-no" onclick="closeSkipModal()">HAYIR</button>
+            <button class="btn btn-yes" onclick="confirmSkip()">EVET</button>
+        </div>
+    </div>
+
     <div id="win-modal" class="custom-modal">
-        <h2 style="color: #FFFFFF; margin-bottom: 20px;">TEBRİKLER!</h2>
-        <p style="color: #ccc; margin-bottom: 25px;">5 Jeton Kazandın 🪙</p>
-        <button class="btn-green" onclick="nextLevel()">DEVAM ET</button>
+        <h2 style="color: #fff;">TEBRİKLER!</h2>
+        <p id="win-msg" style="color: #ccc;">+5 Jeton Kazandın 🪙</p>
+        <button class="btn btn-next" onclick="nextLevel()">DEVAM ET</button>
     </div>
 
     <input type="text" id="hidden-input" autocomplete="off" spellcheck="false">
-    <audio id="bg-music" src="fon-muzigi.mp3" loop preload="auto"></audio>
+    
+    <audio id="bg-music" src="fon-muzigi.mp3" loop></audio>
+    <audio id="true-sound" src="dogru.mp3"></audio>
+    <audio id="false-sound" src="yanlis.mp3"></audio>
 
     <script>
         let coins = parseInt(localStorage.getItem('wordzen_coins')) || 30;
         let currentLevel = parseInt(localStorage.getItem('wordzen_level')) || 0;
         const bgMusic = document.getElementById('bg-music');
+        const trueSnd = document.getElementById('true-sound');
+        const falseSnd = document.getElementById('false-sound');
         let musicStarted = false;
 
-        // KELİME LİSTESİ (Buraya 128 taneyi ekle kanka)
         const levels = [
            {a: "AĞAÇ", m: "gövdesi odun olan bitki."}, {a: "ALTIN", m: "değerli sarı maden."}, {a: "ANNE", m: "Cennetin ayaklarının altında olduğu müjdelenen kişi."}, {a: "ARABA", m: "4 tekerlekli genellikle üstü kapalı olan taşıt."}, {a: "BALIK", m: "Nefes almak için suya muhtaç olan canlı."}, {a: "BEBEK", m: "küçük çocuk."}, {a: "BEYİN", m: "sinir sisteminin merkezi."}, {a: "BİLGİ", m: "Öğrenilen her şeyin toplamı, başarının anahtarı."}, {a: "BULUT", m: "gökyüzündeki su buharı."}, {a: "ÇANTA", m: "İçine eşya konur elde ya da omuzda taşınır."}, {a: "ÇİÇEK", m: "Bitkilerin üreme organı olan kısım."}, {a: "ÇOCUK", m: "henüz büyüyememiş birey"}, {a: "DENİZ", m: "geniş tuzlu su kütlesi."}, {a: "DEFTER", m: "Bilgilerin düzenli şekilde tutulduğu kağıtlar bütünü."}, {a: "DOST", m: "Bağ kurulan samimi insan"}, {a: "DUVAR", m: "Mekanları sınırlandıran sabit yapı öğesi."}, {a: "ELMA", m: "Kırmızı yeşil ya da sarı olabilen tatlı bir meyve."}, {a: "EV", m: "Günlük hayatın geçtiği yaşam alanı."}, {a: "FENER", m: "pil ile çalışan aydınlatma aracı."}, {a: "GEMİ", m: "Uzun yolculuklar yapan büyük su taşıtı"}, {a: "GÖZ", m: "görme organı."}, {a: "GÜNEŞ", m: "dünyayı aydınlatan yıldız."}, {a: "HAVA", m: "Canlı yaşamı için gerekli gaz ."}, {a: "HAYAT", m: "Doğumdan ölüme kadar geçen zaman."}, {a: "IRMAK", m: "büyük akarsu."}, {a: "IŞIK", m: "görmeyi sağlayan enerji."}, {a: "KALEM", m: "Düşünceleri yazıya dökmeye yarayan araç."}, {a: "KAPI", m: "giriş çıkış bölümü."}, {a: "KEDİ", m: "Fare avlayan evcil canlı."}, {a: "KİTAP", m: "basılı eser."}, {a: "KÖPRÜ", m: "iki yeri bağlayan yapı."}, {a: "KUŞ", m: "uçabilen hayvan."}, {a: "MASA", m: "üstüne eşya konulan mobilya."}, {a: "OKUL", m: "eğitim verilen yer."}, {a: "OYUN", m: "eğlence amacıyla yapılan etkinlik."}, {a: "PENCERE", m: "ışık alan açıklık."},{a: "SU", m: "yaşam için gerekli sıvı."}, {a: "TOP", m: "yuvarlak oyun aracı."}, {a: "UYKU", m: "dinlenme hali."}, {a: "YAZI", m: "harflerle anlatım."}, {a: "YILDIZ", m: "gökteki ışıklı cisim."}, {a: "YOL", m: "ulaşım yolu."}, {a: "KUM", m: "ince taneli toprak parçası."},{a: "MUTFAK", m: "yemek yapılan yer."}, {a: "BİBER", m: "acı veya tatlı baharat."}, {a: "SAKIZ", m: "çiğnenen tatlı madde."}, {a: "ÇATI", m: "binanın üst örtüsü."}, {a: "YASTIK", m: "baş altına konan yumuşak eşya."}, {a: "KİRPİ", m: "dikenli küçük hayvan."}, {a: "OYUNCAK", m: "çocukların oynadığı eşya."}, {a: "ÇAY", m: "sıcak içecek."}, {a: "GÖL", m: "karada biriken su."}, {a: "KART", m: "bilgi veya ödeme aracı."}, {a: "MÜZİK", m: "sesle yapılan sanat."}, {a: "SİNEK", m: "uçan küçük böcek."}, {a: "BALON", m: "gazla şişen oyuncak."}, {a: "YOL", m: "ulaşım yapılan yer."}, {a: "BÜYÜKADA", m: "istanbulda bir ada."}, {a: "MAYMUN", m: "memeli hayvan."}, {a: "KÖPRÜ", m: "iki yeri bağlayan yapı."}, {a: "HAVA", m: "yaşam için gerekli gaz."}, {a: "KÖPEK", m: "evcil hayvan."}, {a: "ÇORAP", m: "ayağı örten giysi."},{a: "BİLGİSAYAR", m: "veri işleyen cihaz."}, {a: "FOTOĞRAF", m: "resim veya görüntü kaydı."}, {a: "MOTOR", m: "araçların hareket etmesini sağlayan makine."}, {a: "ŞEMSİYE", m: "yağmurdan koruyan araç."}, {a: "LAMBA", m: "ışık veren nesne."}, {a: "BİYOLOJİ", m: "canlıları inceleyen bilim."}, {a: "TAVŞAN", m: "kemirgen türü hayvan."}, {a: "ŞEHİR", m: "çok kişinin yaşadığı yer."}, {a: "KUYRUK", m: "hayvanın arka kısmı."}, {a: "YILDIZ", m: "gökyüzündeki parlak cisim."}, {a: "YUMURTA", m: "tavuk ve kuşların ürünü."}, {a: "BİBERON", m: "bebek besleme aracı."}, {a: "ÇÖP", m: "atık madde."}, {a: "MUTLULUK", m: "iyi hissetme durumu."}, {a: "GÖZLÜK", m: "görmeyi kolaylaştıran araç."}, {a: "ÇİZİM", m: "resim yapma işi."}, {a: "AYAKKABI", m: "ayak koruyucu giysi."}, {a: "TÜRKİYE", m: "ülke adı."}, {a: "BİRLİK", m: "bir araya gelme durumu."}, {a: "ÇORBA", m: "sıvı yemek."}, {a: "KUMANDA", m: "cihazı kontrol eden araç."}, {a: "KÖY", m: "küçük yerleşim yeri."}, {a: "KUAFÖR", m: "saç bakım hizmeti veren yer."}, {a: "PİZZA", m: "hamur üzerine malzeme konan yiyecek."}, {a: "ŞEKER", m: "tatlı madde."}, {a: "MAYO", m: "yüzmede giyilen giysi."}, {a: "BAYRAK", m: "ülke simgesi."}, {a: "OYUNCAK", m: "çocukların oynadığı eşya."}, {a: "MÜZE", m: "eserlerin sergilendiği yer."}, {a: "TÜNEL", m: "yer altından geçen yol."}, {a: "KİLİT", m: "kapıyı kapayan araç."}, {a: "BANDANA", m: "başa takılan giysi."}, {a: "KAFES", m: "hayvanı sınırlayan yapı."}, {a: "YAY", m: "ok atmada kullanılan araç."}, {a: "ÇİMENTO", m: "yapılarda kullanılan malzeme."}, {a: "TRAFO", m: "elektrik enerjisini dönüştüren cihaz."}, {a: "FIRIN", m: "yiyecek pişirme aracı."}, {a: "RADYO", m: "ses ile bilgi veren cihaz."}, {a: "KABLO", m: "elektrik veya veri taşıyan tel."}, {a: "TELEFON", m: "ses ile iletişim aracı."}, {a: "KASABA", m: "şehirden küçük yerleşim yeri."}, {a: "KAHVE", m: "içecek türü."}, {a: "BASKETBOL", m: "top ile oynanan spor."}, {a: "PASTANE", m: "tatlı ve yiyecek yapılan yer."}, {a: "TAVUK", m: "kümes hayvanı."}, {a: "KARTON", m: "kalın kağıt türü."},{a: "GÜL", m: "çiçek türü."}
         ];
 
-        // TAM EKRAN VE MÜZİK TETİKLEYİCİ
-        function handleFirstClick() {
-            if(!musicStarted) {
-                bgMusic.play().catch(e => console.log("Müzik hatası"));
-                musicStarted = true;
-            }
-            // Tam ekranı zorla
-            const doc = document.documentElement;
-            if (doc.requestFullscreen) doc.requestFullscreen();
-            else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
-            
+        function handleGlobalClick() {
+            if(!musicStarted) { bgMusic.play().catch(()=>{}); musicStarted = true; }
+            document.documentElement.requestFullscreen?.();
             focusInput();
         }
 
         window.onload = () => {
             initGame();
             setTimeout(() => {
-                const splash = document.getElementById('splash-screen');
-                if(splash) {
-                    splash.style.opacity = '0';
-                    bgMusic.play().catch(() => {});
-                    setTimeout(() => splash.remove(), 1200);
-                }
-            }, 3500);
+                document.getElementById('splash-screen').style.opacity = '0';
+                setTimeout(() => document.getElementById('splash-screen').remove(), 1200);
+            }, 3000);
         };
 
         function initGame() {
-            // ARKA PLAN DÖNGÜSÜ (42 resim, her 3 seviyede bir değişir)
             let resimNo = (Math.floor(currentLevel / 3) % 42) + 1;
-            document.body.style.backgroundImage = `url('bg${resimNo}.jpg')`;
-
+            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('bg${resimNo}.jpg')`;
             const levelData = levels[currentLevel % levels.length];
             document.getElementById('clue-text').innerText = levelData.m;
-            
             const container = document.getElementById('word-display');
             container.innerHTML = "";
             levelData.a.split('').forEach((_, i) => {
@@ -159,39 +117,41 @@
                 box.className = 'letter-box'; box.id = 'box-' + i;
                 container.appendChild(box);
             });
-            updateUI();
-            updateCursor();
+            updateUI(); updateCursor();
         }
 
-        function focusInput() { document.getElementById('hidden-input').focus(); }
-
-        document.getElementById('hidden-input').addEventListener('input', (e) => {
+        // BÖLÜM GEÇME MANTIĞI
+        function openSkipModal() { if(coins >= 25) document.getElementById('skip-modal').style.display = 'block'; else alert("Yetersiz Jeton!"); }
+        function closeSkipModal() { document.getElementById('skip-modal').style.display = 'none'; }
+        
+        function confirmSkip() {
+            coins -= 25;
+            closeSkipModal();
             const levelData = levels[currentLevel % levels.length];
-            const val = e.target.value.toUpperCase().slice(-1);
-            e.target.value = "";
-            if(val.match(/[A-ZĞÜŞİÖÇ]/)) {
-                for(let i = 0; i < levelData.a.length; i++) {
-                    const box = document.getElementById('box-' + i);
-                    if(box && box.innerText === "") { 
-                        box.innerText = val; 
-                        updateCursor();
-                        checkWin(); break; 
-                    }
-                }
-            }
-        });
+            // Kelimeyi göster
+            levelData.a.split('').forEach((harf, i) => {
+                document.getElementById('box-' + i).innerText = harf;
+                document.getElementById('box-' + i).classList.add('correct-neon');
+            });
+            trueSnd.play();
+            setTimeout(() => { nextLevel(); }, 1500); // 1.5 saniye sonra geç
+        }
 
         function checkWin() {
             const levelData = levels[currentLevel % levels.length];
             let res = "";
-            for(let i=0; i < levelData.a.length; i++) res += document.getElementById('box-' + i).innerText;
+            document.querySelectorAll('.letter-box').forEach(b => res += b.innerText);
             if(res.length === levelData.a.length) {
                 if(res === levelData.a) {
+                    trueSnd.play();
                     document.querySelectorAll('.letter-box').forEach(b => b.classList.add('correct-neon'));
                     setTimeout(() => { document.getElementById('win-modal').style.display = 'block'; }, 600);
                 } else {
-                    document.querySelectorAll('.letter-box').forEach(b => b.classList.add('wrong-neon'));
-                    setTimeout(() => { document.querySelectorAll('.letter-box').forEach(b => b.classList.remove('wrong-neon')); }, 800);
+                    falseSnd.play();
+                    document.querySelectorAll('.letter-box').forEach(b => {
+                        b.style.borderColor = "red";
+                        setTimeout(() => { b.innerText = ""; b.style.borderColor = "transparent"; updateCursor(); }, 800);
+                    });
                 }
             }
         }
@@ -215,6 +175,16 @@
             initGame();
         }
 
+        function focusInput() { document.getElementById('hidden-input').focus(); }
+        document.getElementById('hidden-input').addEventListener('input', (e) => {
+            const val = e.target.value.toUpperCase().slice(-1);
+            e.target.value = "";
+            if(val.match(/[A-ZĞÜŞİÖÇ]/)) {
+                const boxes = document.querySelectorAll('.letter-box');
+                for(let box of boxes) if(box.innerText === "") { box.innerText = val; updateCursor(); checkWin(); break; }
+            }
+        });
+
         function updateUI() {
             document.getElementById('coin-count').innerText = coins;
             document.getElementById('lvl-txt').innerText = currentLevel + 1;
@@ -224,11 +194,8 @@
 
         function updateCursor() {
             document.querySelectorAll('.letter-box').forEach(b => b.classList.remove('cursor'));
-            const levelData = levels[currentLevel % levels.length];
-            for(let i = 0; i < levelData.a.length; i++) {
-                const box = document.getElementById('box-' + i);
-                if(box && box.innerText === "") { box.classList.add('cursor'); break; }
-            }
+            const boxes = document.querySelectorAll('.letter-box');
+            for(let box of boxes) if(box.innerText === "") { box.classList.add('cursor'); break; }
         }
     </script>
 </body>
