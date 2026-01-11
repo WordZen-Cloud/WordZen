@@ -21,10 +21,10 @@
         /* UI PANELLERİ */
         .info-panel { position: absolute; top: 20px; left: 20px; z-index: 1000; }
         .info-item { background: rgba(0,0,0,0.8); color: #fff; padding: 8px 15px; border-radius: 12px; font-size: 0.65rem; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 5px; }
-        
+
         .coin-panel { position: absolute; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
         #coin-display { background: rgba(0,0,0,0.8); padding: 8px 18px; border-radius: 20px; color: #ffcc00; font-size: 1rem; border: 1px solid #ffcc00; margin-bottom: 5px; }
-        
+
         .btn-round { width: 52px; height: 52px; border-radius: 50%; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
         .btn-skip { background: #ff4b2b; color: #fff; }
         .btn-hint { background: #39FF14; color: #000; margin-top: 5px; }
@@ -147,7 +147,7 @@
 
         let userId = localStorage.getItem('wordzen_id') || "USER_" + Math.floor(Math.random()*90000+10000);
         localStorage.setItem('wordzen_id', userId);
-        
+
         let coins = 0;
         let currentLevel = 0;
         let logoCount = 0;
@@ -253,12 +253,12 @@
             document.getElementById('player-id').innerText = userId;
             const levelData = levels[currentLevel % levels.length];
             document.getElementById('clue-text').innerText = levelData.m;
-            
+
             // 10 Seviyede Bir Arka Plan Döngüsü
             let bgIndex = Math.floor(currentLevel / 10) % 42; 
             let bgNum = bgIndex + 1; 
             document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('bg${bgNum}.jpg')`;
-            
+
             const container = document.getElementById('word-display');
             container.innerHTML = "";
             levelData.a.split('').forEach(() => {
@@ -345,3 +345,6 @@
     </script>
 </body>
 </html>
+
+
+
