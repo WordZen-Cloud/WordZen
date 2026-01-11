@@ -85,19 +85,6 @@
         </div>
     </div>
 
-    <div id="gift-modal" class="modal-overlay">
-        <div class="modal-card gift-card">
-            <div style="font-size: 4.5rem; margin-bottom: 10px;">🎁</div>
-            <h2 style="color:#ffcc00; margin:0; letter-spacing: 1px;">SÜRPRİZ!</h2>
-            <p style="color:#eee; font-size:0.9rem; line-height:1.5; margin-top:15px;">
-                Oyun geliştiricisi tarafından size
-                <span id="gift-amount">0</span>
-                Jeton hediye edildi!
-            </p>
-            <button class="btn-modal btn-confirm" style="background:#ffcc00; color:#000; margin-top:15px;" onclick="closeModal('gift-modal')">EYVALLAH!</button>
-        </div>
-    </div>
-
     <div id="admin-panel" class="modal-overlay">
         <div class="modal-card">
             <h2 style="color:#39FF14">YÖNETİM</h2>
@@ -211,7 +198,58 @@
 {a: "VİTRİN", m: "Mağazada ürünlerin sergilendiği camlı bölüm."},
 {a: "YEMEK", m: "Tüketilerek enerji sağlayan besin."},
 {a: "YOĞURT", m: "Sütün mayalanmasıyla elde edilen koyu kıvamlı ekşi tatlı bir süt ürünüdür"},
-{a: "ZARF", m: "mektup konulan kağıt."}
+{a: "ZARF", m: "mektup konulan kağıt."},
+{a: "AKREP", m: "Zehrli sokma özelliği olan küçük hayvan."},
+{a: "ARMUT", m: "Tatlı ve sulu meyve."},
+{a: "AT", m: "İnsan veya yük taşımada kullanılan hızlı hayvan."},
+{a: "AYI", m: "Büyük ve güçlü memeli hayvan."},
+{a: "BÖCEK", m: "Küçük ve çok bacaklı omurgasız canlı."},
+{a: "ÇİTA", m: "Dünyanın en hızlı kara hayvanı."},
+{a: "DENİZYILDIZI", m: "Denizlerde yaşayan beş kollu canlı."},
+{a: "FOK", m: "Suda yaşayan memeli hayvan."},
+{a: "GEYİK", m: "Boynuzlu orman hayvanı."},
+{a: "HIRSIZ", m: "Başkasının malını çalan kişi."},
+{a: "İNEK", m: "Süt veren çiftlik hayvanı."},
+{a: "JEL", m: "Yarı sıvı kıvamında madde."},
+{a: "KAKTÜS", m: "Sulu ve dikenli bitki."},
+{a: "LAPA", m: "Yoğun kar veya çamur birikintisi."},
+{a: "MANGO", m: "Tropikal ve tatlı meyve."},
+{a: "NEKTAR", m: "Çiçeklerden toplanan tatlı sıvı."},
+{a: "OBJE", m: "Belirli amaçla kullanılan nesne."},
+{a: "PANDA", m: "Siyah beyaz ve bambu yiyen hayvan."},
+{a: "RAPOR", m: "Olay veya durum hakkında yazılı bilgi."},
+{a: "SAL", m: "Küçük ve açık su aracı."},
+{a: "TAVSİYE", m: "Bir konuda yol gösteren öneri."},
+{a: "UĞURBÖCEĞİ", m: "Küçük ve kırmızı benekli böcek."},
+{a: "VİYOLA", m: "Keman ailesinden yaylı çalgı."},
+{a: "YELKENCİ", m: "Yelkenli tekne ile seyahat eden kişi."},
+{a: "ZEBRA", m: "Çizgili ve otçul hayvan."},
+{a: "AMBAR", m: "Eşya veya mal depolanan büyük yer."},
+{a: "BİLGİSAYARCI", m: "Bilgisayar ile çalışan kişi."},
+{a: "CİVCİV", m: "Yeni doğmuş tavuk."},
+{a: "DİKİŞ", m: "İplik ile yapılan birleştirme işlemi."},
+{a: "ELBİSE", m: "Vücut için giyilen giysi."},
+{a: "FOSFOR", m: "Işığı yansıtan kimyasal element."},
+{a: "GÖLGE", m: "Işığın engellenmesi ile oluşan karanlık alan."},
+{a: "HIRS", m: "Fazla arzu veya tamah."},
+{a: "ISITICI", m: "Alanı veya nesneyi ısıtan cihaz."},
+{a: "JAPON", m: "Japonya vatandaşına denir."},
+{a: "KİLOMETRE", m: "Uzunluk ölçü birimi."},
+{a: "LİSANSLI", m: "Resmî izin veya belgeye sahip."},
+{a: "MÜREKKEP", m: "Yazı yazmak için kullanılan sıvı boya."},
+{a: "NELER", m: "Soru zamiri."},
+{a: "ORTAOKUL", m: "İlkokuldan sonra öğrenim verilen kurum."},
+{a: "PİYANO", m: "Tuşlu ve yaylı çalgı."},
+{a: "RAFİNERİ", m: "Ham petrol işlenen fabrika."},
+{a: "SOKAK", m: "Binalar arasında geçen yol."},
+{a: "TOPLANTI", m: "Bir amaç için insanların bir araya gelmesi."},
+{a: "ULUS", m: "Ortak kültür ve dili olan insanlar topluluğu."},
+{a: "VİRAJ", m: "Yolun dönemeçli kısmı."},
+{a: "YEL", m: "Hareket eden hava."},
+{a: "ZİNCİR", m: "Halka halkaya bağlı metal parça."},
+{a: "AÇIKHAVA", m: "Kapalı olmayan dış mekan."},
+{a: "BİTKİ", m: "Toprakta büyüyen canlı organizma."},
+{a: "ÇİZİK", m: "Yüzeyde oluşan ince çizgi veya hasar."}
         ];
 
         window.onload = () => {
