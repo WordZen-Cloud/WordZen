@@ -3,100 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WordZen | Şafak Vakti Paneli</title>
+    <title>WordZen v2.0 | WordZen Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #39FF14; --danger: #ff4b2b; --bg: #0a0a0a; --card: #151515; --gray: #252525; }
+        :root { --neon: #39FF14; --danger: #ff4b2b; --bg: #0a0a0a; --card: #151515; --gray: #252525; --warn: #ffcc00; }
         * { box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-        body { background: var(--bg); color: white; margin: 0; overflow-x: hidden; }
-
-        /* GİRİŞ EKRANI */
-        #login-screen { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); }
-        .login-card { background: var(--card); padding: 40px; border-radius: 30px; border: 2px solid var(--neon); box-shadow: 0 0 40px rgba(57, 255, 20, 0.2); text-align: center; width: 90%; max-width: 380px; }
-
-        /* PANEL ANA YAPI */
-        #admin-panel { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--neon); padding-bottom: 15px; margin-bottom: 30px; }
-        .header h1 { font-weight: 900; letter-spacing: 2px; color: var(--neon); margin: 0; font-size: 1.5rem; }
-
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        body { background: var(--bg); color: white; margin: 0; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         .card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--gray); position: relative; }
-        .card h3 { color: var(--neon); margin-top: 0; border-bottom: 1px solid var(--gray); padding-bottom: 10px; font-size: 0.85rem; letter-spacing: 1px; }
-
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--gray); background: #222; color: white; outline: none; }
-        .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 5px; }
+        .card h3 { color: var(--neon); margin-top: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--gray); background: #222; color: white; }
+        .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 5px; }
         .btn-neon { background: var(--neon); color: black; }
         .btn-danger { background: var(--danger); color: white; }
-        .btn-warn { background: #ffcc00; color: black; }
-
-        /* BAKIM ŞALTERİ ÖZEL */
-        .maint-status { font-weight: 900; padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 10px; border: 2px solid transparent; }
-        .maint-on { background: rgba(255, 75, 43, 0.2); border-color: var(--danger); color: var(--danger); }
-        .maint-off { background: rgba(57, 255, 20, 0.1); border-color: var(--neon); color: var(--neon); }
-
-        .list-box { height: 180px; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; margin-top: 10px; border: 1px solid #1a1a1a; }
-        .row { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #111; font-size: 0.75rem; }
+        .btn-warn { background: var(--warn); color: black; }
+        .status-box { padding: 10px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 10px; border: 1px solid; }
+        .active { border-color: var(--neon); color: var(--neon); }
+        .passive { border-color: var(--danger); color: var(--danger); }
+        .list-scroll { height: 150px; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; font-size: 0.7rem; }
+        .row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #111; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-card">
-            <h2 style="color:var(--neon)">WordZen</h2>
-            <p style="color:#888; font-size:0.8rem">PATRON GİRİŞİ</p>
-            <input type="password" id="pass-input" placeholder="Şifre Gir...">
-            <button class="btn btn-neon" onclick="login()">SİSTEMİ AÇ</button>
+    <h1 style="color:var(--neon); text-align:center; font-weight:900;">ŞAFAK VAKTİ v2.0</h1>
+
+    <div class="grid">
+        <div class="card">
+            <h3>⚙️ SİSTEM VE BAKIM</h3>
+            <div id="maint-status" class="status-box">YÜKLENİYOR...</div>
+            <button class="btn btn-warn" onclick="toggleMaint()">BAKIM MODUNU DEĞİŞTİR</button>
+            <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+            <label style="font-size:0.7rem">İpucu Fiyatı:</label>
+            <input type="number" id="cfg-hint" placeholder="Örn: 10">
+            <label style="font-size:0.7rem">BG Değişim Sıklığı (Kaç Bölümde Bir):</label>
+            <input type="number" id="cfg-bg" placeholder="Örn: 5">
+            <button class="btn btn-neon" onclick="saveConfig()">AYARLARI KAYDET</button>
         </div>
-    </div>
 
-    <div id="admin-panel">
-        <div class="header">
-            <h1>ŞAFAK VAKTİ PANELİ</h1>
-            <button class="btn btn-danger" style="width:auto; padding:8px 20px" onclick="location.reload()">ÇIKIŞ</button>
+        <div class="card">
+            <h3>📢 CANLI DUYURU & BAN</h3>
+            <input type="text" id="global-msg" placeholder="Tüm oyunculara mesaj gönder...">
+            <button class="btn btn-neon" onclick="sendMsg()">MESAJI YAYINLA</button>
+            <button class="btn btn-danger" style="margin-top:15px;" onclick="clearMsg()">MESAJI KALDIR</button>
+            <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+            <input type="text" id="ban-id" placeholder="Banlanacak Oyuncu ID">
+            <div style="display:flex; gap:5px;">
+                <button class="btn btn-danger" onclick="setBan(true)">BANLA</button>
+                <button class="btn btn-neon" onclick="setBan(false)">AÇ</button>
+            </div>
         </div>
 
-        <div class="grid-container">
-            <div class="card">
-                <h3>BAKIM MODU ŞALTERİ</h3>
-                <div id="maint-indicator" class="maint-status">DURUM ÇEKİLİYOR...</div>
-                <button id="maint-toggle-btn" class="btn btn-neon" onclick="toggleMaint()">DURUMU DEĞİŞTİR</button>
-                <p style="font-size:0.6rem; color:#666; margin-top:10px;">*Açarsan oyuncular oyuna giremez.</p>
+        <div class="card">
+            <h3>👤 OYUNCU YÖNETİMİ</h3>
+            <input type="text" id="target-id" placeholder="Oyuncu ID">
+            <input type="number" id="target-amt" placeholder="Miktar">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+                <button class="btn btn-neon" onclick="modUser('coins', true)">JETON EKLE</button>
+                <button class="btn btn-danger" onclick="modUser('coins', false)">JETON SİL</button>
+                <button class="btn btn-warn" onclick="modUser('level', true)">LVL EKLE</button>
+                <button class="btn btn-danger" onclick="modUser('level', false)">LVL SİL</button>
             </div>
+            <div id="user-list" class="list-scroll" style="margin-top:10px;"></div>
+        </div>
 
-            <div class="card">
-                <h3>OYUNCU MÜDAHALE (JETON/SEVİYE)</h3>
-                <input type="text" id="target-id" placeholder="Oyuncu ID'si">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-                    <button class="btn btn-neon" onclick="editUser('coins', 500, 'JETON EKLENDİ')">+500 JETON</button>
-                    <button class="btn btn-danger" onclick="editUser('coins', -500, 'JETON KESİLDİ')">-500 JETON</button>
-                    <button class="btn btn-warn" onclick="editUser('level', 1, 'SEVİYE ATLATILDI')">+1 LEVEL</button>
-                    <button class="btn btn-danger" onclick="editUser('level', -1, 'SEVİYE DÜŞÜRÜLDÜ')">-1 LEVEL</button>
-                </div>
-                <button class="btn btn-danger" style="width:100%; margin-top:10px" onclick="banPlayer()">OYUNCUYU BANLA</button>
-            </div>
-
-            <div class="card">
-                <h3>SİSTEM AYARLARI</h3>
-                <label style="font-size:0.7rem">İPUCU FİYATI:</label>
-                <input type="number" id="cfg-hint">
-                <label style="font-size:0.7rem">BG DEĞİŞİM SIKLIĞI:</label>
-                <input type="number" id="cfg-bg-freq">
-                <button class="btn btn-neon" onclick="saveSettings()">KAYDET</button>
-            </div>
-
-            <div class="card">
-                <h3>YENİ KELİME EKLE</h3>
-                <input type="text" id="w-val" placeholder="Kelime (Örn: ELMA)">
-                <input type="text" id="m-val" placeholder="İpucu">
-                <button class="btn btn-neon" onclick="addLevel()">LİSTEYE EKLE</button>
-                <div class="list-box" id="level-list"></div>
-            </div>
+        <div class="card">
+            <h3>📝 KELİME EKLE (BULUT)</h3>
+            <input type="text" id="w-val" placeholder="KELİME">
+            <input type="text" id="m-val" placeholder="İPUCU">
+            <button class="btn btn-neon" onclick="addWord()">LİSTEYE EKLE</button>
+            <div id="word-list" class="list-scroll" style="margin-top:10px;"></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, update, remove, push, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, update, push, remove, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
@@ -110,79 +92,71 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        window.login = () => {
-            const val = document.getElementById('pass-input').value;
-            onValue(ref(db, 'admin/pass'), s => {
-                if(val === (s.val() || "şafak123")) {
-                    document.getElementById('login-screen').style.display='none';
-                    document.getElementById('admin-panel').style.display='block';
-                    initDashboard();
-                } else alert("Şifre Yanlış!");
-            }, {onlyOnce:true});
+        // Canlı Veri Dinleme
+        onValue(ref(db, 'admin'), (s) => {
+            const data = s.val();
+            const m = document.getElementById('maint-status');
+            m.innerText = data.maintenance ? "BAKIM: AKTİF" : "BAKIM: KAPALI";
+            m.className = "status-box " + (data.maintenance ? "passive" : "active");
+            document.getElementById('cfg-hint').value = data.config?.hint_price || 10;
+            document.getElementById('cfg-bg').value = data.config?.bg_frequency || 1;
+        });
+
+        onValue(ref(db, 'users'), (s) => {
+            const list = document.getElementById('user-list'); list.innerHTML = "";
+            const users = s.val();
+            for(let id in users) {
+                list.innerHTML += `<div class="row" onclick="document.getElementById('target-id').value='${id}'" style="cursor:pointer"><span>${id.slice(0,8)}</span><span>Lvl:${users[id].level} | 🪙${users[id].coins}</span></div>`;
+            }
+        });
+
+        onValue(ref(db, 'levels'), (s) => {
+            const list = document.getElementById('word-list'); list.innerHTML = "";
+            const words = s.val();
+            for(let k in words) {
+                list.innerHTML += `<div class="row"><span>${words[k].a}</span><button onclick="delWord('${k}')" style="background:red; color:white; border:none; font-size:8px;">SİL</button></div>`;
+            }
+        });
+
+        // Fonksiyonlar
+        window.toggleMaint = () => get(ref(db, 'admin/maintenance')).then(s => set(ref(db, 'admin/maintenance'), !s.val()));
+        
+        window.saveConfig = () => {
+            update(ref(db, 'admin/config'), {
+                hint_price: parseInt(document.getElementById('cfg-hint').value),
+                bg_frequency: parseInt(document.getElementById('cfg-bg').value)
+            });
+            alert("Sistem ayarları güncellendi!");
         };
 
-        function initDashboard() {
-            // Bakım Modu Takibi
-            onValue(ref(db, 'admin/maintenance'), snap => {
-                const status = snap.val();
-                const ind = document.getElementById('maint-indicator');
-                const btn = document.getElementById('maint-toggle-btn');
-                if(status) {
-                    ind.innerText = "BAKIM MODU ŞU AN: AÇIK";
-                    ind.className = "maint-status maint-on";
-                    btn.innerText = "BAKIMI KAPAT";
-                    btn.className = "btn btn-danger";
-                } else {
-                    ind.innerText = "BAKIM MODU ŞU AN: KAPALI";
-                    ind.className = "maint-status maint-off";
-                    btn.innerText = "BAKIMI AÇ";
-                    btn.className = "btn btn-neon";
-                }
-            });
+        window.sendMsg = () => set(ref(db, 'admin/announcement'), document.getElementById('global-msg').value);
+        window.clearMsg = () => set(ref(db, 'admin/announcement'), null);
 
-            // Seviyeleri Listele
-            onValue(ref(db, 'levels'), snap => {
-                const list = document.getElementById('level-list'); list.innerHTML = "";
-                for(let key in snap.val()) {
-                    list.innerHTML += `<div class="row"><span>${snap.val()[key].a}</span><button class="btn-danger" style="padding:2px 5px; font-size:10px" onclick="delLevel('${key}')">SİL</button></div>`;
-                }
-            });
-        }
-
-        window.toggleMaint = () => {
-            get(ref(db, 'admin/maintenance')).then(s => set(ref(db, 'admin/maintenance'), !s.val()));
+        window.setBan = (val) => {
+            const id = document.getElementById('ban-id').value;
+            if(id) set(ref(db, 'bans/'+id), val);
         };
 
-        window.editUser = (field, amount, msgType) => {
+        window.modUser = (field, isAdd) => {
             const id = document.getElementById('target-id').value;
-            if(!id) return alert("ID gir!");
+            let amt = parseInt(document.getElementById('target-amt').value);
+            if(!id || isNaN(amt)) return;
+            amt = isAdd ? amt : -amt;
             get(ref(db, `users/${id}`)).then(s => {
                 if(s.exists()){
-                    let val = (s.val()[field] || 0) + amount;
-                    update(ref(db, `users/${id}`), { [field]: val < 0 ? 0 : val, lastUpdateMsg: msgType });
-                    alert("Tamamdır: " + msgType);
+                    let newVal = (s.val()[field] || 0) + amt;
+                    update(ref(db, `users/${id}`), { [field]: newVal < 0 ? 0 : newVal, lastUpdateMsg: "PATRON BİR ŞEYLER DEĞİŞTİRDİ!" });
                 }
             });
         };
 
-        window.saveSettings = () => {
-            update(ref(db, 'admin/config'), {
-                hint_price: document.getElementById('cfg-hint').value || 10,
-                bg_frequency: document.getElementById('cfg-bg-freq').value || 1
-            });
-            alert("Ayarlar Güncellendi!");
-        };
-
-        window.addLevel = () => {
+        window.addWord = () => {
             const a = document.getElementById('w-val').value.toUpperCase();
             const m = document.getElementById('m-val').value;
             if(a && m) push(ref(db, 'levels'), { a, m });
         };
-        window.delLevel = k => remove(ref(db, 'levels/'+k));
-        window.banPlayer = () => {
-            const id = document.getElementById('target-id').value;
-            if(id) set(ref(db, `bans/${id}`), true);
-        };
+        window.delWord = (k) => remove(ref(db, 'levels/'+k));
+
     </script>
 </body>
 </html>
