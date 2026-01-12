@@ -3,53 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WordZen | Admin Kontrol Paneli</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
+    <title>WordZen | Patron Konsolu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Montserrat', sans-serif; background: #0a0a0a; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .admin-card { background: #1a1a1a; padding: 30px; border-radius: 20px; border: 2px solid #39FF14; width: 100%; max-width: 400px; box-shadow: 0 0 20px rgba(57, 255, 20, 0.2); }
-        h1 { color: #39FF14; text-align: center; font-size: 1.5rem; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #333; background: #000; color: #39FF14; font-weight: bold; }
-        button { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .btn-fetch { background: #39FF14; color: #000; }
-        .btn-update { background: #ffcc00; color: #000; }
-        .user-info { margin-top: 20px; padding: 15px; background: #000; border-radius: 10px; display: none; border-left: 5px solid #39FF14; }
-        label { font-size: 0.8rem; color: #888; }
+        :root { --neon: #39FF14; --danger: #ff4b2b; --bg: #0a0a0a; --card: #151515; --gray: #252525; }
+        * { box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        body { background: var(--bg); color: white; margin: 0; overflow-x: hidden; }
+        #login-screen { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); }
+        .login-card { background: var(--card); padding: 40px; border-radius: 30px; border: 2px solid var(--neon); box-shadow: 0 0 40px rgba(57, 255, 20, 0.2); text-align: center; width: 90%; max-width: 380px; }
+        #admin-panel { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--neon); padding-bottom: 15px; margin-bottom: 30px; }
+        .header h1 { font-weight: 900; letter-spacing: 2px; color: var(--neon); margin: 0; font-size: 1.5rem; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--gray); }
+        .card h3 { color: var(--neon); margin-top: 0; border-bottom: 1px solid var(--gray); padding-bottom: 10px; font-size: 0.85rem; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--gray); background: #222; color: white; outline: none; }
+        .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-neon { background: var(--neon); color: black; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warn { background: #ffcc00; color: black; }
+        .list-box { height: 180px; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; margin-top: 10px; }
+        .row { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #111; font-size: 0.75rem; }
+        #cheat-alert { display: none; background: var(--danger); color: white; padding: 10px; border-radius: 10px; margin-bottom: 20px; text-align: center; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
     </style>
 </head>
 <body>
 
-    <div class="admin-card">
-        <h1>WordZen Admin</h1>
-        
-        <label>Yönetici Şifresi</label>
-        <input type="password" id="admin-pass" placeholder="Şifreyi Girin...">
-        
-        <hr style="border: 0.5px solid #333; margin: 20px 0;">
+    <div id="login-screen">
+        <div class="login-card">
+            <h2 style="color:var(--neon)">WordZen</h2>
+            <input type="password" id="pass-input" placeholder="Şifre...">
+            <button class="btn btn-neon" onclick="login()">GİRİŞ YAP</button>
+            <p id="error-msg" style="color:var(--danger); display:none; font-size:12px;">Hatalı Şifre!</p>
+        </div>
+    </div>
 
-        <label>Oyuncu ID (Örn: UZ_12345)</label>
-        <input type="text" id="target-id" placeholder="Oyuncu ID Yazın...">
-        <button class="btn-fetch" onclick="fetchUser()">OYUNCUYU GETİR</button>
+    <div id="admin-panel">
+        <div id="cheat-alert">🚨 ŞÜPHELİ HAREKET TESPİT EDİLDİ!</div>
+        <div class="header">
+            <h1>PATRON KONSOLU</h1>
+            <button class="btn btn-danger" style="width:auto" onclick="location.reload()">ÇIKIŞ</button>
+        </div>
 
-        <div id="user-data" class="user-info">
-            <p>Mevcut Jeton: <span id="curr-coins" style="color:#ffcc00">0</span></p>
-            <p>Mevcut Seviye: <span id="curr-level" style="color:#39FF14">0</span></p>
-            
-            <label>Yeni Jeton Miktarı</label>
-            <input type="number" id="new-coins">
-            
-            <label>Yeni Seviye</label>
-            <input type="number" id="new-level">
-            
-            <button class="btn-update" onclick="updateUser()">VERİLERİ GÜNCELLE</button>
+        <div class="grid-container">
+            <div class="card">
+                <h3>1. CANLI OYUNCULAR (<span id="user-count">0</span>)</h3>
+                <div class="list-box" id="user-list"></div>
+            </div>
+
+            <div class="card">
+                <h3>2 & 11. KELİME EKLE</h3>
+                <input type="text" id="w-val" placeholder="Kelime">
+                <input type="text" id="m-val" placeholder="Anlamı">
+                <button class="btn btn-neon" onclick="addLevel()">OYUNA GÖNDER</button>
+                <div class="list-box" id="level-list"></div>
+            </div>
+
+            <div class="card">
+                <h3>3, 7, 14. OYUNCU MÜDAHALE</h3>
+                <input type="text" id="target-id" placeholder="Oyuncu ID">
+                <button class="btn btn-neon" onclick="editUser('coins', 1000)">+1000 JETON</button>
+                <button class="btn btn-warn" onclick="editUser('level', 0)" style="margin-top:5px">SEVİYE SIFIRLA</button>
+                <button class="btn btn-danger" onclick="banPlayer()" style="margin-top:5px">BANLA</button>
+            </div>
+
+            <div class="card">
+                <h3>4, 9, 10. GLOBAL AYARLAR</h3>
+                <label>İpucu Fiyatı</label><input type="number" id="cfg-hint">
+                <label>BG Değişim Sıklığı</label><input type="number" id="cfg-bg-freq">
+                <button class="btn btn-neon" onclick="saveSettings()">AYARLARI KAYDET</button>
+            </div>
+
+            <div class="card">
+                <h3>5. DUYURU SİSTEMİ</h3>
+                <textarea id="ann-msg" placeholder="Mesajınız..."></textarea>
+                <button class="btn btn-neon" onclick="pushAnn()">DUYURUYU YAYINLA</button>
+            </div>
+
+            <div class="card">
+                <h3>6 & 15. SİSTEM</h3>
+                <button class="btn btn-warn" id="maint-btn" onclick="toggleMaint()">BAKIM MODU</button>
+                <input type="text" id="new-pass" placeholder="Yeni Panel Şifresi" style="margin-top:10px">
+                <button class="btn btn-danger" onclick="changePass()">ŞİFREYİ DEĞİŞTİR</button>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, update, remove, push } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
-        // Senin Firebase Bilgilerin
         const firebaseConfig = {
             apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
             authDomain: "wordzen-2e052.firebaseapp.com",
@@ -59,53 +103,58 @@
             messagingSenderId: "309225718128",
             appId: "1:309225718128:web:8a38717b4b6fc8f3a18fb5"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // ŞİFREYİ BURADAN DEĞİŞTİR KANKA
-        const ADMIN_PASSWORD = "Muhiy.1905342"; 
-
-        window.fetchUser = async () => {
-            const pass = document.getElementById('admin-pass').value;
-            const userId = document.getElementById('target-id').value;
-
-            if(pass !== ADMIN_PASSWORD) { alert("Şifre Yanlış!"); return; }
-            if(!userId) { alert("Lütfen bir ID girin!"); return; }
-
-            const userRef = ref(db, 'users/' + userId);
-            const snapshot = await get(userRef);
-
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                document.getElementById('curr-coins').innerText = data.coins;
-                document.getElementById('curr-level').innerText = data.level + 1;
-                document.getElementById('new-coins').value = data.coins;
-                document.getElementById('new-level').value = data.level;
-                document.getElementById('user-data').style.display = 'block';
-            } else {
-                alert("Böyle bir oyuncu bulunamadı!");
-                document.getElementById('user-data').style.display = 'none';
-            }
+        window.login = () => {
+            const val = document.getElementById('pass-input').value;
+            onValue(ref(db, 'admin/pass'), snap => {
+                if(val === (snap.val() || "şafak123")) {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('admin-panel').style.display = 'block';
+                    initDashboard();
+                } else document.getElementById('error-msg').style.display = 'block';
+            }, {onlyOnce:true});
         };
 
-        window.updateUser = async () => {
-            const pass = document.getElementById('admin-pass').value;
-            const userId = document.getElementById('target-id').value;
-            const nCoins = parseInt(document.getElementById('new-coins').value);
-            const nLevel = parseInt(document.getElementById('new-level').value);
-
-            if(pass !== ADMIN_PASSWORD) { alert("Şifre Yetkisi Yok!"); return; }
-
-            const userRef = ref(db, 'users/' + userId);
-            await update(userRef, {
-                coins: nCoins,
-                level: nLevel
+        function initDashboard() {
+            onValue(ref(db, 'users'), snap => {
+                const list = document.getElementById('user-list'); list.innerHTML = "";
+                let count = 0;
+                for(let id in snap.val()) {
+                    count++;
+                    list.innerHTML += `<div class="row"><span>${id}</span><span>Lvl: ${snap.val()[id].level}</span></div>`;
+                }
+                document.getElementById('user-count').innerText = count;
             });
+            onValue(ref(db, 'levels'), snap => {
+                const list = document.getElementById('level-list'); list.innerHTML = "";
+                for(let key in snap.val()) {
+                    list.innerHTML += `<div class="row"><span>${snap.val()[key].a}</span><button onclick="delLevel('${key}')">SİL</button></div>`;
+                }
+            });
+        }
 
-            alert("Kullanıcı başarıyla güncellendi!");
-            fetchUser(); // Verileri tazele
+        window.addLevel = () => {
+            const a = document.getElementById('w-val').value.toUpperCase();
+            const m = document.getElementById('m-val').value;
+            if(a && m) push(ref(db, 'levels'), { a, m });
         };
+        window.delLevel = id => remove(ref(db, 'levels/'+id));
+        window.editUser = (f, v) => {
+            const id = document.getElementById('target-id').value;
+            if(id) update(ref(db, `users/${id}`), { [f]: v });
+        };
+        window.saveSettings = () => {
+            update(ref(db, 'admin/config'), {
+                hint_price: document.getElementById('cfg-hint').value || 10,
+                bg_frequency: document.getElementById('cfg-bg-freq').value || 1
+            });
+            alert("Kaydedildi!");
+        };
+        window.toggleMaint = () => onValue(ref(db, 'admin/maintenance'), snap => set(ref(db, 'admin/maintenance'), !snap.val()), {onlyOnce:true});
+        window.changePass = () => set(ref(db, 'admin/pass'), document.getElementById('new-pass').value);
+        window.pushAnn = () => set(ref(db, 'admin/ann'), document.getElementById('ann-msg').value);
     </script>
 </body>
 </html>
