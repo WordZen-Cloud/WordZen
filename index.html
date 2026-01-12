@@ -3,107 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WordZen Pro</title>
+    <title>WordZen</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
-    
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
         html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #000; font-family: 'Montserrat', sans-serif; position: fixed; }
-        body { background-image: url('bg1.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; flex-direction: column; align-items: center; transition: background-image 1.5s ease-in-out; }
+        body { background-size: cover; background-position: center; transition: 1.5s; display: flex; flex-direction: column; align-items: center; }
 
-        /* UI PANELLERİ */
-        .info-panel { position: absolute; top: 40px; left: 20px; z-index: 1000; }
-        .info-item { background: rgba(0,0,0,0.8); color: #fff; padding: 8px 15px; border-radius: 12px; font-size: 0.7rem; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 5px; }
-        
-        .coin-panel { position: absolute; top: 40px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
-        #coin-display { background: rgba(0,0,0,0.8); padding: 8px 18px; border-radius: 20px; color: #ffcc00; font-size: 1.1rem; border: 1px solid #ffcc00; }
-        
-        .btn-round { width: 55px; height: 55px; border-radius: 50%; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.4s ease; border: 2px solid rgba(255,255,255,0.1); }
+        /* ÜST PANEL */
+        .ui-top { position: absolute; top: 40px; width: 90%; display: flex; justify-content: space-between; z-index: 100; }
+        .stats { background: rgba(0,0,0,0.8); padding: 10px 15px; border-radius: 15px; color: #fff; border: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; }
+        #coin-display { background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 20px; color: #ffcc00; border: 1px solid #ffcc00; font-size: 1.1rem; }
+
+        /* YAN BUTONLAR */
+        .side-btns { position: absolute; top: 120px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 100; }
+        .btn-round { width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); font-weight: 900; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.4); transition: 0.3s; }
         .btn-hint { background: #39FF14; color: #000; }
+        .btn-skip { background: #ff4b2b; color: #fff; }
+        .disabled { background: #444 !important; color: #888 !important; opacity: 0.6; cursor: default; border-color: transparent; }
 
-        /* GEÇ BUTONU ÖZEL DURUMLARI */
-        .btn-skip-main { background: #ff4b2b; color: #fff; }
-        .btn-skip-main.disabled { 
-            background: #444 !important; 
-            color: #888 !important; 
-            cursor: default; 
-            opacity: 0.6; 
-            box-shadow: none;
-        }
-
-        #game-area { width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 150px; }
-        #header-logo { font-size: 2rem; color: #fff; letter-spacing: 4px; margin-bottom: 50px; text-shadow: 0 0 15px #39FF14; }
-
-        #word-display { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; min-height: 60px; }
-        .letter-box { width: 45px; height: 55px; background: #fff; color: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; transition: 0.3s; text-transform: uppercase; }
+        /* OYUN ALANI */
+        #game-area { margin-top: 180px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        #word-display { display: flex; gap: 8px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
+        .letter-box { width: 45px; height: 55px; background: #fff; color: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; text-transform: uppercase; transition: 0.3s; }
         .hinted { background: #39FF14 !important; color: #000 !important; border: 2px solid #fff; }
-        .reveal { background: #ffcc00 !important; color: #000 !important; }
 
-        #clue-container { color:#fff; text-align:center; width:85%; padding:25px; background:rgba(0,0,0,0.7); border-radius:25px; border:2px solid rgba(57, 255, 20, 0.3); font-size: 1.1rem; line-height: 1.4; backdrop-filter: blur(5px); }
+        #clue-box { width: 85%; padding: 25px; background: rgba(0,0,0,0.75); color: #fff; border-radius: 25px; border: 2px solid rgba(57, 255, 20, 0.3); text-align: center; backdrop-filter: blur(10px); line-height: 1.4; font-size: 1rem; }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        /* MODALLAR */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-card { background: #111; padding: 30px; border-radius: 30px; border: 2px solid #39FF14; width: 85%; max-width: 320px; text-align: center; }
-        .btn-modal { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 900; cursor: pointer; margin-top: 15px; font-size: 1rem; }
-        .btn-confirm { background: #39FF14; color: #000; }
-        .btn-cancel { background: #333; color: #fff; }
+        .btn-modal { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 900; margin-top: 10px; cursor: pointer; font-size: 1rem; }
 
-        #hidden-input { position: absolute; top: -1000px; opacity: 0; }
+        #hidden-input { position: absolute; top: -200px; opacity: 0; }
         .shake { animation: shake 0.4s; background: #ff4b2b !important; color: #fff; }
-        @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }
+        @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
     </style>
 </head>
 <body>
 
-    <div class="info-panel">
-        <div class="info-item">BÖLÜM: <span id="lvl-txt" style="color:#39FF14">1</span></div>
-        <div class="info-item">ID: <span id="player-id">...</span></div>
+    <div class="ui-top">
+        <div class="stats">BÖLÜM: <span id="lvl-txt" style="color:#39FF14">1</span></div>
+        <div id="coin-display">🪙 <span id="coin-count">0</span></div>
     </div>
 
-    <div class="coin-panel">
-        <div id="coin-display">🪙 <span id="coin-count">0</span></div>
+    <div class="side-btns">
         <button class="btn-round btn-hint" onclick="useHint()">İPUCU<br>(10)</button>
-        <button id="main-skip-btn" class="btn-round btn-skip-main" onclick="openSkipModal()">GEÇ<br>(50)</button>
+        <button id="skip-btn" class="btn-round btn-skip" onclick="openSkipModal()">GEÇ<br>(50)</button>
     </div>
 
     <div id="game-area">
-        <div id="header-logo">WordZen</div>
         <div id="word-display"></div>
-        <div id="clue-container">
-            <div id="clue-text">Yükleniyor...</div>
-        </div>
+        <div id="clue-box">Yükleniyor...</div>
     </div>
 
-    <div id="skip-confirm-modal" class="modal-overlay">
-        <div class="modal-card" style="border-color: #ff4b2b;">
-            <h2 style="color:#ff4b2b">BÖLÜMÜ GEÇ?</h2>
-            <p style="color: #fff;">50 Jeton harcayarak bu seviyeyi atlamak istediğine emin misin?</p>
-            <button class="btn-modal btn-confirm" style="background:#ff4b2b; color:#fff;" onclick="confirmSkip()">EVET, GEÇ</button>
-            <button class="btn-modal btn-cancel" onclick="closeModal('skip-confirm-modal')">HAYIR, DEVAM</button>
-        </div>
-    </div>
-
-    <div id="win-modal" class="modal-overlay">
+    <div id="win-modal" class="modal">
         <div class="modal-card">
             <h2 style="color:#39FF14">TEBRİKLER!</h2>
-            <p style="color: #fff;">Kelimeyi bildin! +5 Jeton Kazandın.</p>
-            <button class="btn-modal btn-confirm" onclick="nextLevel()">SIRADAKİ BÖLÜM</button>
+            <p style="color:#fff">Doğru bildin kanka! +5 Jeton kazandın.</p>
+            <button class="btn-modal" style="background:#39FF14" onclick="nextLevel()">SIRADAKİ BÖLÜM</button>
         </div>
     </div>
 
-    <div id="gift-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2 style="color:#ffcc00">SÜRPRİZ!</h2>
-            <p style="color: #fff;">Geliştirici sana jeton gönderdi!</p>
-            <p id="gift-amount" style="font-size:2.5rem; color:#fff;">0</p>
-            <button class="btn-modal btn-confirm" onclick="closeModal('gift-modal')">EYVALLAH!</button>
+    <div id="skip-modal" class="modal">
+        <div class="modal-card" style="border-color:#ff4b2b">
+            <h2 style="color:#ff4b2b">BÖLÜMÜ GEÇ?</h2>
+            <p style="color:#fff">50 Jeton harcayarak bu kelimeyi atlamak istiyor musun?</p>
+            <button class="btn-modal" style="background:#ff4b2b; color:#fff" onclick="confirmSkip()">EVET, GEÇ</button>
+            <button class="btn-modal" style="background:#333; color:#fff" onclick="closeModal('skip-modal')">VAZGEÇ</button>
         </div>
     </div>
 
-    <input type="text" id="hidden-input" autocomplete="off" autofocus>
+    <div id="maint-modal" class="modal">
+        <div class="modal-card" style="border-color:#ffcc00">
+            <h2 style="color:#ffcc00">BAKIM VAR!</h2>
+            <p style="color:#fff">Patron sistemi güncelliyor. Birazdan buradayız!</p>
+        </div>
+    </div>
+
+    <input type="text" id="hidden-input" autofocus autocomplete="off">
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, get, push } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
@@ -119,12 +101,12 @@
         const db = getDatabase(app);
         let userId = localStorage.getItem('wordzen_id') || "UZ_" + Math.floor(Math.random()*90000+10000);
         localStorage.setItem('wordzen_id', userId);
-        
-        let coins = 0;
-        let currentLevel = 0;
-        let lastKnownCoins = -1;
 
-        const levels = [
+        let coins, level, currentWord = "", currentClue = "";
+        let hintPrice = 10, bgFreq = 1;
+        
+        // ESKİ KEMİK KADRO KELİMELER
+        const defaultLevels = [
                  {a: "AĞAÇ", m: "gövdesi odun olan bitki."}, {a: "ALTIN", m: "değerli sarı maden."}, {a: "ANNE", m: "Cennetin ayaklarının altında olduğu müjdelenen kişi."}, {a: "ARABA", m: "4 tekerlekli genellikle üstü kapalı olan taşıt."}, {a: "BALIK", m: "Nefes almak için suya muhtaç olan canlı."}, {a: "BEBEK", m: "Ailenin Yeni üyesi"}, {a: "BEYİN", m: "sinir sisteminin merkezi."}, {a: "BİLGİ", m: "Öğrenilen her şeyin toplamı, başarının anahtarı."}, {a: "BULUT", m: "Gökyüzünde görülen su damlacıklarından oluşan küme."}, {a: "ÇANTA", m: "İçine eşya konur elde ya da omuzda taşınır."}, {a: "ÇİÇEK", m: "Bitkilerin üreme organı olan kısım."}, {a: "ÇOCUK", m: "henüz büyüyememiş birey"}, {a: "DENİZ", m: "geniş tuzlu su kütlesi."}, {a: "DEFTER", m: "Bilgilerin düzenli şekilde tutulduğu kağıtlar bütünü."}, {a: "DOST", m: "Bağ kurulan samimi insan"}, {a: "DUVAR", m: "Mekanları sınırlandıran sabit yapı öğesi."}, {a: "ELMA", m: "Kırmızı yeşil ya da sarı olabilen tatlı bir meyve."}, {a: "EV", m: "Günlük hayatın geçtiği yaşam alanı."}, {a: "FENER", m: "pil ile çalışan aydınlatma aracı."}, {a: "GEMİ", m: "Uzun yolculuklar yapan büyük su taşıtı"}, {a: "GÖZ", m: "görme organı."}, {a: "GÜNEŞ", m: "dünyayı aydınlatan yıldız."}, {a: "HAVA", m: "Canlı yaşamı için gerekli gaz ."}, {a: "HAYAT", m: "Doğumdan ölüme kadar geçen zaman."}, {a: "IRMAK", m: "Denize dökülen büyük akarsu."}, {a: "IŞIK", m: "görmeyi sağlayan enerji."}, {a: "KALEM", m: "Düşünceleri yazıya dökmeye yarayan araç."}, {a: "KAPI", m: "Giriş çıkışı sağlayan açılıp kapanan bölüm."}, {a: "KEDİ", m: "Fare avlayan evcil canlı."}, {a: "KİTAP", m: "Bilgi veya hikâye içeren basılı eser."}, {a: "KÖPRÜ", m: "iki yeri bağlayan yapı."}, {a: "KUŞ", m: "uçabilen hayvan."}, {a: "MASA", m: "üzerinde ders çalıştığımız mobilya."}, {a: "OKUL", m: "eğitim verilen yer."}, {a: "OYUN", m: "eğlence amacıyla yapılan etkinlik."}, {a: "PENCERE", m: "Işık ve hava girişi sağlayan açıklık."},{a: "SU", m: "yaşam için gerekli sıvı."}, {a: "TOP", m: "yuvarlak oyun aracı."}, {a: "UYKU", m: "dinlenme hali."}, {a: "YAZI", m: "harflerle anlatım."}, {a: "YILDIZ", m: "Gökyüzünde kendi ışığını yayarak parlayan gök cismi."}, {a: "YOL", m: "Ulaşım ve geçiş için kullanılan alan."}, {a: "KUM", m: "Deniz ve çöllerde bulunan çok küçük taş taneleri."},{a: "MUTFAK", m: "yemek yapılan yer."}, {a: "BİBER", m: "acı veya tatlı sebze."}, {a: "SAKIZ", m: "Çiğnenen ve ağızda dağılan esnek madde."}, {a: "ÇATI", m: "Bir yapının üstünü örten ve koruyan bölüm."}, {a: "YASTIK", m: "Uyurken başın altına konulan yumuşak eşya."}, {a: "KİRPİ", m: "dikenli küçük hayvan."}, {a: "OYUNCAK", m: "Çocukların oynaması için yapılan eşya."}, {a: "ÇAY", m: "Demlenerek hazırlanan sıcak içecek."}, {a: "GÖL", m: "Karalarla çevrili durgun su birikintisi."}, {a: "KART", m: "Alışveriş ve ödeme yapmaya yarayan plastik kart."}, {a: "MÜZİK", m: "İnsanları etkileyen ve zevk veren ses düzeni."}, {a: "SİNEK", m: "Havada dolaşan ve vızıldayan küçük haşere."}, {a: "BALON", m: "İçi hava veya gazla doldurulan hafif oyuncak."}, {a: "BÜYÜKADA", m: "istanbulda bir ada."}, {a: "MAYMUN", m: "İnsana benzeyen hareketleri olan kuyruklu memeli."}, {a: "HAVA", m: "yaşam için gerekli gaz."}, {a: "KÖPEK", m: "Evleri koruyan ve eğitilebilen hayvan."}, {a: "ÇORAP", m: "Ayağı sıcak tutmak için giyilen giysi."}, {a: "BİLGİSAYAR", m: "Bilgi işleyen ve saklayan elektronik cihaz."}, {a: "FOTOĞRAF", m: "resim veya görüntü kaydı."}, {a: "MOTOR", m: "Hareket üretmek için enerjiyi mekanik güce çeviren makine."}, {a: "ŞEMSİYE", m: "Yağmur ve güneşten korunmak için kullanılan açılır kapanır araç."}, {a: "LAMBA", m: "ışık veren aydınlatma aracı."}, {a: "BİYOLOJİ", m: "canlıları inceleyen bilim."}, {a: "TAVŞAN", m: "Hızlı koşan ve uzun kulaklı memeli hayvan."}, {a: "ŞEHİR", m: "İnsanların yoğun olarak yaşadığı yerleşim alanı."}, {a: "KUYRUK", m: "Bazı hayvanların arka kısmında bulunan uzantı."}, {a: "YUMURTA", m: "tavuk ve kuşların ürünü."}, {a: "BİBERON", m: "Emzik ve ağızdan beslenmeyi sağlayan kaplı araç."}, {a: "ÇÖP", m: "atık madde."}, {a: "MUTLULUK", m: "iyi hissetme durumu."}, {a: "GÖZLÜK", m: "görmeyi kolaylaştıran araç."}, {a: "ÇİZİM", m: "Kalem veya fırça ile yapılan resim veya tasarım."}, {a: "AYAKKABI", m: "ayak koruyucu giysi."}, {a: "TÜRKİYE", m: "81 ili olan ülke."}, {a: "BİRLİK", m: "bir araya gelme durumu."}, {a: "ÇORBA", m: "Sulu ve yiyeceklerle yapılan sıcak yemek."}, {a: "KUMANDA", m: "cihazı uzaktan kontrol eden eşya."}, {a: "KÖY", m: "küçük yerleşim yeri."}, {a: "KUAFÖR", m: "saç kesimi ve bakım hizmeti veren yer."}, {a: "PİZZA", m: "Üzerine peynir, sos ve malzeme konularak fırında pişirilen yiyecek."}, {a: "ŞEKER", m: "Tatlı ve genellikle küçük katı yiyecek."}, {a: "BAYRAK", m: "ülke simgesi."}, {a: "MÜZE", m: "eserlerin sergilendiği yer."}, {a: "TÜNEL", m: "yer altından geçen yol."}, {a: "KİLİT", m: "Kapıları veya eşyaları güvenli hale getiren araç."}, {a: "BANDANA", m: "Baş veya boyuna bağlanan ince kumaş parça."}, {a: "KAFES", m: "Hayvanları içinde tutmak için yapılan tel veya demirden yapı."}, {a: "YAY", m: "Esnek malzeme ile enerji depolayan ve fırlatma aracı."}, {a: "ÇİMENTO", m: "Binalarda sağlamlık sağlamak için kullanılan toz malzeme"}, {a: "TRAFO", m: "Elektrik voltajını yükselten veya düşüren cihaz."}, {a: "FIRIN", m: "Isı ve ısıtma ile yiyecekleri pişiren mutfak aracı."}, {a: "RADYO", m: "ses ile bilgi veren cihaz."}, {a: "KABLO", m: "elektrik veya veri taşıyan tel."},      {a: "TELEFON", m: "Sesli ve yazılı iletişim kurmayı sağlayan cihaz."}, {a: "KASABA", m: "şehirden küçük yerleşim yeri."}, {a: "KAHVE", m: "Kavrulmuş çekirdeklerden hazırlanan sıcak içecek."}, {a: "BASKETBOL", m: "İki takımın topu potaya atarak sayı yaptığı spor oyunu."}, {a: "PASTANE", m: "tatlı ve yiyecek yapılan yer."}, {a: "TAVUK", m: "kümes hayvanı."}, {a: "KARTON", m: "kalın kağıt türü."}, {a: "GÜL", m: "çiçek türü."}, {a: "ADALET", m: "hak ve doğruluğa uygunluk."},
 {a: "AKIL", m: "düşünme ve anlama yeteneği."},
 {a: "ALARM", m: "uyarı veren sistem."},
@@ -240,106 +222,120 @@
 {a: "ÇİZİK", m: "Yüzeyde oluşan ince çizgi veya hasar."}
         ];
 
-        const userRef = ref(db, 'users/' + userId);
-        onValue(userRef, (snap) => {
-            const data = snap.val();
-            if(data) {
-                let diff = data.coins - lastKnownCoins;
-                if(lastKnownCoins !== -1 && diff > 0 && diff !== 5) {
-                    document.getElementById('gift-amount').innerText = "+" + diff;
-                    document.getElementById('gift-modal').style.display = 'flex';
-                }
-                coins = data.coins;
-                lastKnownCoins = coins;
-                currentLevel = data.level;
-                render();
-            } else {
-                set(userRef, { coins: 50, level: 0, id: userId });
-            }
+        let allLevels = [...defaultLevels];
+
+        // SİSTEM DİNLEYİCİLERİ
+        onValue(ref(db, 'admin/maintenance'), snap => {
+            document.getElementById('maint-modal').style.display = snap.val() ? 'flex' : 'none';
         });
+
+        onValue(ref(db, 'admin/config'), snap => {
+            const c = snap.val();
+            hintPrice = parseInt(c?.hint_price) || 10;
+            bgFreq = parseInt(c?.bg_frequency) || 1;
+        });
+
+        // KELİMELERİ VE OYUNCUYU YÜKLE
+        onValue(ref(db, 'levels'), snap => {
+            const dbLevels = snap.val() ? Object.values(snap.val()) : [];
+            allLevels = [...defaultLevels, ...dbLevels]; // Önce eskiler, sonra panelden gelenler
+            loadUserData();
+        });
+
+        function loadUserData() {
+            onValue(ref(db, 'users/' + userId), snap => {
+                const data = snap.val();
+                if(!data) {
+                    update(ref(db, 'users/' + userId), { coins: 50, level: 0, id: userId });
+                    coins = 50; level = 0;
+                } else {
+                    coins = data.coins;
+                    level = data.level;
+                }
+                render();
+            }, { onlyOnce: true });
+        }
 
         function render() {
             document.getElementById('coin-count').innerText = coins;
-            document.getElementById('lvl-txt').innerText = currentLevel + 1;
-            document.getElementById('player-id').innerText = userId;
+            document.getElementById('lvl-txt').innerText = level + 1;
             
-            // GEÇ BUTONUNUN RENGİNİ VE AKTİFLİĞİNİ AYARLA
-            const skipBtn = document.getElementById('main-skip-btn');
-            if(coins < 50) {
-                skipBtn.classList.add('disabled');
-            } else {
-                skipBtn.classList.remove('disabled');
-            }
+            // GEÇ Buton Rengi
+            const skipBtn = document.getElementById('skip-btn');
+            if(coins < 50) skipBtn.classList.add('disabled'); else skipBtn.classList.remove('disabled');
 
-            let bgNum = (currentLevel % 42) + 1;
+            // Arka Plan
+            let bgNum = Math.floor(level / bgFreq) % 42 + 1;
             document.body.style.backgroundImage = `url('bg${bgNum}.jpg')`;
 
-            const levelData = levels[currentLevel % levels.length];
-            document.getElementById('clue-text').innerText = levelData.m;
+            // Kelimeyi Ekrana Bas
+            const l = allLevels[level % allLevels.length];
+            currentWord = l.a;
+            currentClue = l.m;
+            document.getElementById('clue-box').innerText = currentClue;
             
-            const container = document.getElementById('word-display');
-            container.innerHTML = "";
-            levelData.a.split('').forEach(() => {
-                const b = document.createElement('div');
-                b.className = 'letter-box';
-                container.appendChild(b);
+            const display = document.getElementById('word-display');
+            display.innerHTML = "";
+            currentWord.split('').forEach((char, i) => {
+                const box = document.createElement('div');
+                box.className = 'letter-box';
+                box.setAttribute('data-index', i);
+                display.appendChild(box);
             });
+            document.getElementById('hidden-input').focus();
         }
 
+        // İPUCU SİSTEMİ (JETON YEME SORUNU ÇÖZÜLDÜ)
         window.useHint = () => {
-            if(coins < 10) { alert("Jetonun yetersiz!"); return; }
-            const levelData = levels[currentLevel % levels.length];
-            const boxes = document.querySelectorAll('.letter-box');
-            let availableIndexes = [];
-            boxes.forEach((box, i) => { if(box.innerText === "") availableIndexes.push(i); });
-
-            if(availableIndexes.length > 0) {
-                let randomIdx = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
-                boxes[randomIdx].innerText = levelData.a[randomIdx];
-                boxes[randomIdx].classList.add('hinted');
-                update(userRef, { coins: coins - 10 });
-                setTimeout(checkWin, 300);
+            if(coins < hintPrice) return alert("Jetonun kalmadı kanka!");
+            const boxes = Array.from(document.querySelectorAll('.letter-box')).filter(b => b.innerText === "");
+            
+            if(boxes.length > 0) {
+                const target = boxes[Math.floor(Math.random() * boxes.length)];
+                const idx = target.getAttribute('data-index');
+                target.innerText = currentWord[idx];
+                target.classList.add('hinted');
+                
+                coins -= hintPrice;
+                update(ref(db, 'users/' + userId), { coins });
+                document.getElementById('coin-count').innerText = coins;
+                checkWin();
             }
         };
 
-        window.openSkipModal = () => {
-            if(coins < 50) return; // Jeton yetersizse hiçbir şey yapma
-            document.getElementById('skip-confirm-modal').style.display = 'flex';
-        };
+        window.openSkipModal = () => { if(coins >= 50) document.getElementById('skip-modal').style.display = 'flex'; };
 
         window.confirmSkip = () => {
-            const levelData = levels[currentLevel % levels.length];
             const boxes = document.querySelectorAll('.letter-box');
-            boxes.forEach((box, i) => {
-                box.innerText = levelData.a[i];
-                box.classList.add('reveal');
-            });
-
+            boxes.forEach((b, i) => b.innerText = currentWord[i]); // Kelimeyi göster
+            
             setTimeout(() => {
-                closeModal('skip-confirm-modal');
-                update(userRef, { 
-                    coins: coins - 50, 
-                    level: currentLevel + 1 
-                });
+                closeModal('skip-modal');
+                update(ref(db, 'users/' + userId), { coins: coins - 50, level: level + 1 });
+                location.reload(); // Temiz sayfa, yeni bölüm
             }, 1200);
         };
 
+        // KLAVYE GİRİŞİ
         document.getElementById('hidden-input').oninput = (e) => {
             const val = e.target.value.toUpperCase().slice(-1);
             e.target.value = "";
             const boxes = document.querySelectorAll('.letter-box');
-            for (let b of boxes) { 
-                if (b.innerText === "") { b.innerText = val; checkWin(); break; } 
+            for (let b of boxes) {
+                if (b.innerText === "") {
+                    b.innerText = val;
+                    checkWin();
+                    break;
+                }
             }
         };
 
         function checkWin() {
-            const levelData = levels[currentLevel % levels.length];
-            let currentWord = "";
-            document.querySelectorAll('.letter-box').forEach(b => currentWord += b.innerText);
+            let typed = "";
+            document.querySelectorAll('.letter-box').forEach(b => typed += b.innerText);
             
-            if(currentWord.length === levelData.a.length) {
-                if(currentWord === levelData.a) {
+            if(typed.length === currentWord.length) {
+                if(typed === currentWord) {
                     setTimeout(() => { document.getElementById('win-modal').style.display = 'flex'; }, 300);
                 } else {
                     document.querySelectorAll('.letter-box').forEach(b => {
@@ -353,16 +349,16 @@
         }
 
         window.nextLevel = () => {
-            update(userRef, { coins: coins + 5, level: currentLevel + 1 });
-            closeModal('win-modal');
+            update(ref(db, 'users/' + userId), { coins: coins + 5, level: level + 1 });
+            location.reload();
         };
 
-        window.closeModal = (id) => {
-            document.getElementById(id).style.display = 'none';
+        window.closeModal = (id) => { 
+            document.getElementById(id).style.display = 'none'; 
             document.getElementById('hidden-input').focus();
         };
 
-        document.body.onclick = () => { document.getElementById('hidden-input').focus(); };
+        document.body.onclick = () => document.getElementById('hidden-input').focus();
     </script>
 </body>
 </html>
