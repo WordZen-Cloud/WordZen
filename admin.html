@@ -3,29 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WordZen | Patron Konsolu</title>
+    <title>WordZen | Şafak Vakti Paneli</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --neon: #39FF14; --danger: #ff4b2b; --bg: #0a0a0a; --card: #151515; --gray: #252525; }
         * { box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
         body { background: var(--bg); color: white; margin: 0; overflow-x: hidden; }
+
+        /* GİRİŞ EKRANI */
         #login-screen { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); }
         .login-card { background: var(--card); padding: 40px; border-radius: 30px; border: 2px solid var(--neon); box-shadow: 0 0 40px rgba(57, 255, 20, 0.2); text-align: center; width: 90%; max-width: 380px; }
+
+        /* PANEL ANA YAPI */
         #admin-panel { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--neon); padding-bottom: 15px; margin-bottom: 30px; }
         .header h1 { font-weight: 900; letter-spacing: 2px; color: var(--neon); margin: 0; font-size: 1.5rem; }
+
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-        .card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--gray); }
-        .card h3 { color: var(--neon); margin-top: 0; border-bottom: 1px solid var(--gray); padding-bottom: 10px; font-size: 0.85rem; }
+        .card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--gray); position: relative; }
+        .card h3 { color: var(--neon); margin-top: 0; border-bottom: 1px solid var(--gray); padding-bottom: 10px; font-size: 0.85rem; letter-spacing: 1px; }
+
         input, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--gray); background: #222; color: white; outline: none; }
-        .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 5px; }
         .btn-neon { background: var(--neon); color: black; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-warn { background: #ffcc00; color: black; }
-        .list-box { height: 180px; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; margin-top: 10px; }
+
+        /* BAKIM ŞALTERİ ÖZEL */
+        .maint-status { font-weight: 900; padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 10px; border: 2px solid transparent; }
+        .maint-on { background: rgba(255, 75, 43, 0.2); border-color: var(--danger); color: var(--danger); }
+        .maint-off { background: rgba(57, 255, 20, 0.1); border-color: var(--neon); color: var(--neon); }
+
+        .list-box { height: 180px; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; margin-top: 10px; border: 1px solid #1a1a1a; }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #111; font-size: 0.75rem; }
-        #cheat-alert { display: none; background: var(--danger); color: white; padding: 10px; border-radius: 10px; margin-bottom: 20px; text-align: center; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
     </style>
 </head>
 <body>
@@ -33,66 +43,60 @@
     <div id="login-screen">
         <div class="login-card">
             <h2 style="color:var(--neon)">WordZen</h2>
-            <input type="password" id="pass-input" placeholder="Muhiy.1905342">
-            <button class="btn btn-neon" onclick="login()">GİRİŞ YAP</button>
-            <p id="error-msg" style="color:var(--danger); display:none; font-size:12px;">Hatalı Şifre!</p>
+            <p style="color:#888; font-size:0.8rem">PATRON GİRİŞİ</p>
+            <input type="password" id="pass-input" placeholder="Şifre Gir...">
+            <button class="btn btn-neon" onclick="login()">SİSTEMİ AÇ</button>
         </div>
     </div>
 
     <div id="admin-panel">
-        <div id="cheat-alert">🚨 ŞÜPHELİ HAREKET TESPİT EDİLDİ!</div>
         <div class="header">
-            <h1>PATRON KONSOLU</h1>
-            <button class="btn btn-danger" style="width:auto" onclick="location.reload()">ÇIKIŞ</button>
+            <h1>ŞAFAK VAKTİ PANELİ</h1>
+            <button class="btn btn-danger" style="width:auto; padding:8px 20px" onclick="location.reload()">ÇIKIŞ</button>
         </div>
 
         <div class="grid-container">
             <div class="card">
-                <h3>1. CANLI OYUNCULAR (<span id="user-count">0</span>)</h3>
-                <div class="list-box" id="user-list"></div>
+                <h3>BAKIM MODU ŞALTERİ</h3>
+                <div id="maint-indicator" class="maint-status">DURUM ÇEKİLİYOR...</div>
+                <button id="maint-toggle-btn" class="btn btn-neon" onclick="toggleMaint()">DURUMU DEĞİŞTİR</button>
+                <p style="font-size:0.6rem; color:#666; margin-top:10px;">*Açarsan oyuncular oyuna giremez.</p>
             </div>
 
             <div class="card">
-                <h3>2 & 11. KELİME EKLE</h3>
-                <input type="text" id="w-val" placeholder="Kelime">
-                <input type="text" id="m-val" placeholder="Anlamı">
-                <button class="btn btn-neon" onclick="addLevel()">OYUNA GÖNDER</button>
+                <h3>OYUNCU MÜDAHALE (JETON/SEVİYE)</h3>
+                <input type="text" id="target-id" placeholder="Oyuncu ID'si">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+                    <button class="btn btn-neon" onclick="editUser('coins', 500, 'JETON EKLENDİ')">+500 JETON</button>
+                    <button class="btn btn-danger" onclick="editUser('coins', -500, 'JETON KESİLDİ')">-500 JETON</button>
+                    <button class="btn btn-warn" onclick="editUser('level', 1, 'SEVİYE ATLATILDI')">+1 LEVEL</button>
+                    <button class="btn btn-danger" onclick="editUser('level', -1, 'SEVİYE DÜŞÜRÜLDÜ')">-1 LEVEL</button>
+                </div>
+                <button class="btn btn-danger" style="width:100%; margin-top:10px" onclick="banPlayer()">OYUNCUYU BANLA</button>
+            </div>
+
+            <div class="card">
+                <h3>SİSTEM AYARLARI</h3>
+                <label style="font-size:0.7rem">İPUCU FİYATI:</label>
+                <input type="number" id="cfg-hint">
+                <label style="font-size:0.7rem">BG DEĞİŞİM SIKLIĞI:</label>
+                <input type="number" id="cfg-bg-freq">
+                <button class="btn btn-neon" onclick="saveSettings()">KAYDET</button>
+            </div>
+
+            <div class="card">
+                <h3>YENİ KELİME EKLE</h3>
+                <input type="text" id="w-val" placeholder="Kelime (Örn: ELMA)">
+                <input type="text" id="m-val" placeholder="İpucu">
+                <button class="btn btn-neon" onclick="addLevel()">LİSTEYE EKLE</button>
                 <div class="list-box" id="level-list"></div>
-            </div>
-
-            <div class="card">
-                <h3>3, 7, 14. OYUNCU MÜDAHALE</h3>
-                <input type="text" id="target-id" placeholder="Oyuncu ID">
-                <button class="btn btn-neon" onclick="editUser('coins', 1000)">+1000 JETON</button>
-                <button class="btn btn-warn" onclick="editUser('level', 0)" style="margin-top:5px">SEVİYE SIFIRLA</button>
-                <button class="btn btn-danger" onclick="banPlayer()" style="margin-top:5px">BANLA</button>
-            </div>
-
-            <div class="card">
-                <h3>4, 9, 10. GLOBAL AYARLAR</h3>
-                <label>İpucu Fiyatı</label><input type="number" id="cfg-hint">
-                <label>BG Değişim Sıklığı</label><input type="number" id="cfg-bg-freq">
-                <button class="btn btn-neon" onclick="saveSettings()">AYARLARI KAYDET</button>
-            </div>
-
-            <div class="card">
-                <h3>5. DUYURU SİSTEMİ</h3>
-                <textarea id="ann-msg" placeholder="Mesajınız..."></textarea>
-                <button class="btn btn-neon" onclick="pushAnn()">DUYURUYU YAYINLA</button>
-            </div>
-
-            <div class="card">
-                <h3>6 & 15. SİSTEM</h3>
-                <button class="btn btn-warn" id="maint-btn" onclick="toggleMaint()">BAKIM MODU</button>
-                <input type="text" id="new-pass" placeholder="Yeni Panel Şifresi" style="margin-top:10px">
-                <button class="btn btn-danger" onclick="changePass()">ŞİFREYİ DEĞİŞTİR</button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, update, remove, push } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, update, remove, push, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
@@ -108,53 +112,77 @@
 
         window.login = () => {
             const val = document.getElementById('pass-input').value;
-            onValue(ref(db, 'admin/pass'), snap => {
-                if(val === (snap.val() || "şafak123")) {
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('admin-panel').style.display = 'block';
+            onValue(ref(db, 'admin/pass'), s => {
+                if(val === (s.val() || "şafak123")) {
+                    document.getElementById('login-screen').style.display='none';
+                    document.getElementById('admin-panel').style.display='block';
                     initDashboard();
-                } else document.getElementById('error-msg').style.display = 'block';
+                } else alert("Şifre Yanlış!");
             }, {onlyOnce:true});
         };
 
         function initDashboard() {
-            onValue(ref(db, 'users'), snap => {
-                const list = document.getElementById('user-list'); list.innerHTML = "";
-                let count = 0;
-                for(let id in snap.val()) {
-                    count++;
-                    list.innerHTML += `<div class="row"><span>${id}</span><span>Lvl: ${snap.val()[id].level}</span></div>`;
+            // Bakım Modu Takibi
+            onValue(ref(db, 'admin/maintenance'), snap => {
+                const status = snap.val();
+                const ind = document.getElementById('maint-indicator');
+                const btn = document.getElementById('maint-toggle-btn');
+                if(status) {
+                    ind.innerText = "BAKIM MODU ŞU AN: AÇIK";
+                    ind.className = "maint-status maint-on";
+                    btn.innerText = "BAKIMI KAPAT";
+                    btn.className = "btn btn-danger";
+                } else {
+                    ind.innerText = "BAKIM MODU ŞU AN: KAPALI";
+                    ind.className = "maint-status maint-off";
+                    btn.innerText = "BAKIMI AÇ";
+                    btn.className = "btn btn-neon";
                 }
-                document.getElementById('user-count').innerText = count;
             });
+
+            // Seviyeleri Listele
             onValue(ref(db, 'levels'), snap => {
                 const list = document.getElementById('level-list'); list.innerHTML = "";
                 for(let key in snap.val()) {
-                    list.innerHTML += `<div class="row"><span>${snap.val()[key].a}</span><button onclick="delLevel('${key}')">SİL</button></div>`;
+                    list.innerHTML += `<div class="row"><span>${snap.val()[key].a}</span><button class="btn-danger" style="padding:2px 5px; font-size:10px" onclick="delLevel('${key}')">SİL</button></div>`;
                 }
             });
         }
+
+        window.toggleMaint = () => {
+            get(ref(db, 'admin/maintenance')).then(s => set(ref(db, 'admin/maintenance'), !s.val()));
+        };
+
+        window.editUser = (field, amount, msgType) => {
+            const id = document.getElementById('target-id').value;
+            if(!id) return alert("ID gir!");
+            get(ref(db, `users/${id}`)).then(s => {
+                if(s.exists()){
+                    let val = (s.val()[field] || 0) + amount;
+                    update(ref(db, `users/${id}`), { [field]: val < 0 ? 0 : val, lastUpdateMsg: msgType });
+                    alert("Tamamdır: " + msgType);
+                }
+            });
+        };
+
+        window.saveSettings = () => {
+            update(ref(db, 'admin/config'), {
+                hint_price: document.getElementById('cfg-hint').value || 10,
+                bg_frequency: document.getElementById('cfg-bg-freq').value || 1
+            });
+            alert("Ayarlar Güncellendi!");
+        };
 
         window.addLevel = () => {
             const a = document.getElementById('w-val').value.toUpperCase();
             const m = document.getElementById('m-val').value;
             if(a && m) push(ref(db, 'levels'), { a, m });
         };
-        window.delLevel = id => remove(ref(db, 'levels/'+id));
-        window.editUser = (f, v) => {
+        window.delLevel = k => remove(ref(db, 'levels/'+k));
+        window.banPlayer = () => {
             const id = document.getElementById('target-id').value;
-            if(id) update(ref(db, `users/${id}`), { [f]: v });
+            if(id) set(ref(db, `bans/${id}`), true);
         };
-        window.saveSettings = () => {
-            update(ref(db, 'admin/config'), {
-                hint_price: document.getElementById('cfg-hint').value || 10,
-                bg_frequency: document.getElementById('cfg-bg-freq').value || 1
-            });
-            alert("Kaydedildi!");
-        };
-        window.toggleMaint = () => onValue(ref(db, 'admin/maintenance'), snap => set(ref(db, 'admin/maintenance'), !snap.val()), {onlyOnce:true});
-        window.changePass = () => set(ref(db, 'admin/pass'), document.getElementById('new-pass').value);
-        window.pushAnn = () => set(ref(db, 'admin/ann'), document.getElementById('ann-msg').value);
     </script>
 </body>
 </html>
