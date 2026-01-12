@@ -3,160 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WordZen v2.0 | WordZen Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>WordZen | Master Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #39FF14; --danger: #ff4b2b; --bg: #0a0a0a; --card: #151515; --gray: #252525; --warn: #ffcc00; }
-        * { box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-        body { background: var(--bg); color: white; margin: 0; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--gray); position: relative; }
-        .card h3 { color: var(--neon); margin-top: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--gray); background: #222; color: white; }
-        .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 5px; }
-        .btn-neon { background: var(--neon); color: black; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-warn { background: var(--warn); color: black; }
-        .status-box { padding: 10px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 10px; border: 1px solid; }
-        .active { border-color: var(--neon); color: var(--neon); }
-        .passive { border-color: var(--danger); color: var(--danger); }
-        .list-scroll { height: 150px; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; font-size: 0.7rem; }
-        .row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #111; }
+        body { font-family: 'Montserrat', sans-serif; background: #050505; color: #fff; margin: 0; padding: 15px; }
+        .container { max-width: 700px; margin: 0 auto; }
+        h1 { color: #39FF14; text-align: center; font-size: 1.4rem; margin-bottom: 20px; }
+        
+        .card { background: #111; padding: 15px; border-radius: 12px; border: 1px solid #222; margin-bottom: 15px; }
+        .card-title { font-size: 0.8rem; color: #39FF14; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        input, textarea, select { width: 100%; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 10px; color: #fff; margin-bottom: 8px; font-family: inherit; font-size: 0.9rem; }
+        button { width: 100%; background: #39FF14; color: #000; border: none; padding: 10px; border-radius: 6px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        button:active { transform: scale(0.97); }
+        .btn-red { background: #ff4b2b; color: #fff; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .stat-box { background: #111; padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #222; }
+        .stat-val { font-size: 1.1rem; color: #39FF14; display: block; }
+        .stat-lbl { font-size: 0.6rem; color: #888; }
+        
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-bottom: 10px; }
+        .online { background: #39FF14; color: #000; }
+        .maintenance { background: #ff4b2b; color: #fff; }
     </style>
 </head>
 <body>
 
-    <h1 style="color:var(--neon); text-align:center; font-weight:900;">ŞAFAK VAKTİ v2.0</h1>
+<div class="container">
+    <h1>WORDZEN MASTER PANEL</h1>
 
-    <div class="grid">
-        <div class="card">
-            <h3>⚙️ SİSTEM VE BAKIM</h3>
-            <div id="maint-status" class="status-box">YÜKLENİYOR...</div>
-            <button class="btn btn-warn" onclick="toggleMaint()">BAKIM MODUNU DEĞİŞTİR</button>
-            <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-            <label style="font-size:0.7rem">İpucu Fiyatı:</label>
-            <input type="number" id="cfg-hint" placeholder="Örn: 10">
-            <label style="font-size:0.7rem">BG Değişim Sıklığı (Kaç Bölümde Bir):</label>
-            <input type="number" id="cfg-bg" placeholder="Örn: 5">
-            <button class="btn btn-neon" onclick="saveConfig()">AYARLARI KAYDET</button>
-        </div>
+    <div id="maintenance-status" class="status-badge online">SİSTEM ÇEVRİMİÇİ</div>
 
-        <div class="card">
-            <h3>📢 CANLI DUYURU & BAN</h3>
-            <input type="text" id="global-msg" placeholder="Tüm oyunculara mesaj gönder...">
-            <button class="btn btn-neon" onclick="sendMsg()">MESAJI YAYINLA</button>
-            <button class="btn btn-danger" style="margin-top:15px;" onclick="clearMsg()">MESAJI KALDIR</button>
-            <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-            <input type="text" id="ban-id" placeholder="Banlanacak Oyuncu ID">
-            <div style="display:flex; gap:5px;">
-                <button class="btn btn-danger" onclick="setBan(true)">BANLA</button>
-                <button class="btn btn-neon" onclick="setBan(false)">AÇ</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>👤 OYUNCU YÖNETİMİ</h3>
-            <input type="text" id="target-id" placeholder="Oyuncu ID">
-            <input type="number" id="target-amt" placeholder="Miktar">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-                <button class="btn btn-neon" onclick="modUser('coins', true)">JETON EKLE</button>
-                <button class="btn btn-danger" onclick="modUser('coins', false)">JETON SİL</button>
-                <button class="btn btn-warn" onclick="modUser('level', true)">LVL EKLE</button>
-                <button class="btn btn-danger" onclick="modUser('level', false)">LVL SİL</button>
-            </div>
-            <div id="user-list" class="list-scroll" style="margin-top:10px;"></div>
-        </div>
-
-        <div class="card">
-            <h3>📝 KELİME EKLE (BULUT)</h3>
-            <input type="text" id="w-val" placeholder="KELİME">
-            <input type="text" id="m-val" placeholder="İPUCU">
-            <button class="btn btn-neon" onclick="addWord()">LİSTEYE EKLE</button>
-            <div id="word-list" class="list-scroll" style="margin-top:10px;"></div>
-        </div>
+    <div class="grid-2" style="margin-bottom: 15px;">
+        <div class="stat-box"><span id="total-users" class="stat-val">0</span><span class="stat-lbl">OYUNCU</span></div>
+        <div class="stat-box"><span id="total-levels" class="stat-val">0</span><span class="stat-lbl">KELİME</span></div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, update, push, remove, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+    <div class="card">
+        <div class="card-title">Sistem & Duyuru</div>
+        <button id="maint-btn" class="btn-red" onclick="toggleMaintenance()" style="margin-bottom:10px;">BAKIM MODUNU AÇ</button>
+        <input type="text" id="announcement-text" placeholder="Duyuru mesajı yaz...">
+        <button onclick="updateAnnouncement()" style="background:#fff">DUYURUYU YAYINLA</button>
+    </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
-            authDomain: "wordzen-2e052.firebaseapp.com",
-            databaseURL: "https://wordzen-2e052-default-rtdb.firebaseio.com",
-            projectId: "wordzen-2e052",
-            storageBucket: "wordzen-2e052.firebasestorage.app",
-            messagingSenderId: "309225718128",
-            appId: "1:309225718128:web:8a38717b4b6fc8f3a18fb5"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+    <div class="card">
+        <div class="card-title">Oyuncu Düzenle</div>
+        <input type="text" id="target-user-id" placeholder="Oyuncu ID (Örn: UZ_123456)">
+        <div class="grid-2">
+            <input type="number" id="mod-coin" placeholder="Jeton (+/-)">
+            <input type="number" id="mod-level" placeholder="Seviye (+/-)">
+        </div>
+        <button onclick="managePlayer()">BİLGİLERİ GÜNCELLE</button>
+    </div>
 
-        // Canlı Veri Dinleme
-        onValue(ref(db, 'admin'), (s) => {
+    <div class="card">
+        <div class="card-title">Yeni Kelime Ekle</div>
+        <input type="text" id="word-input" placeholder="Kelime (Örn: TÜRKİYE)">
+        <textarea id="clue-input" placeholder="Anlamı/İpucu..." rows="2"></textarea>
+        <button onclick="addLevel()">KELİMEYİ SİSTEME EKLE</button>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Ayarlar & Görsellik</div>
+        <div class="grid-2">
+            <div><label class="stat-lbl">İPUCU 🪙</label><input type="number" id="hint-price"></div>
+            <div><label class="stat-lbl">ATLA 🪙</label><input type="number" id="skip-price"></div>
+        </div>
+        <div>
+            <label class="stat-lbl">ARKA PLAN DEĞİŞİM SIKLIĞI (Kaç bölümde bir?)</label>
+            <input type="number" id="bg-freq" placeholder="Örn: 5">
+        </div>
+        <button onclick="updateConfig()" style="background:#fff">TÜM AYARLARI KAYDET</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getDatabase, ref, set, push, get, update, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
+        authDomain: "wordzen-2e052.firebaseapp.com",
+        databaseURL: "https://wordzen-2e052-default-rtdb.firebaseio.com",
+        projectId: "wordzen-2e052",
+        storageBucket: "wordzen-2e052.firebasestorage.app",
+        messagingSenderId: "309225718128",
+        appId: "1:309225718128:web:8a38717b4b6fc8f3a18fb5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // CANLI VERİ TAKİBİ
+    onValue(ref(db, 'users'), s => document.getElementById('total-users').innerText = s.exists() ? Object.keys(s.val()).length : 0);
+    onValue(ref(db, 'levels'), s => document.getElementById('total-levels').innerText = s.exists() ? Object.keys(s.val()).length : 0);
+    
+    // BAKIM DURUMU TAKİBİ
+    onValue(ref(db, 'admin/config'), s => {
+        if(s.exists()){
             const data = s.val();
-            const m = document.getElementById('maint-status');
-            m.innerText = data.maintenance ? "BAKIM: AKTİF" : "BAKIM: KAPALI";
-            m.className = "status-box " + (data.maintenance ? "passive" : "active");
-            document.getElementById('cfg-hint').value = data.config?.hint_price || 10;
-            document.getElementById('cfg-bg').value = data.config?.bg_frequency || 1;
-        });
+            const isMaint = data.maintenance_mode;
+            const badge = document.getElementById('maintenance-status');
+            const btn = document.getElementById('maint-btn');
+            
+            badge.innerText = isMaint ? "BAKIM MODU AKTİF" : "SİSTEM ÇEVRİMİÇİ";
+            badge.className = isMaint ? "status-badge maintenance" : "status-badge online";
+            btn.innerText = isMaint ? "BAKIM MODUNU KAPAT" : "BAKIM MODUNU AÇ";
+            btn.setAttribute('data-state', isMaint);
 
-        onValue(ref(db, 'users'), (s) => {
-            const list = document.getElementById('user-list'); list.innerHTML = "";
-            const users = s.val();
-            for(let id in users) {
-                list.innerHTML += `<div class="row" onclick="document.getElementById('target-id').value='${id}'" style="cursor:pointer"><span>${id.slice(0,8)}</span><span>Lvl:${users[id].level} | 🪙${users[id].coins}</span></div>`;
-            }
-        });
+            document.getElementById('hint-price').value = data.hint_price || 10;
+            document.getElementById('skip-price').value = data.skip_price || 50;
+            document.getElementById('bg-freq').value = data.bg_frequency || 10;
+            document.getElementById('announcement-text').value = data.announcement || "";
+        }
+    });
 
-        onValue(ref(db, 'levels'), (s) => {
-            const list = document.getElementById('word-list'); list.innerHTML = "";
-            const words = s.val();
-            for(let k in words) {
-                list.innerHTML += `<div class="row"><span>${words[k].a}</span><button onclick="delWord('${k}')" style="background:red; color:white; border:none; font-size:8px;">SİL</button></div>`;
-            }
-        });
+    // BAKIM MODU AÇ/KAPAT
+    window.toggleMaintenance = async () => {
+        const btn = document.getElementById('maint-btn');
+        const currentState = btn.getAttribute('data-state') === 'true';
+        await update(ref(db, 'admin/config'), { maintenance_mode: !currentState });
+        alert("Bakım modu durumu değiştirildi!");
+    };
 
-        // Fonksiyonlar
-        window.toggleMaint = () => get(ref(db, 'admin/maintenance')).then(s => set(ref(db, 'admin/maintenance'), !s.val()));
+    // DUYURU GÜNCELLE
+    window.updateAnnouncement = async () => {
+        const txt = document.getElementById('announcement-text').value;
+        await update(ref(db, 'admin/config'), { announcement: txt });
+        alert("Duyuru yayınlandı!");
+    };
+
+    // OYUNCU YÖNETİMİ
+    window.managePlayer = async () => {
+        const uid = document.getElementById('target-user-id').value.trim();
+        const coinMod = parseInt(document.getElementById('mod-coin').value) || 0;
+        const levelMod = parseInt(document.getElementById('mod-level').value) || 0;
+
+        if(!uid) return alert("Oyuncu ID gir!");
+
+        const userRef = ref(db, 'users/' + uid);
+        const snap = await get(userRef);
         
-        window.saveConfig = () => {
-            update(ref(db, 'admin/config'), {
-                hint_price: parseInt(document.getElementById('cfg-hint').value),
-                bg_frequency: parseInt(document.getElementById('cfg-bg').value)
-            });
-            alert("Sistem ayarları güncellendi!");
-        };
+        if(snap.exists()){
+            const newData = {
+                coins: (snap.val().coins || 0) + coinMod,
+                level: (snap.val().level || 0) + levelMod
+            };
+            await update(userRef, newData);
+            alert("Oyuncu güncellendi!");
+        } else { alert("Oyuncu bulunamadı!"); }
+    };
 
-        window.sendMsg = () => set(ref(db, 'admin/announcement'), document.getElementById('global-msg').value);
-        window.clearMsg = () => set(ref(db, 'admin/announcement'), null);
+    // KELİME EKLE
+    window.addLevel = async () => {
+        const a = document.getElementById('word-input').value.trim().toUpperCase();
+        const m = document.getElementById('clue-input').value.trim();
+        if(a && m) {
+            await set(push(ref(db, 'levels')), { a, m });
+            document.getElementById('word-input').value = "";
+            document.getElementById('clue-input').value = "";
+            alert("Kelime eklendi!");
+        }
+    };
 
-        window.setBan = (val) => {
-            const id = document.getElementById('ban-id').value;
-            if(id) set(ref(db, 'bans/'+id), val);
-        };
-
-        window.modUser = (field, isAdd) => {
-            const id = document.getElementById('target-id').value;
-            let amt = parseInt(document.getElementById('target-amt').value);
-            if(!id || isNaN(amt)) return;
-            amt = isAdd ? amt : -amt;
-            get(ref(db, `users/${id}`)).then(s => {
-                if(s.exists()){
-                    let newVal = (s.val()[field] || 0) + amt;
-                    update(ref(db, `users/${id}`), { [field]: newVal < 0 ? 0 : newVal, lastUpdateMsg: "PATRON BİR ŞEYLER DEĞİŞTİRDİ!" });
-                }
-            });
-        };
-
-        window.addWord = () => {
-            const a = document.getElementById('w-val').value.toUpperCase();
-            const m = document.getElementById('m-val').value;
-            if(a && m) push(ref(db, 'levels'), { a, m });
-        };
-        window.delWord = (k) => remove(ref(db, 'levels/'+k));
-
-    </script>
+    // AYARLARI GÜNCELLE
+    window.updateConfig = async () => {
+        await update(ref(db, 'admin/config'), {
+            hint_price: parseInt(document.getElementById('hint-price').value),
+            skip_price: parseInt(document.getElementById('skip-price').value),
+            bg_frequency: parseInt(document.getElementById('bg-freq').value)
+        });
+        alert("Ayarlar kaydedildi!");
+    };
+</script>
 </body>
 </html>
