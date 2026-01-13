@@ -1,76 +1,137 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WordZen</title>
+    <title>WordZen Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #000; font-family: 'Montserrat', sans-serif; position: fixed; }
-        body { background-size: cover; background-position: center; transition: background-image 0.8s ease-in-out; display: flex; flex-direction: column; align-items: center; }
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Montserrat', sans-serif; }
+        body { background-size: cover; background-position: center; display: flex; flex-direction: column; align-items: center; transition: background 1.2s ease; }
 
-        #maint-screen { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff; padding: 20px; }
-        #announcement-bar { position: absolute; top: 0; width: 100%; background: rgba(57, 255, 20, 0.9); color: #000; font-size: 0.7rem; padding: 3px 0; z-index: 200; display: none; overflow: hidden; }
+        /* SPLASH SCREEN */
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.8s; }
+        .splash-logo { font-size: 2.2rem; color: #fff; text-shadow: 0 0 20px #39FF14; animation: pulse 2s infinite; }
+        .loader-bar { width: 160px; height: 3px; background: #222; margin-top: 20px; border-radius: 10px; overflow: hidden; }
+        #progress { width: 0%; height: 100%; background: #39FF14; transition: 0.3s; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .fade-out { opacity: 0; visibility: hidden; }
 
-        .ui-top { position: absolute; top: 45px; width: 92%; display: flex; justify-content: space-between; z-index: 100; }
-        .stats { background: rgba(0,0,0,0.7); padding: 6px 10px; border-radius: 10px; color: #fff; font-size: 0.65rem; border: 1px solid #39FF14; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 4px; }
+        /* UI PANELLERİ */
+        .info-panel { position: absolute; top: 20px; left: 20px; z-index: 1000; }
+        .info-item { background: rgba(0,0,0,0.8); color: #fff; padding: 8px 15px; border-radius: 12px; font-size: 0.65rem; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 5px; }
 
-        #game-area { margin-top: 180px; width: 100%; display: flex; flex-direction: column; align-items: center; }
-        #word-display { display: flex; gap: 6px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; padding: 0 15px; }
-        .letter-box { width: 38px; height: 48px; background: #fff; color: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; text-transform: uppercase; box-shadow: 0 4px 0 #999; }
-        #clue-box { width: 88%; padding: 20px; background: rgba(0,0,0,0.6); color: #fff; border-radius: 20px; border: 1px solid #39FF14; text-align: center; font-size: 0.9rem; backdrop-filter: blur(15px); }
+        .coin-panel { position: absolute; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+        #coin-display { background: rgba(0,0,0,0.8); padding: 8px 18px; border-radius: 20px; color: #ffcc00; font-size: 1rem; border: 1px solid #ffcc00; margin-bottom: 5px; }
 
-        .side-btns { position: absolute; top: 130px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 100; }
-        .btn-round { width: 48px; height: 48px; border-radius: 50%; border: none; font-weight: 900; font-size: 0.55rem; cursor: pointer; box-shadow: 0 4px 15px #000; color: #fff; }
+        .btn-round { width: 52px; height: 52px; border-radius: 50%; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
+        .btn-skip { background: #ff4b2b; color: #fff; }
+        .btn-hint { background: #39FF14; color: #000; margin-top: 5px; }
 
-        #win-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .win-content { background: #111; padding: 30px; border-radius: 25px; border: 2px solid #39FF14; text-align: center; width: 80%; }
-        .next-btn { margin-top: 15px; padding: 12px; background: #39FF14; color: #000; border: none; border-radius: 12px; font-weight: 900; width: 100%; }
+        #game-area { width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 120px; }
+        #header-logo { font-size: 1.8rem; color: #fff; letter-spacing: 3px; margin-bottom: 40px; cursor: pointer; text-shadow: 0 0 10px #39FF14; }
 
-        #hidden-input { position: absolute; top: -100px; opacity: 0; }
+        #word-display { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 35px; min-height: 55px; }
+        .letter-box { width: 42px; height: 52px; background: #fff; color: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        /* MODALLAR */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 9000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-card { background: #111; padding: 25px; border-radius: 30px; border: 1px solid #39FF14; width: 300px; text-align: center; animation: modalPop 0.3s ease-out; }
+        @keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .modal-card input { width: 100%; background: #000; border: 1px solid #222; color: #fff; padding: 12px; border-radius: 12px; margin-bottom: 10px; text-align: center; font-family: sans-serif; }
+        .btn-modal { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 900; cursor: pointer; margin-top: 10px; font-size: 1rem; }
+        .btn-confirm { background: #39FF14; color: #000; }
+        .btn-cancel { background: transparent; color: #555; }
+
+        /* HEDİYE PANELİ ÖZEL STİL */
+        .gift-card { border: 2px solid #ffcc00 !important; box-shadow: 0 0 30px rgba(255, 204, 0, 0.3); }
+        #gift-amount { font-size: 2.2rem; color: #ffcc00; display: block; margin: 10px 0; text-shadow: 0 0 10px rgba(255,204,0,0.5); }
+
+        #hidden-input { position: absolute; top: -1000px; opacity: 0; }
+        .shake { animation: shake 0.4s; background: #ff4b2b !important; color: #fff; }
+        @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }
     </style>
 </head>
 <body>
 
-    <div id="maint-screen">
-        <h1 style="color: #39FF14;">BAKIMDAYIZ</h1>
-        <p>WordZen güncelleniyor. Az sonra tekrar gel kanka!</p>
+    <div id="splash-screen">
+        <div class="splash-logo">WordZen</div>
+        <div class="loader-bar"><div id="progress"></div></div>
     </div>
 
-    <div id="announcement-bar"><marquee id="ann-text"></marquee></div>
+    <audio id="bg-music" src="fon-muzigi.mp3" loop></audio>
+    <audio id="snd-correct" src="dogru.mp3"></audio>
+    <audio id="snd-wrong" src="yanlis.mp3"></audio>
+    <audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 
-    <audio id="music-fon" loop src="fon-muzigi.mp3"></audio>
-    <audio id="sound-dogru" src="dogru.mp3"></audio>
-    <audio id="sound-yanlis" src="yanlis.mp3"></audio>
-
-    <div class="ui-top">
-        <div class="stats">BÖLÜM: <span id="lvl-txt" style="color:#39FF14">1</span></div>
-        <div class="stats">🪙 <span id="coin-count">0</span></div>
+    <div class="info-panel">
+        <div class="info-item">BÖLÜM: <span id="lvl-txt" style="color:#39FF14">1</span></div>
+        <div class="info-item">ID: <span id="player-id">...</span></div>
     </div>
 
-    <div class="side-btns">
-        <button class="btn-round" style="background:#39FF14; color:#000" onclick="useHint()">İPUCU</button>
-        <button class="btn-round" style="background:#ff4b2b" onclick="skipLevel()">ATLA</button>
+    <div class="coin-panel">
+        <div id="coin-display">🪙 <span id="coin-count">...</span></div>
+        <button class="btn-round btn-skip" onclick="askSkipLevel()">PAS<br>(25)</button>
+        <button class="btn-round btn-hint" onclick="useHint()">İPUCU<br>(10)</button>
     </div>
 
     <div id="game-area">
+        <div id="header-logo" onclick="logoTrigger()">WordZen</div>
         <div id="word-display"></div>
-        <div id="clue-box">Yükleniyor...</div>
-    </div>
-
-    <div id="win-modal">
-        <div class="win-content">
-            <h2 style="color:#39FF14; margin:0;">TEBRİKLER!</h2>
-            <button class="next-btn" onclick="nextLevel()">DEVAM ET</button>
+        <div id="clue-container" style="color:#fff; text-align:center; width:85%; padding:25px; background:rgba(255,255,255,0.04); border-radius:25px; border:1px solid rgba(255,255,255,0.08);">
+            <div id="clue-text">...</div>
         </div>
     </div>
 
-    <input type="text" id="hidden-input" autofocus autocomplete="off">
+    <div id="gift-modal" class="modal-overlay">
+        <div class="modal-card gift-card">
+            <div style="font-size: 4.5rem; margin-bottom: 10px;">🎁</div>
+            <h2 style="color:#ffcc00; margin:0; letter-spacing: 1px;">SÜRPRİZ!</h2>
+            <p style="color:#eee; font-size:0.9rem; line-height:1.5; margin-top:15px;">
+                Oyun geliştiricisi tarafından size
+                <span id="gift-amount">0</span>
+                Jeton hediye edildi!
+            </p>
+            <button class="btn-modal btn-confirm" style="background:#ffcc00; color:#000; margin-top:15px;" onclick="closeModal('gift-modal')">EYVALLAH!</button>
+        </div>
+    </div>
+
+    <div id="admin-panel" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="color:#39FF14">YÖNETİM</h2>
+            <input type="password" id="admin-pass" placeholder="ŞİFRE">
+            <input type="text" id="target-id" placeholder="HEDEF OYUNCU ID">
+            <input type="number" id="jeton-miktar" placeholder="MİKTAR">
+            <button class="btn-modal btn-confirm" onclick="processAdmin()">GÖNDER</button>
+            <button class="btn-modal btn-cancel" onclick="closeModal('admin-panel')">KAPAT</button>
+        </div>
+    </div>
+
+    <div id="skip-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="color:#ff4b2b">ATLANSIN MI?</h2>
+            <p style="color:#ccc; font-size:0.85rem;">25 Jeton karşılığında bu kelimeyi geçmek istiyor musunuz?</p>
+            <button class="btn-modal btn-confirm" onclick="confirmSkip()">EVET, GEÇ</button>
+            <button class="btn-modal btn-cancel" onclick="closeModal('skip-modal')">HAYIR</button>
+        </div>
+    </div>
+
+    <div id="win-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="color:#fff">BİLDİN!</h2>
+            <p style="color:#39FF14">+5 Jeton Hesabında</p>
+            <button class="btn-modal btn-confirm" onclick="nextLevel()">SONRAKİ</button>
+        </div>
+    </div>
+
+    <input type="text" id="hidden-input" autocomplete="off">
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getDatabase, ref, update, get, set, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, update, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
@@ -84,44 +145,18 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const fonMuzigi = document.getElementById('music-fon');
-        let userId = localStorage.getItem('wordzen_id') || "UZ_" + Math.floor(Math.random()*900000+100000);
+
+        let userId = localStorage.getItem('wordzen_id') || "USER_" + Math.floor(Math.random()*90000+10000);
         localStorage.setItem('wordzen_id', userId);
 
-        let coins = 50, currentLevel = 0, maxUnlockedLevel = 0, levelsData = [];
-        let hintPrice = 10, skipPrice = 50, bgFreq = 10;
+        let coins = 0;
+        let currentLevel = 0;
+        let logoCount = 0;
+        let lastKnownCoins = 0;
 
-        const stopAudio = () => fonMuzigi.pause();
-        const startAudio = () => { if(fonMuzigi.paused) fonMuzigi.play().catch(()=>{}); };
-        document.addEventListener("visibilitychange", () => document.hidden ? stopAudio() : startAudio());
-
-        onValue(ref(db, 'admin/config'), (s) => {
-            if(s.exists()){
-                const cfg = s.val();
-                document.getElementById('maint-screen').style.display = cfg.maintenance_mode ? 'flex' : 'none';
-                hintPrice = cfg.hint_price || 10;
-                skipPrice = cfg.skip_price || 50;
-                bgFreq = cfg.bg_frequency || 10;
-                if(cfg.announcement) {
-                    document.getElementById('announcement-bar').style.display = 'block';
-                    document.getElementById('ann-text').innerText = cfg.announcement;
-                } else { document.getElementById('announcement-bar').style.display = 'none'; }
-                render();
-            }
-        });
-
-        onValue(ref(db, 'users/' + userId), (s) => {
-            if(s.exists()){
-                coins = s.val().coins;
-                maxUnlockedLevel = s.val().level;
-                if(currentLevel < maxUnlockedLevel) currentLevel = maxUnlockedLevel;
-                render();
-            } else { set(ref(db, 'users/' + userId), {id: userId, coins: 50, level: 0}); }
-        });
-
-        async function startApp() {
-            const varsayilanlar = [
-                      {a: "AĞAÇ", m: "gövdesi odun olan bitki."}, {a: "ALTIN", m: "değerli sarı maden."}, {a: "ANNE", m: "Cennetin ayaklarının altında olduğu müjdelenen kişi."}, {a: "ARABA", m: "4 tekerlekli genellikle üstü kapalı olan taşıt."}, {a: "BALIK", m: "Nefes almak için suya muhtaç olan canlı."}, {a: "BEBEK", m: "Ailenin Yeni üyesi"}, {a: "BEYİN", m: "sinir sisteminin merkezi."}, {a: "BİLGİ", m: "Öğrenilen her şeyin toplamı, başarının anahtarı."}, {a: "BULUT", m: "Gökyüzünde görülen su damlacıklarından oluşan küme."}, {a: "ÇANTA", m: "İçine eşya konur elde ya da omuzda taşınır."}, {a: "ÇİÇEK", m: "Bitkilerin üreme organı olan kısım."}, {a: "ÇOCUK", m: "henüz büyüyememiş birey"}, {a: "DENİZ", m: "geniş tuzlu su kütlesi."}, {a: "DEFTER", m: "Bilgilerin düzenli şekilde tutulduğu kağıtlar bütünü."}, {a: "DOST", m: "Bağ kurulan samimi insan"}, {a: "DUVAR", m: "Mekanları sınırlandıran sabit yapı öğesi."}, {a: "ELMA", m: "Kırmızı yeşil ya da sarı olabilen tatlı bir meyve."}, {a: "EV", m: "Günlük hayatın geçtiği yaşam alanı."}, {a: "FENER", m: "pil ile çalışan aydınlatma aracı."}, {a: "GEMİ", m: "Uzun yolculuklar yapan büyük su taşıtı"}, {a: "GÖZ", m: "görme organı."}, {a: "GÜNEŞ", m: "dünyayı aydınlatan yıldız."}, {a: "HAVA", m: "Canlı yaşamı için gerekli gaz ."}, {a: "HAYAT", m: "Doğumdan ölüme kadar geçen zaman."}, {a: "IRMAK", m: "Denize dökülen büyük akarsu."}, {a: "IŞIK", m: "görmeyi sağlayan enerji."}, {a: "KALEM", m: "Düşünceleri yazıya dökmeye yarayan araç."}, {a: "KAPI", m: "Giriş çıkışı sağlayan açılıp kapanan bölüm."}, {a: "KEDİ", m: "Fare avlayan evcil canlı."}, {a: "KİTAP", m: "Bilgi veya hikâye içeren basılı eser."}, {a: "KÖPRÜ", m: "iki yeri bağlayan yapı."}, {a: "KUŞ", m: "uçabilen hayvan."}, {a: "MASA", m: "üzerinde ders çalıştığımız mobilya."}, {a: "OKUL", m: "eğitim verilen yer."}, {a: "OYUN", m: "eğlence amacıyla yapılan etkinlik."}, {a: "PENCERE", m: "Işık ve hava girişi sağlayan açıklık."},{a: "SU", m: "yaşam için gerekli sıvı."}, {a: "TOP", m: "yuvarlak oyun aracı."}, {a: "UYKU", m: "dinlenme hali."}, {a: "YAZI", m: "harflerle anlatım."}, {a: "YILDIZ", m: "Gökyüzünde kendi ışığını yayarak parlayan gök cismi."}, {a: "YOL", m: "Ulaşım ve geçiş için kullanılan alan."}, {a: "KUM", m: "Deniz ve çöllerde bulunan çok küçük taş taneleri."},{a: "MUTFAK", m: "yemek yapılan yer."}, {a: "BİBER", m: "acı veya tatlı sebze."}, {a: "SAKIZ", m: "Çiğnenen ve ağızda dağılan esnek madde."}, {a: "ÇATI", m: "Bir yapının üstünü örten ve koruyan bölüm."}, {a: "YASTIK", m: "Uyurken başın altına konulan yumuşak eşya."}, {a: "KİRPİ", m: "dikenli küçük hayvan."}, {a: "OYUNCAK", m: "Çocukların oynaması için yapılan eşya."}, {a: "ÇAY", m: "Demlenerek hazırlanan sıcak içecek."}, {a: "GÖL", m: "Karalarla çevrili durgun su birikintisi."}, {a: "KART", m: "Alışveriş ve ödeme yapmaya yarayan plastik kart."}, {a: "MÜZİK", m: "İnsanları etkileyen ve zevk veren ses düzeni."}, {a: "SİNEK", m: "Havada dolaşan ve vızıldayan küçük haşere."}, {a: "BALON", m: "İçi hava veya gazla doldurulan hafif oyuncak."}, {a: "BÜYÜKADA", m: "istanbulda bir ada."}, {a: "MAYMUN", m: "İnsana benzeyen hareketleri olan kuyruklu memeli."}, {a: "HAVA", m: "yaşam için gerekli gaz."}, {a: "KÖPEK", m: "Evleri koruyan ve eğitilebilen hayvan."}, {a: "ÇORAP", m: "Ayağı sıcak tutmak için giyilen giysi."}, {a: "BİLGİSAYAR", m: "Bilgi işleyen ve saklayan elektronik cihaz."}, {a: "FOTOĞRAF", m: "resim veya görüntü kaydı."}, {a: "MOTOR", m: "Hareket üretmek için enerjiyi mekanik güce çeviren makine."}, {a: "ŞEMSİYE", m: "Yağmur ve güneşten korunmak için kullanılan açılır kapanır araç."}, {a: "LAMBA", m: "ışık veren aydınlatma aracı."}, {a: "BİYOLOJİ", m: "canlıları inceleyen bilim."}, {a: "TAVŞAN", m: "Hızlı koşan ve uzun kulaklı memeli hayvan."}, {a: "ŞEHİR", m: "İnsanların yoğun olarak yaşadığı yerleşim alanı."}, {a: "KUYRUK", m: "Bazı hayvanların arka kısmında bulunan uzantı."}, {a: "YUMURTA", m: "tavuk ve kuşların ürünü."}, {a: "BİBERON", m: "Emzik ve ağızdan beslenmeyi sağlayan kaplı araç."}, {a: "ÇÖP", m: "atık madde."}, {a: "MUTLULUK", m: "iyi hissetme durumu."}, {a: "GÖZLÜK", m: "görmeyi kolaylaştıran araç."}, {a: "ÇİZİM", m: "Kalem veya fırça ile yapılan resim veya tasarım."}, {a: "AYAKKABI", m: "ayak koruyucu giysi."}, {a: "TÜRKİYE", m: "81 ili olan ülke."}, {a: "BİRLİK", m: "bir araya gelme durumu."}, {a: "ÇORBA", m: "Sulu ve yiyeceklerle yapılan sıcak yemek."}, {a: "KUMANDA", m: "cihazı uzaktan kontrol eden eşya."}, {a: "KÖY", m: "küçük yerleşim yeri."}, {a: "KUAFÖR", m: "saç kesimi ve bakım hizmeti veren yer."}, {a: "PİZZA", m: "Üzerine peynir, sos ve malzeme konularak fırında pişirilen yiyecek."}, {a: "ŞEKER", m: "Tatlı ve genellikle küçük katı yiyecek."}, {a: "BAYRAK", m: "ülke simgesi."}, {a: "MÜZE", m: "eserlerin sergilendiği yer."}, {a: "TÜNEL", m: "yer altından geçen yol."}, {a: "KİLİT", m: "Kapıları veya eşyaları güvenli hale getiren araç."}, {a: "BANDANA", m: "Baş veya boyuna bağlanan ince kumaş parça."}, {a: "KAFES", m: "Hayvanları içinde tutmak için yapılan tel veya demirden yapı."}, {a: "YAY", m: "Esnek malzeme ile enerji depolayan ve fırlatma aracı."}, {a: "ÇİMENTO", m: "Binalarda sağlamlık sağlamak için kullanılan toz malzeme"}, {a: "TRAFO", m: "Elektrik voltajını yükselten veya düşüren cihaz."}, {a: "FIRIN", m: "Isı ve ısıtma ile yiyecekleri pişiren mutfak aracı."}, {a: "RADYO", m: "ses ile bilgi veren cihaz."}, {a: "KABLO", m: "elektrik veya veri taşıyan tel."},      {a: "TELEFON", m: "Sesli ve yazılı iletişim kurmayı sağlayan cihaz."}, {a: "KASABA", m: "şehirden küçük yerleşim yeri."}, {a: "KAHVE", m: "Kavrulmuş çekirdeklerden hazırlanan sıcak içecek."}, {a: "BASKETBOL", m: "İki takımın topu potaya atarak sayı yaptığı spor oyunu."}, {a: "PASTANE", m: "tatlı ve yiyecek yapılan yer."}, {a: "TAVUK", m: "kümes hayvanı."}, {a: "KARTON", m: "kalın kağıt türü."}, {a: "GÜL", m: "çiçek türü."}, {a: "ADALET", m: "hak ve doğruluğa uygunluk."},
+        const levels = [
+            // Buraya istediğin kadar kelime ekle...
+            {a: "AĞAÇ", m: "gövdesi odun olan bitki."}, {a: "ALTIN", m: "değerli sarı maden."}, {a: "ANNE", m: "Cennetin ayaklarının altında olduğu müjdelenen kişi."}, {a: "ARABA", m: "4 tekerlekli genellikle üstü kapalı olan taşıt."}, {a: "BALIK", m: "Nefes almak için suya muhtaç olan canlı."}, {a: "BEBEK", m: "Ailenin Yeni üyesi"}, {a: "BEYİN", m: "sinir sisteminin merkezi."}, {a: "BİLGİ", m: "Öğrenilen her şeyin toplamı, başarının anahtarı."}, {a: "BULUT", m: "Gökyüzünde görülen su damlacıklarından oluşan küme."}, {a: "ÇANTA", m: "İçine eşya konur elde ya da omuzda taşınır."}, {a: "ÇİÇEK", m: "Bitkilerin üreme organı olan kısım."}, {a: "ÇOCUK", m: "henüz büyüyememiş birey"}, {a: "DENİZ", m: "geniş tuzlu su kütlesi."}, {a: "DEFTER", m: "Bilgilerin düzenli şekilde tutulduğu kağıtlar bütünü."}, {a: "DOST", m: "Bağ kurulan samimi insan"}, {a: "DUVAR", m: "Mekanları sınırlandıran sabit yapı öğesi."}, {a: "ELMA", m: "Kırmızı yeşil ya da sarı olabilen tatlı bir meyve."}, {a: "EV", m: "Günlük hayatın geçtiği yaşam alanı."}, {a: "FENER", m: "pil ile çalışan aydınlatma aracı."}, {a: "GEMİ", m: "Uzun yolculuklar yapan büyük su taşıtı"}, {a: "GÖZ", m: "görme organı."}, {a: "GÜNEŞ", m: "dünyayı aydınlatan yıldız."}, {a: "HAVA", m: "Canlı yaşamı için gerekli gaz ."}, {a: "HAYAT", m: "Doğumdan ölüme kadar geçen zaman."}, {a: "IRMAK", m: "Denize dökülen büyük akarsu."}, {a: "IŞIK", m: "görmeyi sağlayan enerji."}, {a: "KALEM", m: "Düşünceleri yazıya dökmeye yarayan araç."}, {a: "KAPI", m: "Giriş çıkışı sağlayan açılıp kapanan bölüm."}, {a: "KEDİ", m: "Fare avlayan evcil canlı."}, {a: "KİTAP", m: "Bilgi veya hikâye içeren basılı eser."}, {a: "KÖPRÜ", m: "iki yeri bağlayan yapı."}, {a: "KUŞ", m: "uçabilen hayvan."}, {a: "MASA", m: "üzerinde ders çalıştığımız mobilya."}, {a: "OKUL", m: "eğitim verilen yer."}, {a: "OYUN", m: "eğlence amacıyla yapılan etkinlik."}, {a: "PENCERE", m: "Işık ve hava girişi sağlayan açıklık."},{a: "SU", m: "yaşam için gerekli sıvı."}, {a: "TOP", m: "yuvarlak oyun aracı."}, {a: "UYKU", m: "dinlenme hali."}, {a: "YAZI", m: "harflerle anlatım."}, {a: "YILDIZ", m: "Gökyüzünde kendi ışığını yayarak parlayan gök cismi."}, {a: "YOL", m: "Ulaşım ve geçiş için kullanılan alan."}, {a: "KUM", m: "Deniz ve çöllerde bulunan çok küçük taş taneleri."},{a: "MUTFAK", m: "yemek yapılan yer."}, {a: "BİBER", m: "acı veya tatlı sebze."}, {a: "SAKIZ", m: "Çiğnenen ve ağızda dağılan esnek madde."}, {a: "ÇATI", m: "Bir yapının üstünü örten ve koruyan bölüm."}, {a: "YASTIK", m: "Uyurken başın altına konulan yumuşak eşya."}, {a: "KİRPİ", m: "dikenli küçük hayvan."}, {a: "OYUNCAK", m: "Çocukların oynaması için yapılan eşya."}, {a: "ÇAY", m: "Demlenerek hazırlanan sıcak içecek."}, {a: "GÖL", m: "Karalarla çevrili durgun su birikintisi."}, {a: "KART", m: "Alışveriş ve ödeme yapmaya yarayan plastik kart."}, {a: "MÜZİK", m: "İnsanları etkileyen ve zevk veren ses düzeni."}, {a: "SİNEK", m: "Havada dolaşan ve vızıldayan küçük haşere."}, {a: "BALON", m: "İçi hava veya gazla doldurulan hafif oyuncak."}, {a: "BÜYÜKADA", m: "istanbulda bir ada."}, {a: "MAYMUN", m: "İnsana benzeyen hareketleri olan kuyruklu memeli."}, {a: "HAVA", m: "yaşam için gerekli gaz."}, {a: "KÖPEK", m: "Evleri koruyan ve eğitilebilen hayvan."}, {a: "ÇORAP", m: "Ayağı sıcak tutmak için giyilen giysi."}, {a: "BİLGİSAYAR", m: "Bilgi işleyen ve saklayan elektronik cihaz."}, {a: "FOTOĞRAF", m: "resim veya görüntü kaydı."}, {a: "MOTOR", m: "Hareket üretmek için enerjiyi mekanik güce çeviren makine."}, {a: "ŞEMSİYE", m: "Yağmur ve güneşten korunmak için kullanılan açılır kapanır araç."}, {a: "LAMBA", m: "ışık veren aydınlatma aracı."}, {a: "BİYOLOJİ", m: "canlıları inceleyen bilim."}, {a: "TAVŞAN", m: "Hızlı koşan ve uzun kulaklı memeli hayvan."}, {a: "ŞEHİR", m: "İnsanların yoğun olarak yaşadığı yerleşim alanı."}, {a: "KUYRUK", m: "Bazı hayvanların arka kısmında bulunan uzantı."}, {a: "YUMURTA", m: "tavuk ve kuşların ürünü."}, {a: "BİBERON", m: "Emzik ve ağızdan beslenmeyi sağlayan kaplı araç."}, {a: "ÇÖP", m: "atık madde."}, {a: "MUTLULUK", m: "iyi hissetme durumu."}, {a: "GÖZLÜK", m: "görmeyi kolaylaştıran araç."}, {a: "ÇİZİM", m: "Kalem veya fırça ile yapılan resim veya tasarım."}, {a: "AYAKKABI", m: "ayak koruyucu giysi."}, {a: "TÜRKİYE", m: "81 ili olan ülke."}, {a: "BİRLİK", m: "bir araya gelme durumu."}, {a: "ÇORBA", m: "Sulu ve yiyeceklerle yapılan sıcak yemek."}, {a: "KUMANDA", m: "cihazı uzaktan kontrol eden eşya."}, {a: "KÖY", m: "küçük yerleşim yeri."}, {a: "KUAFÖR", m: "saç kesimi ve bakım hizmeti veren yer."}, {a: "PİZZA", m: "Üzerine peynir, sos ve malzeme konularak fırında pişirilen yiyecek."}, {a: "ŞEKER", m: "Tatlı ve genellikle küçük katı yiyecek."}, {a: "BAYRAK", m: "ülke simgesi."}, {a: "MÜZE", m: "eserlerin sergilendiği yer."}, {a: "TÜNEL", m: "yer altından geçen yol."}, {a: "KİLİT", m: "Kapıları veya eşyaları güvenli hale getiren araç."}, {a: "BANDANA", m: "Baş veya boyuna bağlanan ince kumaş parça."}, {a: "KAFES", m: "Hayvanları içinde tutmak için yapılan tel veya demirden yapı."}, {a: "YAY", m: "Esnek malzeme ile enerji depolayan ve fırlatma aracı."}, {a: "ÇİMENTO", m: "Binalarda sağlamlık sağlamak için kullanılan toz malzeme"}, {a: "TRAFO", m: "Elektrik voltajını yükselten veya düşüren cihaz."}, {a: "FIRIN", m: "Isı ve ısıtma ile yiyecekleri pişiren mutfak aracı."}, {a: "RADYO", m: "ses ile bilgi veren cihaz."}, {a: "KABLO", m: "elektrik veya veri taşıyan tel."},      {a: "TELEFON", m: "Sesli ve yazılı iletişim kurmayı sağlayan cihaz."}, {a: "KASABA", m: "şehirden küçük yerleşim yeri."}, {a: "KAHVE", m: "Kavrulmuş çekirdeklerden hazırlanan sıcak içecek."}, {a: "BASKETBOL", m: "İki takımın topu potaya atarak sayı yaptığı spor oyunu."}, {a: "PASTANE", m: "tatlı ve yiyecek yapılan yer."}, {a: "TAVUK", m: "kümes hayvanı."}, {a: "KARTON", m: "kalın kağıt türü."}, {a: "GÜL", m: "çiçek türü."}, {a: "ADALET", m: "hak ve doğruluğa uygunluk."},
 {a: "AKIL", m: "düşünme ve anlama yeteneği."},
 {a: "ALARM", m: "uyarı veren sistem."},
 {a: "AYNA", m: "yansıma sağlayan cam."},
@@ -182,138 +217,135 @@
 {a: "VİTRİN", m: "ürün sergilenen camlı alan."},
 {a: "YEMEK", m: "beslenme amacıyla tüketilen şey."},
 {a: "YOĞURT", m: "Sütün mayalanmasıyla elde edilen koyu kıvamlı ekşi tatlı bir süt ürünüdür"},
-{a: "ZARF", m: "mektup konulan kağıt."}, 
-{a: "AKREP", m: "Zehrli sokma özelliği olan küçük hayvan."},
-{a: "ARMUT", m: "Tatlı ve sulu meyve."},
-{a: "AT", m: "İnsan veya yük taşımada kullanılan hızlı hayvan."},
-{a: "AYI", m: "Büyük ve güçlü memeli hayvan."},
-{a: "BÖCEK", m: "Küçük ve çok bacaklı omurgasız canlı."},
-{a: "ÇİTA", m: "Dünyanın en hızlı kara hayvanı."},
-{a: "DENİZYILDIZI", m: "Denizlerde yaşayan beş kollu canlı."},
-{a: "FOK", m: "Suda yaşayan memeli hayvan."},
-{a: "GEYİK", m: "Boynuzlu orman hayvanı."},
-{a: "HIRSIZ", m: "Başkasının malını çalan kişi."},
-{a: "İNEK", m: "Süt veren çiftlik hayvanı."},
-{a: "JEL", m: "Yarı sıvı kıvamında madde."},
-{a: "KAKTÜS", m: "Sulu ve dikenli bitki."},
-{a: "LAPA", m: "Yoğun kar veya çamur birikintisi."},
-{a: "MANGO", m: "Tropikal ve tatlı meyve."},
-{a: "NEKTAR", m: "Çiçeklerden toplanan tatlı sıvı."},
-{a: "OBJE", m: "Belirli amaçla kullanılan nesne."},
-{a: "PANDA", m: "Siyah beyaz ve bambu yiyen hayvan."},
-{a: "RAPOR", m: "Olay veya durum hakkında yazılı bilgi."},
-{a: "SAL", m: "Küçük ve açık su aracı."},
-{a: "TAVSİYE", m: "Bir konuda yol gösteren öneri."},
-{a: "UĞURBÖCEĞİ", m: "Küçük ve kırmızı benekli böcek."},
-{a: "VİYOLA", m: "Keman ailesinden yaylı çalgı."},
-{a: "YELKENCİ", m: "Yelkenli tekne ile seyahat eden kişi."},
-{a: "ZEBRA", m: "Çizgili ve otçul hayvan."},
-{a: "AMBAR", m: "Eşya veya mal depolanan büyük yer."},
-{a: "BİLGİSAYARCI", m: "Bilgisayar ile çalışan kişi."},
-{a: "CİVCİV", m: "Yeni doğmuş tavuk."},
-{a: "DİKİŞ", m: "İplik ile yapılan birleştirme işlemi."},
-{a: "ELBİSE", m: "Vücut için giyilen giysi."},
-{a: "FOSFOR", m: "Işığı yansıtan kimyasal element."},
-{a: "GÖLGE", m: "Işığın engellenmesi ile oluşan karanlık alan."},
-{a: "HIRS", m: "Fazla arzu veya tamah."},
-{a: "ISITICI", m: "Alanı veya nesneyi ısıtan cihaz."},
-{a: "JAPON", m: "Japonya vatandaşına denir."},
-{a: "KİLOMETRE", m: "Uzunluk ölçü birimi."},
-{a: "LİSANSLI", m: "Resmî izin veya belgeye sahip."},
-{a: "MÜREKKEP", m: "Yazı yazmak için kullanılan sıvı boya."},
-{a: "NELER", m: "Soru zamiri."},
-{a: "ORTAOKUL", m: "İlkokuldan sonra öğrenim verilen kurum."},
-{a: "PİYANO", m: "Tuşlu ve yaylı çalgı."},
-{a: "RAFİNERİ", m: "Ham petrol işlenen fabrika."},
-{a: "SOKAK", m: "Binalar arasında geçen yol."},
-{a: "TOPLANTI", m: "Bir amaç için insanların bir araya gelmesi."},
-{a: "ULUS", m: "Ortak kültür ve dili olan insanlar topluluğu."},
-{a: "VİRAJ", m: "Yolun dönemeçli kısmı."},
-{a: "YEL", m: "Hareket eden hava."},
-{a: "ZİNCİR", m: "Halka halkaya bağlı metal parça."},
-{a: "AÇIKHAVA", m: "Kapalı olmayan dış mekan."},
-{a: "BİTKİ", m: "Toprakta büyüyen canlı organizma."},
-{a: "ÇİZİK", m: "Yüzeyde oluşan ince çizgi veya hasar."}
+{a: "ZARF", m: "mektup konulan kağıt."}
         ];
 
-            const levelsSnap = await get(ref(db, 'levels'));
-            levelsData = levelsSnap.exists() ? [...varsayilanlar, ...Object.values(levelsSnap.val())] : varsayilanlar;
-            render();
-        }
+        window.onload = () => {
+            let p = 0;
+            let i = setInterval(() => {
+                p += 25; document.getElementById('progress').style.width = p + '%';
+                if(p >= 100) { clearInterval(i); setTimeout(()=>document.getElementById('splash-screen').classList.add('fade-out'), 500); }
+            }, 100);
+        };
+
+        const userRef = ref(db, 'users/' + userId);
+        onValue(userRef, (snap) => {
+            const data = snap.val();
+            if(data) {
+                // Hediye Jeton Kontrolü
+                if(lastKnownCoins > 0 && data.coins > lastKnownCoins) {
+                    const diff = data.coins - lastKnownCoins;
+                    document.getElementById('gift-amount').innerText = diff;
+                    document.getElementById('gift-modal').style.display = 'flex';
+                    playSnd('snd-correct');
+                }
+                coins = data.coins;
+                lastKnownCoins = coins;
+                currentLevel = data.level;
+                render();
+            } else {
+                set(userRef, { coins: 30, level: 0, id: userId });
+            }
+        });
 
         function render() {
             document.getElementById('coin-count').innerText = coins;
             document.getElementById('lvl-txt').innerText = currentLevel + 1;
-            let bgIndex = (Math.floor(currentLevel / bgFreq) % 42) + 1;
-            document.body.style.backgroundImage = `url('bg${bgIndex}.jpg')`;
-            const l = levelsData[currentLevel];
-            if(!l) return;
-            document.getElementById('clue-box').innerText = l.m;
-            const disp = document.getElementById('word-display'); disp.innerHTML = "";
-            l.a.split('').forEach(() => {
-                const b = document.createElement('div'); b.className = 'letter-box';
-                disp.appendChild(b);
+            document.getElementById('player-id').innerText = userId;
+            const levelData = levels[currentLevel % levels.length];
+            document.getElementById('clue-text').innerText = levelData.m;
+
+            // 10 Seviyede Bir Arka Plan Döngüsü
+            let bgIndex = Math.floor(currentLevel / 10) % 42; 
+            let bgNum = bgIndex + 1; 
+            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('bg${bgNum}.jpg')`;
+
+            const container = document.getElementById('word-display');
+            container.innerHTML = "";
+            levelData.a.split('').forEach(() => {
+                const b = document.createElement('div'); b.className = 'letter-box'; container.appendChild(b);
             });
-            document.getElementById('hidden-input').focus();
         }
 
+        // --- KLAVYE SİSTEMİ ---
         document.getElementById('hidden-input').onkeydown = (e) => {
-            if(e.key === "Backspace") {
-                const boxes = Array.from(document.querySelectorAll('.letter-box')).reverse();
-                for(let b of boxes) if(b.innerText !== "" && !b.hasAttribute('data-hinted')) { b.innerText = ""; break; }
+            if (e.key === "Backspace") {
+                const boxes = document.querySelectorAll('.letter-box');
+                for (let i = boxes.length - 1; i >= 0; i--) {
+                    if (boxes[i].innerText !== "") { boxes[i].innerText = ""; playSnd('snd-click'); break; }
+                }
             }
         };
 
         document.getElementById('hidden-input').oninput = (e) => {
-            const v = e.target.value.toUpperCase().slice(-1); e.target.value = "";
-            if(!/[A-ZÇĞİÖŞÜ]/.test(v)) return;
-            const boxes = document.querySelectorAll('.letter-box');
-            for(let b of boxes) if(b.innerText === "") { b.innerText = v; checkWin(); break; }
+            const val = e.target.value.toUpperCase().slice(-1);
+            e.target.value = "";
+            if (val.match(/[A-ZĞÜŞİÖÇ]/)) {
+                playSnd('snd-click');
+                const boxes = document.querySelectorAll('.letter-box');
+                for (let b of boxes) { if (b.innerText === "") { b.innerText = val; checkWin(); break; } }
+            }
         };
 
         function checkWin() {
-            let typed = "";
-            document.querySelectorAll('.letter-box').forEach(b => typed += b.innerText);
-            const target = levelsData[currentLevel].a;
-            if(typed === target) {
-                document.getElementById('sound-dogru').play();
-                document.getElementById('win-modal').style.display = 'flex';
+            const levelData = levels[currentLevel % levels.length];
+            let res = "";
+            document.querySelectorAll('.letter-box').forEach(b => res += b.innerText);
+            if(res.length === levelData.a.length) {
+                if(res === levelData.a) {
+                    playSnd('snd-correct');
+                    document.querySelectorAll('.letter-box').forEach(b => b.style.background = "#39FF14");
+                    setTimeout(() => document.getElementById('win-modal').style.display='flex', 500);
+                } else {
+                    playSnd('snd-wrong');
+                    document.querySelectorAll('.letter-box').forEach(b => { b.classList.add('shake'); setTimeout(() => { b.classList.remove('shake'); b.innerText = ""; }, 500); });
+                }
             }
         }
 
-        window.nextLevel = () => {
-            document.getElementById('win-modal').style.display = 'none';
-            if (currentLevel === maxUnlockedLevel) {
-                maxUnlockedLevel++;
-                update(ref(db, 'users/'+userId), {level: maxUnlockedLevel, coins: coins + 5});
-            } else { currentLevel++; render(); }
-        };
-
-        window.skipLevel = () => {
-            if(coins >= skipPrice) {
-                if(confirm(skipPrice + " Jeton ile geç?")) {
-                    update(ref(db, 'users/'+userId), {coins: coins - skipPrice});
-                    nextLevel();
-                }
-            } else { alert("Jeton az kanka!"); }
-        };
-
+        // --- BUTONLAR ---
+        window.nextLevel = () => { update(userRef, { coins: coins + 5, level: currentLevel + 1 }); closeModal('win-modal'); };
+        window.confirmSkip = () => { update(userRef, { coins: coins - 25, level: currentLevel + 1 }); closeModal('skip-modal'); };
+        window.askSkipLevel = () => { if(coins < 25) return alert("Yetersiz Jeton!"); document.getElementById('skip-modal').style.display='flex'; };
         window.useHint = () => {
-            const target = levelsData[currentLevel].a;
+            if(coins < 10) return;
+            const levelData = levels[currentLevel % levels.length];
             const boxes = document.querySelectorAll('.letter-box');
-            const empty = Array.from(boxes).map((b,i)=>b.innerText===""?i:null).filter(x=>x!==null);
-            if(coins >= hintPrice && empty.length > 0) {
-                const idx = empty[Math.floor(Math.random()*empty.length)];
-                boxes[idx].innerText = target[idx];
-                boxes[idx].setAttribute('data-hinted', 'true');
-                boxes[idx].style.color = "#39FF14";
-                update(ref(db, 'users/'+userId), {coins: coins - hintPrice});
-                checkWin();
+            for(let i=0; i<boxes.length; i++) {
+                if(boxes[i].innerText === "") { boxes[i].innerText = levelData.a[i]; update(userRef, {coins: coins - 10}); checkWin(); break; }
             }
         };
 
-        document.body.onclick = () => { startAudio(); document.getElementById('hidden-input').focus(); };
-        startApp();
+        // --- ADMİN TETİK ---
+        window.logoTrigger = () => {
+            logoCount++;
+            if(logoCount >= 5) { document.getElementById('admin-panel').style.display='flex'; logoCount = 0; }
+            setTimeout(() => { logoCount = 0; }, 3000);
+        };
+
+        window.processAdmin = async () => {
+            const pass = document.getElementById('admin-pass').value;
+            const tid = document.getElementById('target-id').value;
+            const mik = parseInt(document.getElementById('jeton-miktar').value);
+            if(pass === "zen123") {
+                const tRef = ref(db, 'users/' + tid);
+                const snap = await get(tRef);
+                if(snap.exists()) {
+                    update(tRef, { coins: snap.val().coins + mik });
+                    alert("Jetonlar Başarıyla Gönderildi!");
+                    closeModal('admin-panel');
+                } else { alert("ID Bulunamadı!"); }
+            } else { alert("Şifre Hatalı!"); }
+        };
+
+        // --- KONTROLLER ---
+        window.closeModal = (id) => document.getElementById(id).style.display='none';
+        function playSnd(id) { let s = document.getElementById(id); if(s) { s.currentTime=0; s.play().catch(()=>{}); } }
+        document.body.onclick = () => { document.getElementById('bg-music').play().catch(()=>{}); document.getElementById('hidden-input').focus(); };
+        document.addEventListener("visibilitychange", () => { const m = document.getElementById('bg-music'); if (document.hidden) m.pause(); else m.play().catch(()=>{}); });
     </script>
 </body>
 </html>
+
+
+
