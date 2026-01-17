@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WordZen - Bakım Çalışması</title>
+    <title>WordZen - Büyük Güncelleme</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
         html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Montserrat', sans-serif; }
         
+        /* BAKIM EKRANI ANA PANEL */
         #maintenance-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle, #111 0%, #000 100%);
@@ -19,24 +20,26 @@
         .m-icon { font-size: 4rem; margin-bottom: 20px; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
 
-        .m-title { color: #39FF14; font-size: 1.8rem; margin-bottom: 20px; text-shadow: 0 0 15px rgba(57, 255, 20, 0.4); }
+        .m-title { color: #39FF14; font-size: 1.8rem; margin-bottom: 25px; text-shadow: 0 0 15px rgba(57, 255, 20, 0.4); letter-spacing: 2px; }
 
-        /* Geri Sayım Kutuları */
-        #countdown { display: flex; gap: 10px; margin-bottom: 30px; }
-        .timer-box { background: rgba(57, 255, 20, 0.05); border: 1px solid rgba(57, 255, 20, 0.5); padding: 15px; border-radius: 15px; min-width: 75px; backdrop-filter: blur(5px); }
+        /* ZAMANLAYICI KUTULARI */
+        #countdown { display: flex; gap: 10px; margin-bottom: 35px; }
+        .timer-box { background: rgba(57, 255, 20, 0.05); border: 1px solid rgba(57, 255, 20, 0.4); padding: 15px; border-radius: 15px; min-width: 75px; backdrop-filter: blur(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .timer-val { display: block; color: #fff; font-size: 1.6rem; font-weight: 900; }
         .timer-lab { display: block; color: #39FF14; font-size: 0.6rem; margin-top: 5px; font-weight: bold; }
 
-        .m-note { color: #fff; font-size: 1rem; line-height: 1.6; max-width: 320px; opacity: 0.9; }
-        .thanks { color: #39FF14; font-size: 0.9rem; margin-top: 15px; font-weight: bold; }
+        /* PARAGRAF VE TEŞEKKÜR METNİ */
+        .m-note { color: #fff; font-size: 1rem; line-height: 1.6; max-width: 320px; opacity: 0.9; margin-bottom: 10px; }
+        .thanks { color: #39FF14; font-size: 0.9rem; font-weight: bold; }
 
+        /* AÇILIŞ LOGOSU */
         #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; z-index: 11000; }
     </style>
 </head>
 <body>
 
     <div id="splash-screen">
-        <div style="font-size: 2.2rem; color: #fff; text-shadow: 0 0 20px #39FF14; font-weight: 900;">WordZen</div>
+        <div style="font-size: 2.5rem; color: #fff; text-shadow: 0 0 20px #39FF14; font-weight: 900; letter-spacing: 3px;">WordZen</div>
     </div>
 
     <div id="maintenance-screen">
@@ -57,7 +60,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 
-        // SENİN VERDİĞİN GÜNCEL BİLGİLER
+        // SENİN VERDİĞİN BİLGİLER
         const firebaseConfig = {
             apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
             authDomain: "wordzen-2e052.firebaseapp.com",
@@ -71,32 +74,39 @@
 
         const app = initializeApp(firebaseConfig);
 
-        // HEDEF TARİH: ŞU ANDAN İTİBAREN TAM 7 GÜN SONRASI
-        const targetDate = new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
+        // HEDEF TARİHİ BURADAN SABİTLEDİK (Yıl, Ay(0-11), Gün, Saat, Dakika)
+        // 24 Ocak 2026 Saat 18:00
+        const targetDate = new Date(2026, 0, 24, 18, 0, 0).getTime();
 
         function updateCountdown() {
             const now = new Date().getTime();
             const distance = targetDate - now;
 
+            // Süre dolduğunda yapılacak işlem
             if (distance < 0) {
-                document.getElementById("countdown").innerHTML = "<span style='color:#39FF14'>GÜNCELLEME TAMAMLANDI!</span>";
+                document.getElementById("countdown").innerHTML = "<span style='color:#39FF14; font-size:1.2rem;'>GÜNCELLEME TAMAMLANDI!</span>";
                 return;
             }
 
+            // Matematiksel hesaplama
             const d = Math.floor(distance / (1000 * 60 * 60 * 24));
             const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const s = Math.floor((distance % (1000 * 60)) / 1000);
 
+            // Ekrana yansıtma
             document.getElementById("days").innerText = d;
             document.getElementById("hours").innerText = h;
             document.getElementById("mins").innerText = m;
             document.getElementById("secs").innerText = s;
         }
 
+        // Sayfa yüklendiğinde akışı başlat
         window.onload = () => {
             setTimeout(() => {
+                // Splash ekranını gizle
                 document.getElementById('splash-screen').style.display = 'none';
+                // Sayacı saniyede bir güncelle
                 setInterval(updateCountdown, 1000);
                 updateCountdown();
             }, 1500);
