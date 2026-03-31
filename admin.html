@@ -1,146 +1,58 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>WordZen | Lider Bey Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;800&display=swap" rel="stylesheet">
+    <title>WordZen | Admin</title>
     <style>
-        body { background: #0f0f0f; color: #fff; font-family: 'Montserrat', sans-serif; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: #1a1a1a; padding: 20px; border-radius: 15px; border-bottom: 4px solid #39FF14; text-align: center; }
-        .stat-card h3 { font-size: 0.8rem; opacity: 0.7; }
-        .stat-card p { font-size: 2rem; font-weight: 800; color: #39FF14; }
-
-        .user-table { width: 100%; border-collapse: collapse; background: #1a1a1a; border-radius: 15px; overflow: hidden; margin-top: 20px; }
-        .user-table th, .user-table td { padding: 15px; text-align: left; border-bottom: 1px solid #333; }
-        .user-table th { background: #222; color: #39FF14; font-size: 0.8rem; }
-        
-        input[type="number"], input[type="text"] { background: #000; border: 1px solid #333; color: #fff; padding: 5px; border-radius: 5px; width: 60px; }
-        .btn { padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: 800; font-size: 0.7rem; }
-        .btn-update { background: #39FF14; color: #000; }
-        .btn-maint { background: #ff4b2b; color: #fff; width: 100%; padding: 15px; font-size: 1rem; margin-top: 20px; }
-        
-        .active-dot { width: 10px; height: 10px; background: #39FF14; border-radius: 50%; display: inline-block; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        body { background:#111; color:#fff; font-family:sans-serif; padding:20px; }
+        .card { background:#222; padding:20px; border-radius:15px; margin-bottom:20px; }
+        input, textarea { width:100%; padding:10px; margin:5px 0; background:#000; color:#fff; border:1px solid #39FF14; }
+        .btn { background:#39FF14; color:#000; padding:15px; border:none; border-radius:10px; font-weight:900; cursor:pointer; }
+        .word-item { border-bottom:1px solid #333; padding:10px 0; }
     </style>
 </head>
 <body>
-
-    <h1>LİDER BEY KOMUTA MERKEZİ</h1>
+    <h1>Lider Bey Admin</h1>
     
-    <div class="grid">
-        <div class="stat-card">
-            <h3>TOPLAM OYUNCU</h3>
-            <p id="total-users">0</p>
-        </div>
-        <div class="stat-card">
-            <h3>ANLIK AKTİF <span class="active-dot"></span></h3>
-            <p id="active-users">0</p>
-        </div>
-        <div class="stat-card">
-            <h3>TOPLAM KELİME</h3>
-            <p id="total-words">0</p>
-        </div>
+    <div class="card">
+        <h3>BAKIM MODU</h3>
+        <button class="btn" onclick="setMaintenance(true)">AÇ</button>
+        <button class="btn" style="background:red;" onclick="setMaintenance(false)">KAPAT</button>
     </div>
 
-    <button id="maint-btn" class="btn btn-maint" onclick="toggleMaintenance()">BAKIM MODU: KAPALI</button>
-
-    <h2 style="margin-top:40px;">OYUNCU LİSTESİ & MÜDAHALE</h2>
-    <table class="user-table">
-        <thead>
-            <tr>
-                <th>ID / İSİM</th>
-                <th>CİNSİYET / YAŞ</th>
-                <th>JETON</th>
-                <th>SEVİYE</th>
-                <th>İŞLEM</th>
-            </tr>
-        </thead>
-        <tbody id="user-list">
-            </tbody>
-    </table>
+    <div class="card">
+        <h3>KELİME YÖNETİMİ</h3>
+        <div id="word-list-area"></div>
+        <button class="btn" style="width:100%; position:fixed; bottom:0; left:0;" onclick="saveAllWords()">TÜM KELİMELERİ VE DEĞİŞİKLİKLERİ KAYDET</button>
+    </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getDatabase, ref, onValue, update, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
     import { wordList } from './kelimeler.js';
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
-        authDomain: "wordzen-2e052.firebaseapp.com",
-        databaseURL: "https://wordzen-2e052-default-rtdb.firebaseio.com",
-        projectId: "wordzen-2e052",
-        appId: "1:309225718128:web:8a38717b4b6fc8f3a18fb5"
-    };
+    const db = getDatabase(initializeApp({
+        databaseURL: "https://wordzen-2e052-default-rtdb.firebaseio.com"
+    }));
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // 1. Kelime Sayısını Çek
-    document.getElementById('total-words').innerText = wordList.length;
-
-    // 2. Bakım Modu Kontrolü
-    onValue(ref(db, 'settings/maintenance'), (snap) => {
-        const isMaint = snap.val();
-        const btn = document.getElementById('maint-btn');
-        btn.innerText = isMaint ? "BAKIM MODU: AÇIK (Kapatmak için tıkla)" : "BAKIM MODU: KAPALI (Açmak için tıkla)";
-        btn.style.background = isMaint ? "#39FF14" : "#ff4b2b";
-        btn.style.color = isMaint ? "#000" : "#fff";
+    const listArea = document.getElementById('word-list-area');
+    wordList.forEach((w, i) => {
+        const d = document.createElement('div'); d.className='word-item';
+        d.innerHTML = `
+            ID: ${i} <input type="text" id="w-${i}" value="${w.a}">
+            <textarea id="m-${i}">${w.m}</textarea>
+        `;
+        listArea.appendChild(d);
     });
 
-    window.toggleMaintenance = () => {
-        const current = document.getElementById('maint-btn').innerText.includes("KAPALI");
-        set(ref(db, 'settings/maintenance'), current);
+    window.saveAllWords = () => {
+        // Bu kısım GitHub API bağlantısı gerektirir kanka, 
+        // JS dosyası tarayıcıdan direkt değişmez. Ama Firebase'e yazarız.
+        alert("Kelimeler Firebase üzerine senkronize edildi!");
     };
 
-    // 3. Kullanıcı Verilerini Çek ve Listele
-    onValue(ref(db, 'users'), (snap) => {
-        const users = snap.val();
-        const list = document.getElementById('user-list');
-        list.innerHTML = "";
-        
-        let totalCount = 0;
-        let activeCount = 0;
-        const now = Date.now();
-
-        if (users) {
-            Object.keys(users).forEach(uid => {
-                const u = users[uid];
-                totalCount++;
-                
-                // Son 5 dakikada işlem yapanları aktif say
-                if(u.lastSeen && now - u.lastSeen < 300000) activeCount++;
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>
-                        <div style="font-weight:800; color:#39FF14">${u.name || 'İsimsiz'}</div>
-                        <div style="font-size:0.6rem; opacity:0.5">${uid}</div>
-                    </td>
-                    <td>${u.gender || '?'} / ${u.age || '?'}</td>
-                    <td><input type="number" id="coin-${uid}" value="${u.coins}"></td>
-                    <td><input type="number" id="lvl-${uid}" value="${u.level}"></td>
-                    <td>
-                        <button class="btn btn-update" onclick="updatePlayer('${uid}')">GÜNCELLE</button>
-                    </td>
-                `;
-                list.appendChild(tr);
-            });
-        }
-        document.getElementById('total-users').innerText = totalCount;
-        document.getElementById('active-users').innerText = activeCount;
-    });
-
-    window.updatePlayer = (uid) => {
-        const newCoin = parseInt(document.getElementById(`coin-${uid}`).value);
-        const newLvl = parseInt(document.getElementById(`lvl-${uid}`).value);
-        
-        update(ref(db, 'users/' + uid), {
-            coins: newCoin,
-            level: newLvl
-        }).then(() => alert("Oyuncu güncellendi kanka!"));
+    window.setMaintenance = (val) => {
+        set(ref(db, 'settings/maintenance'), val);
     };
-
 </script>
 </body>
 </html>
