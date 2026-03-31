@@ -2,101 +2,77 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WordZen Pro | Master</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WordZen | Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Montserrat', sans-serif; background: #000; }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        body, html { width:100%; height:100%; background:#000; font-family:'Montserrat', sans-serif; color:#fff; overflow:hidden; }
         
-        body { 
-            background-size: cover; background-position: center; 
-            display: flex; flex-direction: column; align-items: center;
-            transition: background 0.5s ease;
-        }
+        /* Splash Video */
+        #splash-container { position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background:#000; }
+        #splash-vid { width:100%; height:100%; object-fit:cover; }
 
-        /* ÜST PANEL (SABİT VE ÇAKIŞMAZ) */
-        .top-bar {
-            position: absolute; top: 0; left: 0; width: 100%; height: 80px;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 20px; z-index: 1000; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-        }
+        /* Profil ve Mod Ekranları */
+        .screen { position:absolute; top:0; left:0; width:100%; height:100%; display:none; flex-direction:column; align-items:center; justify-content:center; padding:20px; text-align:center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); }
+        .active { display:flex; }
 
-        .user-info { display: flex; flex-direction: column; gap: 4px; }
-        .info-pill { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 10px; color: #fff; font-size: 0.7rem; }
-        
-        .currency-box { background: rgba(0,0,0,0.8); border: 1px solid #ffcc00; padding: 8px 15px; border-radius: 20px; color: #ffcc00; font-size: 1.1rem; font-weight: 900; }
+        input, select { width:80%; padding:15px; margin:10px 0; border-radius:12px; border:1px solid #39FF14; background:rgba(0,0,0,0.5); color:#fff; font-size:1rem; outline:none; }
+        .btn { width:80%; padding:15px; margin:10px 0; border-radius:12px; border:none; font-weight:900; cursor:pointer; transition:0.3s; text-transform:uppercase; }
+        .btn-green { background:#39FF14; color:#000; box-shadow:0 0 20px rgba(57,255,20,0.4); }
+        .btn-blue { background:#00d4ff; color:#000; }
 
-        /* AKSİYON BUTONLARI (SAĞ KENARDA SIRALI) */
-        .action-buttons { position: absolute; right: 15px; top: 90px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
-        .side-btn { width: 55px; height: 55px; border-radius: 50%; border: none; font-weight: 900; color: #fff; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); font-size: 0.7rem; }
+        .mod-box { width:90%; padding:25px; margin:10px; border:2px solid rgba(255,255,255,0.1); border-radius:20px; background:rgba(255,255,255,0.05); }
+        .mod-title { font-size:1.5rem; font-weight:900; margin-bottom:5px; }
+        .mod-desc { font-size:0.8rem; opacity:0.6; margin-bottom:15px; }
 
-        /* OYUN ALANI (BOŞLUK BIRAKILDI) */
-        #game-area { width: 100%; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; margin-top: 50px; }
-
-        /* KUTUCUKLAR (ASLA ÜST ÜSTE BİNMEZ) */
-        #word-display { 
-            display: flex; width: 95%; max-width: 500px; justify-content: center; 
-            gap: 5px; flex-wrap: nowrap; margin-bottom: 30px;
-        }
-        .letter-box { 
-            flex: 1; min-width: 20px; max-width: 45px; height: 55px;
-            background: rgba(255,255,255,0.15); backdrop-filter: blur(5px);
-            border: 2px solid rgba(255,255,255,0.3); color: #fff;
-            border-radius: 10px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.6rem; font-weight: 900; text-transform: uppercase;
-        }
-
-        .clue-container { 
-            width: 90%; max-width: 400px; background: rgba(0,0,0,0.6); border: 1px solid #333;
-            padding: 20px; border-radius: 20px; color: #fff; text-align: center; font-size: 0.9rem;
-        }
-
-        /* KLAVYE (QWERTY) */
-        #keyboard-area { 
-            width: 100%; padding: 10px; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-            display: flex; flex-direction: column; gap: 5px; padding-bottom: env(safe-area-inset-bottom);
-        }
-        .kb-row { display: flex; justify-content: center; gap: 4px; width: 100%; }
-        .key { 
-            flex: 1; height: 48px; background: rgba(255,255,255,0.2); border-radius: 6px;
-            color: #fff; display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem; font-weight: bold; cursor: pointer;
-        }
-        .key:active { background: #39FF14; color: #000; }
-        .key-del { flex: 2; background: #ff4b2b; }
-
-        .shake { animation: shake 0.3s; background: #ff4b2b !important; }
-        @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+        #bg-preloader { display:none; }
     </style>
 </head>
 <body>
 
-    <div class="top-bar">
-        <div class="user-info">
-            <div class="info-pill">BÖLÜM: <span id="lvl-txt" style="color:#39FF14">1</span></div>
-            <div class="info-pill">ID: <span id="player-id" style="font-size:0.5rem">...</span></div>
+    <div id="splash-container">
+        <video id="splash-vid" autoplay muted playsinline>
+            <source src="video.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div id="profile-screen" class="screen">
+        <h1 style="margin-bottom:20px; letter-spacing:5px;">PROFİL OLUŞTUR</h1>
+        <input type="text" id="username" placeholder="Kullanıcı Adı">
+        <input type="number" id="userage" placeholder="Yaş">
+        <select id="usergender">
+            <option value="Erkek">Erkek</option>
+            <option value="Kadın">Kadın</option>
+        </select>
+        <button class="btn btn-green" onclick="saveProfile()">DEVAM ET</button>
+    </div>
+
+    <div id="mode-screen" class="screen">
+        <div class="mod-box" onclick="startMode('normal')">
+            <div class="mod-title" style="color:#39FF14">NORMAL MOD</div>
+            <div class="mod-desc">250+ Kelime, İnternetsiz, Seviye İlerlemeli</div>
+            <button class="btn btn-green">OYNA</button>
         </div>
-        <div class="currency-box">🪙 <span id="coin-count">0</span></div>
-    </div>
-
-    <div class="action-buttons">
-        <button class="side-btn" style="background:#39FF14; color:#000;" onclick="useHint()">İPUCU</button>
-        <button class="side-btn" style="background:#ff4b2b;" onclick="askSkipLevel()">PAS</button>
-    </div>
-
-    <div id="game-area">
-        <div id="word-display"></div>
-        <div class="clue-container">
-            <div id="clue-text">Yükleniyor...</div>
+        <div class="mod-box" onclick="startMode('pvp')">
+            <div class="mod-title" style="color:#00d4ff">1V1 RANDOM</div>
+            <div class="mod-desc">Rastgele Bir Rakiple Kapış, Jetonları Topla</div>
+            <button class="btn btn-blue">EŞLEŞ</button>
+        </div>
+        <div class="mod-box" onclick="startMode('room')">
+            <div class="mod-title" style="color:#ffcc00">1V1 ODA (WZ-)</div>
+            <div class="mod-desc">Arkadaşınla Oda Kur ve Jetonuna Kapış</div>
+            <button class="btn" style="background:#ffcc00; color:#000;">ODA KUR/GİR</button>
         </div>
     </div>
 
-    <div id="keyboard-area"></div>
+    <audio id="bg-music" loop src="fon-muzigi.mp3"></audio>
+    
+    <div id="bg-preloader"></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
@@ -108,136 +84,69 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    
-    let userId = localStorage.getItem('wordzen_id') || "U" + Math.floor(Math.random()*90000);
-    localStorage.setItem('wordzen_id', userId);
 
-    let levels = [], backupLevels = [
-        {a: "AĞAÇ", m: "Gövdesi odun olan bitki."},
-        {a: "ALTIN", m: "Değerli sarı maden."},
-        {a: "ARABA", m: "4 tekerlekli taşıt."},
-        {a: "TÜRKİYE", m: "81 ili olan güzel ülkemiz."}
-    ];
+    const vid = document.getElementById('splash-vid');
+    const bgMusic = document.getElementById('bg-music');
 
-    let coins = 0, currentLevel = 0;
+    // 1. Splash Bitiş ve Müzik
+    vid.onended = () => {
+        document.getElementById('splash-container').style.display = 'none';
+        bgMusic.play();
+        checkUser();
+    };
 
-    // KELİMELERİ ÇEK
-    onValue(ref(db, 'levels'), (snap) => {
-        const data = snap.val();
-        levels = data ? Object.values(data) : backupLevels;
-        loadUserData();
+    // 2. Arka Planları Önden Yükle (42 Adet)
+    function preloadImages() {
+        const preloader = document.getElementById('bg-preloader');
+        for(let i=1; i<=42; i++) {
+            const img = new Image();
+            img.src = `bg${i}.jpg`;
+            preloader.appendChild(img);
+        }
+    }
+    preloadImages();
+
+    // 3. Kullanıcı Kontrol
+    function checkUser() {
+        const saved = localStorage.getItem('wz_profile');
+        if(saved) {
+            document.getElementById('mode-screen').classList.add('active');
+        } else {
+            document.getElementById('profile-screen').classList.add('active');
+        }
+    }
+
+    window.saveProfile = () => {
+        const name = document.getElementById('username').value;
+        const age = document.getElementById('userage').value;
+        const gender = document.getElementById('usergender').value;
+
+        if(!name || !age) return alert("Boş bırakma kanka!");
+
+        const profile = { name, age, gender, coins: 500, level: 1 };
+        localStorage.setItem('wz_profile', JSON.stringify(profile));
+        
+        // Firebase'e de yedekle
+        const uid = "U" + Math.floor(Math.random()*999999);
+        localStorage.setItem('wz_uid', uid);
+        set(ref(db, 'users/' + uid), profile);
+
+        document.getElementById('profile-screen').classList.remove('active');
+        document.getElementById('mode-screen').classList.add('active');
+    };
+
+    window.startMode = (mode) => {
+        if(mode === 'normal') window.location.href = 'normal.html';
+        if(mode === 'pvp' || mode === 'room') window.location.href = 'pvp.html';
+    };
+
+    // Bakım Modu Kontrolü
+    onValue(ref(db, 'settings/maintenance'), (snap) => {
+        if(snap.val() === true) {
+            document.body.innerHTML = "<h1 style='color:#39FF14; text-align:center; margin-top:100px;'>BAKIM MODU AÇILMIŞTIR ANLAYIŞINIZ İÇİN TEŞEKKÜREDERİZ.</h1>";
+        }
     });
 
-    function loadUserData() {
-        onValue(ref(db, 'users/' + userId), (snap) => {
-            const d = snap.val();
-            if(d) { coins = d.coins; currentLevel = d.level; render(); }
-            else { set(ref(db, 'users/' + userId), {coins: 50, level: 0, id: userId}); }
-        });
-    }
-
-    function render() {
-        if(levels.length === 0) return;
-        const levelData = levels[currentLevel % levels.length];
-        document.getElementById('coin-count').innerText = coins;
-        document.getElementById('lvl-txt').innerText = currentLevel + 1;
-        document.getElementById('player-id').innerText = userId;
-        document.getElementById('clue-text').innerText = levelData.m;
-
-        const container = document.getElementById('word-display');
-        container.innerHTML = "";
-        levelData.a.split('').forEach(() => {
-            const b = document.createElement('div'); b.className = 'letter-box'; container.appendChild(b);
-        });
-
-        let bgNum = (currentLevel % 10) + 1;
-        document.body.style.backgroundImage = `url('bg${bgNum}.jpg')`;
-    }
-
-    // KLAVYE OLUŞTURMA (QWERTY DÜZENİ)
-    const qwerty = [
-        ["Q","W","E","R","T","Y","U","I","İ","O","P"],
-        ["A","S","D","F","G","Ğ","H","J","K","L","Ş"],
-        ["Z","X","C","V","B","N","M","Ö","Ç","Ü"]
-    ];
-
-    function createKeyboard() {
-        const kb = document.getElementById('keyboard-area');
-        qwerty.forEach((row, index) => {
-            const rowDiv = document.createElement('div');
-            rowDiv.className = 'kb-row';
-            row.forEach(letter => {
-                const k = document.createElement('div');
-                k.className = 'key';
-                k.innerText = letter;
-                k.onclick = () => addLetter(letter);
-                rowDiv.appendChild(k);
-            });
-            if(index === 2) { // Son sıraya SİL butonu
-                const del = document.createElement('div');
-                del.className = 'key key-del';
-                del.innerText = "SİL";
-                del.onclick = removeLetter;
-                rowDiv.appendChild(del);
-            }
-            kb.appendChild(rowDiv);
-        });
-    }
-
-    window.addLetter = (l) => {
-        const boxes = document.querySelectorAll('.letter-box');
-        for(let b of boxes) {
-            if(b.innerText === "") { b.innerText = l; checkWin(); break; }
-        }
-    };
-
-    window.removeLetter = () => {
-        const boxes = document.querySelectorAll('.letter-box');
-        for(let i = boxes.length - 1; i >= 0; i--) {
-            if(boxes[i].innerText !== "") { boxes[i].innerText = ""; break; }
-        }
-    };
-
-    function checkWin() {
-        const levelData = levels[currentLevel % levels.length];
-        let res = "";
-        document.querySelectorAll('.letter-box').forEach(b => res += b.innerText);
-        
-        if(res.length === levelData.a.length) {
-            if(res === levelData.a) {
-                setTimeout(() => {
-                    update(ref(db, 'users/' + userId), { coins: coins + 10, level: currentLevel + 1 });
-                }, 300);
-            } else {
-                document.querySelectorAll('.letter-box').forEach(b => {
-                    b.classList.add('shake');
-                    setTimeout(() => { b.classList.remove('shake'); b.innerText = ""; }, 500);
-                });
-            }
-        }
-    }
-
-    window.useHint = () => {
-        if(coins < 10) return alert("Jeton Yetersiz!");
-        const levelData = levels[currentLevel % levels.length];
-        const boxes = document.querySelectorAll('.letter-box');
-        for(let i=0; i<boxes.length; i++) {
-            if(boxes[i].innerText === "") {
-                boxes[i].innerText = levelData.a[i];
-                boxes[i].style.color = "#39FF14";
-                update(ref(db, 'users/' + userId), { coins: coins - 10 });
-                checkWin();
-                break;
-            }
-        }
-    };
-
-    window.askSkipLevel = () => {
-        if(coins >= 25) update(ref(db, 'users/' + userId), { coins: coins - 25, level: currentLevel + 1 });
-        else alert("Jeton Yetersiz!");
-    };
-
-    createKeyboard();
 </script>
 </body>
 </html>
