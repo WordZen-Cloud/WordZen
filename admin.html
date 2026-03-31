@@ -2,72 +2,68 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WordZen | Master Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
+    <title>WordZen | Lider Bey Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Montserrat', sans-serif; background: #050505; color: #fff; margin: 0; padding: 15px; }
-        .container { max-width: 800px; margin: 0 auto; display: none; }
-        h1 { color: #39FF14; text-align: center; font-size: 1.4rem; margin-bottom: 20px; text-shadow: 0 0 10px #39FF14; }
-        
-        /* GİRİŞ EKRANI */
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        
-        .card { background: #111; padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 15px; width: 100%; }
-        .card-title { font-size: 0.8rem; color: #39FF14; margin-bottom: 15px; text-transform: uppercase; font-weight: 800; }
-        
-        input, textarea { width: 100%; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px; color: #fff; margin-bottom: 10px; font-family: inherit; }
-        button { width: 100%; background: #39FF14; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; margin-bottom: 5px; }
-        button:active { transform: scale(0.96); }
-        .btn-blue { background: #00d4ff; color: #000; }
-        .btn-red { background: #ff4b2b; color: #fff; }
+        body { background: #0f0f0f; color: #fff; font-family: 'Montserrat', sans-serif; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: #1a1a1a; padding: 20px; border-radius: 15px; border-bottom: 4px solid #39FF14; text-align: center; }
+        .stat-card h3 { font-size: 0.8rem; opacity: 0.7; }
+        .stat-card p { font-size: 2rem; font-weight: 800; color: #39FF14; }
 
-        /* KELİME LİSTESİ */
-        #word-list-container { margin-top: 20px; display: none; }
-        .word-item { background: #111; padding: 15px; border-radius: 10px; border-left: 4px solid #39FF14; margin-bottom: 10px; }
-        .word-item input { margin-bottom: 5px; background: #000; border-color: #222; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .user-table { width: 100%; border-collapse: collapse; background: #1a1a1a; border-radius: 15px; overflow: hidden; margin-top: 20px; }
+        .user-table th, .user-table td { padding: 15px; text-align: left; border-bottom: 1px solid #333; }
+        .user-table th { background: #222; color: #39FF14; font-size: 0.8rem; }
+        
+        input[type="number"], input[type="text"] { background: #000; border: 1px solid #333; color: #fff; padding: 5px; border-radius: 5px; width: 60px; }
+        .btn { padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: 800; font-size: 0.7rem; }
+        .btn-update { background: #39FF14; color: #000; }
+        .btn-maint { background: #ff4b2b; color: #fff; width: 100%; padding: 15px; font-size: 1rem; margin-top: 20px; }
+        
+        .active-dot { width: 10px; height: 10px; background: #39FF14; border-radius: 50%; display: inline-block; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<div id="login-screen">
-    <div class="card" style="max-width: 350px;">
-        <h1 style="font-size: 1.2rem;">MASTER AUTH</h1>
-        <input type="password" id="admin-pass" placeholder="ŞİFRE">
-        <input type="number" id="admin-pin" placeholder="2FA PIN">
-        <button onclick="checkAuth()">SİSTEME GİR</button>
-        <p id="err" style="color:#ff4b2b; font-size:0.7rem; display:none; text-align:center;">HATALI GİRİŞ!</p>
-    </div>
-</div>
-
-<div class="container" id="admin-main">
-    <h1>WORDZEN CONTROL UNIT</h1>
-
-    <div class="card">
-        <div class="card-title">HIZLI İŞLEMLER</div>
-        <div class="grid-2">
-            <button class="btn-blue" onclick="toggleList()">KELİMELERİ LİSTELE</button>
-            <button class="btn-red" onclick="location.reload()">ÇIKIŞ YAP</button>
+    <h1>LİDER BEY KOMUTA MERKEZİ</h1>
+    
+    <div class="grid">
+        <div class="stat-card">
+            <h3>TOPLAM OYUNCU</h3>
+            <p id="total-users">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>ANLIK AKTİF <span class="active-dot"></span></h3>
+            <p id="active-users">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>TOPLAM KELİME</h3>
+            <p id="total-words">0</p>
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-title">YENİ KELİME EKLE</div>
-        <input type="text" id="new-word" placeholder="KELİME">
-        <textarea id="new-clue" placeholder="ANLAMI/İPUCU" rows="2"></textarea>
-        <button onclick="addWord()">SİSTEME KAYDET</button>
-    </div>
+    <button id="maint-btn" class="btn btn-maint" onclick="toggleMaintenance()">BAKIM MODU: KAPALI</button>
 
-    <div id="word-list-container" class="card">
-        <div class="card-title">MEVCUT KELİMELER (DÜZENLENEBİLİR)</div>
-        <div id="word-list"></div>
-    </div>
-</div>
+    <h2 style="margin-top:40px;">OYUNCU LİSTESİ & MÜDAHALE</h2>
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>ID / İSİM</th>
+                <th>CİNSİYET / YAŞ</th>
+                <th>JETON</th>
+                <th>SEVİYE</th>
+                <th>İŞLEM</th>
+            </tr>
+        </thead>
+        <tbody id="user-list">
+            </tbody>
+    </table>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+    import { getDatabase, ref, onValue, update, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+    import { wordList } from './kelimeler.js';
 
     const firebaseConfig = {
         apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
@@ -80,72 +76,71 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // 1. GÜVENLİK KONTROLÜ
-    window.checkAuth = () => {
-        const p = document.getElementById('admin-pass').value;
-        const pin = document.getElementById('admin-pin').value;
-        if(p === "Muhiy.1905342" && pin === "342332") {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('admin-main').style.display = 'block';
-        } else {
-            document.getElementById('err').style.display = 'block';
+    // 1. Kelime Sayısını Çek
+    document.getElementById('total-words').innerText = wordList.length;
+
+    // 2. Bakım Modu Kontrolü
+    onValue(ref(db, 'settings/maintenance'), (snap) => {
+        const isMaint = snap.val();
+        const btn = document.getElementById('maint-btn');
+        btn.innerText = isMaint ? "BAKIM MODU: AÇIK (Kapatmak için tıkla)" : "BAKIM MODU: KAPALI (Açmak için tıkla)";
+        btn.style.background = isMaint ? "#39FF14" : "#ff4b2b";
+        btn.style.color = isMaint ? "#000" : "#fff";
+    });
+
+    window.toggleMaintenance = () => {
+        const current = document.getElementById('maint-btn').innerText.includes("KAPALI");
+        set(ref(db, 'settings/maintenance'), current);
+    };
+
+    // 3. Kullanıcı Verilerini Çek ve Listele
+    onValue(ref(db, 'users'), (snap) => {
+        const users = snap.val();
+        const list = document.getElementById('user-list');
+        list.innerHTML = "";
+        
+        let totalCount = 0;
+        let activeCount = 0;
+        const now = Date.now();
+
+        if (users) {
+            Object.keys(users).forEach(uid => {
+                const u = users[uid];
+                totalCount++;
+                
+                // Son 5 dakikada işlem yapanları aktif say
+                if(u.lastSeen && now - u.lastSeen < 300000) activeCount++;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div style="font-weight:800; color:#39FF14">${u.name || 'İsimsiz'}</div>
+                        <div style="font-size:0.6rem; opacity:0.5">${uid}</div>
+                    </td>
+                    <td>${u.gender || '?'} / ${u.age || '?'}</td>
+                    <td><input type="number" id="coin-${uid}" value="${u.coins}"></td>
+                    <td><input type="number" id="lvl-${uid}" value="${u.level}"></td>
+                    <td>
+                        <button class="btn btn-update" onclick="updatePlayer('${uid}')">GÜNCELLE</button>
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
         }
+        document.getElementById('total-users').innerText = totalCount;
+        document.getElementById('active-users').innerText = activeCount;
+    });
+
+    window.updatePlayer = (uid) => {
+        const newCoin = parseInt(document.getElementById(`coin-${uid}`).value);
+        const newLvl = parseInt(document.getElementById(`lvl-${uid}`).value);
+        
+        update(ref(db, 'users/' + uid), {
+            coins: newCoin,
+            level: newLvl
+        }).then(() => alert("Oyuncu güncellendi kanka!"));
     };
 
-    // 2. KELİME EKLEME
-    window.addWord = async () => {
-        const w = document.getElementById('new-word').value.trim().toUpperCase();
-        const c = document.getElementById('new-clue').value.trim();
-        if(!w || !c) return alert("Eksik bilgi!");
-        await set(ref(db, 'levels/' + w), { a: w, m: c });
-        alert("Başarıyla eklendi!");
-        document.getElementById('new-word').value = "";
-        document.getElementById('new-clue').value = "";
-    };
-
-    // 3. LİSTELEME VE DÜZENLEME
-    window.toggleList = () => {
-        const container = document.getElementById('word-list-container');
-        container.style.display = container.style.display === 'none' ? 'block' : 'none';
-        if(container.style.display === 'block') loadWords();
-    };
-
-    function loadWords() {
-        const listDiv = document.getElementById('word-list');
-        onValue(ref(db, 'levels'), (snap) => {
-            listDiv.innerHTML = "";
-            const data = snap.val();
-            if(data) {
-                Object.keys(data).forEach(key => {
-                    const item = data[key];
-                    const div = document.createElement('div');
-                    div.className = 'word-item';
-                    div.innerHTML = `
-                        <label style="font-size:0.6rem; color:#888;">KELİME</label>
-                        <input type="text" id="edit-w-${key}" value="${item.a}">
-                        <label style="font-size:0.6rem; color:#888;">ANLAMI</label>
-                        <textarea id="edit-m-${key}">${item.m}</textarea>
-                        <div class="grid-2">
-                            <button onclick="saveEdit('${key}')">KAYDET</button>
-                            <button class="btn-red" onclick="deleteWord('${key}')">SİL</button>
-                        </div>
-                    `;
-                    listDiv.appendChild(div);
-                });
-            }
-        });
-    }
-
-    window.saveEdit = async (key) => {
-        const newW = document.getElementById('edit-w-'+key).value.toUpperCase();
-        const newM = document.getElementById('edit-m-'+key).value;
-        await update(ref(db, 'levels/' + key), { a: newW, m: newM });
-        alert("Güncellendi!");
-    };
-
-    window.deleteWord = async (key) => {
-        if(confirm("Silinsin mi?")) await remove(ref(db, 'levels/' + key));
-    };
 </script>
 </body>
 </html>
