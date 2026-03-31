@@ -7,174 +7,144 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Montserrat', sans-serif; background: #050505; color: #fff; margin: 0; padding: 15px; }
-        .container { max-width: 700px; margin: 0 auto; }
-        h1 { color: #39FF14; text-align: center; font-size: 1.4rem; margin-bottom: 20px; }
+        .container { max-width: 800px; margin: 0 auto; display: none; }
+        h1 { color: #39FF14; text-align: center; font-size: 1.4rem; margin-bottom: 20px; text-shadow: 0 0 10px #39FF14; }
         
-        .card { background: #111; padding: 15px; border-radius: 12px; border: 1px solid #222; margin-bottom: 15px; }
-        .card-title { font-size: 0.8rem; color: #39FF14; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        /* GİRİŞ EKRANI */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
         
-        input, textarea, select { width: 100%; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 10px; color: #fff; margin-bottom: 8px; font-family: inherit; font-size: 0.9rem; }
-        button { width: 100%; background: #39FF14; color: #000; border: none; padding: 10px; border-radius: 6px; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        button:active { transform: scale(0.97); }
+        .card { background: #111; padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 15px; width: 100%; }
+        .card-title { font-size: 0.8rem; color: #39FF14; margin-bottom: 15px; text-transform: uppercase; font-weight: 800; }
+        
+        input, textarea { width: 100%; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px; color: #fff; margin-bottom: 10px; font-family: inherit; }
+        button { width: 100%; background: #39FF14; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; margin-bottom: 5px; }
+        button:active { transform: scale(0.96); }
+        .btn-blue { background: #00d4ff; color: #000; }
         .btn-red { background: #ff4b2b; color: #fff; }
-        
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .stat-box { background: #111; padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #222; }
-        .stat-val { font-size: 1.1rem; color: #39FF14; display: block; }
-        .stat-lbl { font-size: 0.6rem; color: #888; }
-        
-        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-bottom: 10px; }
-        .online { background: #39FF14; color: #000; }
-        .maintenance { background: #ff4b2b; color: #fff; }
+
+        /* KELİME LİSTESİ */
+        #word-list-container { margin-top: 20px; display: none; }
+        .word-item { background: #111; padding: 15px; border-radius: 10px; border-left: 4px solid #39FF14; margin-bottom: 10px; }
+        .word-item input { margin-bottom: 5px; background: #000; border-color: #222; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>WORDZEN MASTER PANEL</h1>
-
-    <div id="maintenance-status" class="status-badge online">SİSTEM ÇEVRİMİÇİ</div>
-
-    <div class="grid-2" style="margin-bottom: 15px;">
-        <div class="stat-box"><span id="total-users" class="stat-val">0</span><span class="stat-lbl">OYUNCU</span></div>
-        <div class="stat-box"><span id="total-levels" class="stat-val">0</span><span class="stat-lbl">KELİME</span></div>
+<div id="login-screen">
+    <div class="card" style="max-width: 350px;">
+        <h1 style="font-size: 1.2rem;">MASTER AUTH</h1>
+        <input type="password" id="admin-pass" placeholder="ŞİFRE">
+        <input type="number" id="admin-pin" placeholder="2FA PIN">
+        <button onclick="checkAuth()">SİSTEME GİR</button>
+        <p id="err" style="color:#ff4b2b; font-size:0.7rem; display:none; text-align:center;">HATALI GİRİŞ!</p>
     </div>
+</div>
+
+<div class="container" id="admin-main">
+    <h1>WORDZEN CONTROL UNIT</h1>
 
     <div class="card">
-        <div class="card-title">Sistem & Duyuru</div>
-        <button id="maint-btn" class="btn-red" onclick="toggleMaintenance()" style="margin-bottom:10px;">BAKIM MODUNU AÇ</button>
-        <input type="text" id="announcement-text" placeholder="Duyuru mesajı yaz...">
-        <button onclick="updateAnnouncement()" style="background:#fff">DUYURUYU YAYINLA</button>
-    </div>
-
-    <div class="card">
-        <div class="card-title">Oyuncu Düzenle</div>
-        <input type="text" id="target-user-id" placeholder="Oyuncu ID (Örn: UZ_123456)">
+        <div class="card-title">HIZLI İŞLEMLER</div>
         <div class="grid-2">
-            <input type="number" id="mod-coin" placeholder="Jeton (+/-)">
-            <input type="number" id="mod-level" placeholder="Seviye (+/-)">
+            <button class="btn-blue" onclick="toggleList()">KELİMELERİ LİSTELE</button>
+            <button class="btn-red" onclick="location.reload()">ÇIKIŞ YAP</button>
         </div>
-        <button onclick="managePlayer()">BİLGİLERİ GÜNCELLE</button>
     </div>
 
     <div class="card">
-        <div class="card-title">Yeni Kelime Ekle</div>
-        <input type="text" id="word-input" placeholder="Kelime (Örn: TÜRKİYE)">
-        <textarea id="clue-input" placeholder="Anlamı/İpucu..." rows="2"></textarea>
-        <button onclick="addLevel()">KELİMEYİ SİSTEME EKLE</button>
+        <div class="card-title">YENİ KELİME EKLE</div>
+        <input type="text" id="new-word" placeholder="KELİME">
+        <textarea id="new-clue" placeholder="ANLAMI/İPUCU" rows="2"></textarea>
+        <button onclick="addWord()">SİSTEME KAYDET</button>
     </div>
 
-    <div class="card">
-        <div class="card-title">Ayarlar & Görsellik</div>
-        <div class="grid-2">
-            <div><label class="stat-lbl">İPUCU 🪙</label><input type="number" id="hint-price"></div>
-            <div><label class="stat-lbl">ATLA 🪙</label><input type="number" id="skip-price"></div>
-        </div>
-        <div>
-            <label class="stat-lbl">ARKA PLAN DEĞİŞİM SIKLIĞI (Kaç bölümde bir?)</label>
-            <input type="number" id="bg-freq" placeholder="Örn: 5">
-        </div>
-        <button onclick="updateConfig()" style="background:#fff">TÜM AYARLARI KAYDET</button>
+    <div id="word-list-container" class="card">
+        <div class="card-title">MEVCUT KELİMELER (DÜZENLENEBİLİR)</div>
+        <div id="word-list"></div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getDatabase, ref, set, push, get, update, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
         authDomain: "wordzen-2e052.firebaseapp.com",
         databaseURL: "https://wordzen-2e052-default-rtdb.firebaseio.com",
         projectId: "wordzen-2e052",
-        storageBucket: "wordzen-2e052.firebasestorage.app",
-        messagingSenderId: "309225718128",
         appId: "1:309225718128:web:8a38717b4b6fc8f3a18fb5"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // CANLI VERİ TAKİBİ
-    onValue(ref(db, 'users'), s => document.getElementById('total-users').innerText = s.exists() ? Object.keys(s.val()).length : 0);
-    onValue(ref(db, 'levels'), s => document.getElementById('total-levels').innerText = s.exists() ? Object.keys(s.val()).length : 0);
-    
-    // BAKIM DURUMU TAKİBİ
-    onValue(ref(db, 'admin/config'), s => {
-        if(s.exists()){
-            const data = s.val();
-            const isMaint = data.maintenance_mode;
-            const badge = document.getElementById('maintenance-status');
-            const btn = document.getElementById('maint-btn');
-            
-            badge.innerText = isMaint ? "BAKIM MODU AKTİF" : "SİSTEM ÇEVRİMİÇİ";
-            badge.className = isMaint ? "status-badge maintenance" : "status-badge online";
-            btn.innerText = isMaint ? "BAKIM MODUNU KAPAT" : "BAKIM MODUNU AÇ";
-            btn.setAttribute('data-state', isMaint);
-
-            document.getElementById('hint-price').value = data.hint_price || 10;
-            document.getElementById('skip-price').value = data.skip_price || 50;
-            document.getElementById('bg-freq').value = data.bg_frequency || 10;
-            document.getElementById('announcement-text').value = data.announcement || "";
-        }
-    });
-
-    // BAKIM MODU AÇ/KAPAT
-    window.toggleMaintenance = async () => {
-        const btn = document.getElementById('maint-btn');
-        const currentState = btn.getAttribute('data-state') === 'true';
-        await update(ref(db, 'admin/config'), { maintenance_mode: !currentState });
-        alert("Bakım modu durumu değiştirildi!");
-    };
-
-    // DUYURU GÜNCELLE
-    window.updateAnnouncement = async () => {
-        const txt = document.getElementById('announcement-text').value;
-        await update(ref(db, 'admin/config'), { announcement: txt });
-        alert("Duyuru yayınlandı!");
-    };
-
-    // OYUNCU YÖNETİMİ
-    window.managePlayer = async () => {
-        const uid = document.getElementById('target-user-id').value.trim();
-        const coinMod = parseInt(document.getElementById('mod-coin').value) || 0;
-        const levelMod = parseInt(document.getElementById('mod-level').value) || 0;
-
-        if(!uid) return alert("Oyuncu ID gir!");
-
-        const userRef = ref(db, 'users/' + uid);
-        const snap = await get(userRef);
-        
-        if(snap.exists()){
-            const newData = {
-                coins: (snap.val().coins || 0) + coinMod,
-                level: (snap.val().level || 0) + levelMod
-            };
-            await update(userRef, newData);
-            alert("Oyuncu güncellendi!");
-        } else { alert("Oyuncu bulunamadı!"); }
-    };
-
-    // KELİME EKLE
-    window.addLevel = async () => {
-        const a = document.getElementById('word-input').value.trim().toUpperCase();
-        const m = document.getElementById('clue-input').value.trim();
-        if(a && m) {
-            await set(push(ref(db, 'levels')), { a, m });
-            document.getElementById('word-input').value = "";
-            document.getElementById('clue-input').value = "";
-            alert("Kelime eklendi!");
+    // 1. GÜVENLİK KONTROLÜ
+    window.checkAuth = () => {
+        const p = document.getElementById('admin-pass').value;
+        const pin = document.getElementById('admin-pin').value;
+        if(p === "Muhiy.1905342" && pin === "342332") {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-main').style.display = 'block';
+        } else {
+            document.getElementById('err').style.display = 'block';
         }
     };
 
-    // AYARLARI GÜNCELLE
-    window.updateConfig = async () => {
-        await update(ref(db, 'admin/config'), {
-            hint_price: parseInt(document.getElementById('hint-price').value),
-            skip_price: parseInt(document.getElementById('skip-price').value),
-            bg_frequency: parseInt(document.getElementById('bg-freq').value)
+    // 2. KELİME EKLEME
+    window.addWord = async () => {
+        const w = document.getElementById('new-word').value.trim().toUpperCase();
+        const c = document.getElementById('new-clue').value.trim();
+        if(!w || !c) return alert("Eksik bilgi!");
+        await set(ref(db, 'levels/' + w), { a: w, m: c });
+        alert("Başarıyla eklendi!");
+        document.getElementById('new-word').value = "";
+        document.getElementById('new-clue').value = "";
+    };
+
+    // 3. LİSTELEME VE DÜZENLEME
+    window.toggleList = () => {
+        const container = document.getElementById('word-list-container');
+        container.style.display = container.style.display === 'none' ? 'block' : 'none';
+        if(container.style.display === 'block') loadWords();
+    };
+
+    function loadWords() {
+        const listDiv = document.getElementById('word-list');
+        onValue(ref(db, 'levels'), (snap) => {
+            listDiv.innerHTML = "";
+            const data = snap.val();
+            if(data) {
+                Object.keys(data).forEach(key => {
+                    const item = data[key];
+                    const div = document.createElement('div');
+                    div.className = 'word-item';
+                    div.innerHTML = `
+                        <label style="font-size:0.6rem; color:#888;">KELİME</label>
+                        <input type="text" id="edit-w-${key}" value="${item.a}">
+                        <label style="font-size:0.6rem; color:#888;">ANLAMI</label>
+                        <textarea id="edit-m-${key}">${item.m}</textarea>
+                        <div class="grid-2">
+                            <button onclick="saveEdit('${key}')">KAYDET</button>
+                            <button class="btn-red" onclick="deleteWord('${key}')">SİL</button>
+                        </div>
+                    `;
+                    listDiv.appendChild(div);
+                });
+            }
         });
-        alert("Ayarlar kaydedildi!");
+    }
+
+    window.saveEdit = async (key) => {
+        const newW = document.getElementById('edit-w-'+key).value.toUpperCase();
+        const newM = document.getElementById('edit-m-'+key).value;
+        await update(ref(db, 'levels/' + key), { a: newW, m: newM });
+        alert("Güncellendi!");
+    };
+
+    window.deleteWord = async (key) => {
+        if(confirm("Silinsin mi?")) await remove(ref(db, 'levels/' + key));
     };
 </script>
 </body>
