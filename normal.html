@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WordZen | Normal Mod</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        body { width:100%; height:100vh; overflow:hidden; font-family:'Montserrat', sans-serif; background-size:cover; background-position:center; transition: background 1s ease-in-out; }
+        
+        /* Üst Bar */
+        .header { position:fixed; top:10px; width:100%; display:flex; justify-content:space-between; padding:0 20px; z-index:10; }
+        .coin-box { background:rgba(0,0,0,0.8); border:2px solid #ffcc00; padding:10px 20px; border-radius:30px; color:#ffcc00; font-size:1.2rem; position:relative; }
+        .lvl-box { background:rgba(0,0,0,0.8); color:#39FF14; padding:10px 20px; border-radius:15px; border:1px solid #39FF14; }
+
+        /* Oyun Alanı */
+        #game-container { height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding-bottom:200px; }
+        #word-row { display:flex; gap:8px; margin-bottom:30px; flex-wrap:nowrap; }
+        .box { width:45px; height:55px; background:rgba(255,255,255,0.1); border:2px solid #fff; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:#fff; }
+        .clue { background:rgba(0,0,0,0.7); padding:20px; border-radius:20px; color:#fff; text-align:center; width:85%; max-width:400px; }
+
+        /* Klavye */
+        #kb { position:fixed; bottom:0; width:100%; background:rgba(0,0,0,0.9); padding:10px; display:flex; flex-direction:column; gap:5px; }
+        .row { display:flex; justify-content:center; gap:4px; }
+        .key { flex:1; height:50px; background:rgba(255,255,255,0.2); color:#fff; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:bold; }
+
+        /* Jeton Animasyonu */
+        .floating-coin { position:absolute; color:#ffcc00; font-size:1.5rem; animation: floatUp 0.8s forwards; z-index:100; pointer-events:none; }
+        @keyframes floatUp { 0%{transform:translateY(0); opacity:1;} 100%{transform:translateY(-300px); opacity:0;} }
+    </style>
+</head>
+<body id="main-body">
+
+    <div class="header">
+        <div class="lvl-box">BÖLÜM: <span id="lvl">1</span></div>
+        <div class="coin-box" id="coin-parent">🪙 <span id="coins">0</span></div>
+    </div>
+
+    <div id="game-container">
+        <div id="word-row"></div>
+        <div class="clue" id="clue-text">Yükleniyor...</div>
+    </div>
+
+    <div id="kb"></div>
+
+<script type="module">
+    import { wordList } from './kelimeler.js';
+    let profile = JSON.parse(localStorage.getItem('wz_profile'));
+    let curIdx = profile.level - 1;
+
+    const dogruSes = new Audio('dogru.mp3');
+    const yanlisSes = new Audio('yanlis.mp3');
+
+    function init() {
+        updateBG();
+        document.getElementById('coins').innerText = profile.coins;
+        document.getElementById('lvl').innerText = profile.level;
+        renderWord();
+    }
+
+    function updateBG() {
+        // 5 bölümde bir değişen 42 arka plan sistemi
+        let bgNum = Math.floor(curIdx / 5) + 1;
+        if(bgNum > 42) bgNum = 42;
+        document.getElementById('main-body').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('bg${bgNum}.jpg')`;
+    }
+
+    function renderWord() {
+        const data = wordList[curIdx % wordList.length];
+        document.getElementById('clue-text').innerText = data.m;
+        const row = document.getElementById('word-row');
+        row.innerHTML = "";
+        data.a.split('').forEach(() => {
+            const b = document.createElement('div'); b.className='box'; row.appendChild(b);
+        });
+    }
+
+    window.checkWin = (guess) => {
+        const target = wordList[curIdx % wordList.length].a;
+        if(guess === target) {
+            dogruSes.play();
+            showCoinAnim();
+            profile.coins += 5;
+            profile.level += 1;
+            curIdx++;
+            localStorage.setItem('wz_profile', JSON.stringify(profile));
+            setTimeout(() => { init(); }, 800);
+        } else {
+            yanlisSes.play();
+            // Titreme efekti buraya gelecek
+        }
+    }
+
+    function showCoinAnim() {
+        const anim = document.createElement('div');
+        anim.className = 'floating-coin';
+        anim.innerText = "+5 🪙";
+        document.body.appendChild(anim);
+        setTimeout(() => anim.remove(), 800);
+    }
+
+    // Klavye ve Harf Fonksiyonları (Önceki kodların aynısı buraya tam eklenecek)
+    init();
+</script>
+</body>
+</html>
