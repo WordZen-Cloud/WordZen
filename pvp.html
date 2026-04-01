@@ -9,231 +9,205 @@
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { width:100%; height:100vh; overflow:hidden; font-family:'Montserrat', sans-serif; background:#000; color:#fff; }
         
-        /* Eşleşme Ekranı */
-        #matchmaking { position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle, #1a1a1a, #000); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:5000; padding:20px; }
-        .input-group { width:100%; display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
-        input { width:100%; padding:20px; border-radius:15px; border:2px solid #333; background:#000; color:#39FF14; font-size:1.5rem; text-align:center; font-weight:900; }
+        /* 1. Eşleşme Ekranı (Matchmaking - Harika Arka Plan) */
+        #matchmaking { 
+            position:fixed; top:0; left:0; width:100%; height:100%; 
+            background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
+            display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:5000; padding:20px;
+        }
+        .match-card { background:rgba(255,255,255,0.05); backdrop-filter:blur(15px); padding:30px; border-radius:30px; border:1px solid rgba(255,255,255,0.1); width:100%; max-width:400px; text-align:center; }
+        .match-input { width:100%; padding:15px; border-radius:15px; border:2px solid #39FF14; background:rgba(0,0,0,0.5); color:#39FF14; font-size:1.4rem; text-align:center; margin:10px 0; outline:none; }
         
-        .btn { width:100%; padding:20px; border-radius:15px; border:none; font-weight:900; cursor:pointer; font-size:1.1rem; text-transform:uppercase; margin-top:10px; }
-        .btn-create { background:#39FF14; color:#000; }
-        .btn-join { background:#00d4ff; color:#000; }
-        .btn-cancel { background:#ff4b2b; color:#fff; margin-top:20px; width:50%; }
+        /* Eşleşme Aranıyor Animasyonu */
+        .searching-anim { width:60px; height:60px; border:5px solid #39FF14; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin:20px auto; display:none; }
+        @keyframes spin { 100% { transform:rotate(360deg); } }
 
-        /* Oyun Ekranı */
-        #game-ui { display:none; height:100vh; flex-direction:column; }
-        #timer-container { width:100%; height:8px; background:#222; position:fixed; top:0; }
-        #timer-fill { width:100%; height:100%; background:#39FF14; transition: width 1s linear; }
+        /* 2. Oyun Arenası Arka Planı */
+        #arena { 
+            display:none; height:100vh; flex-direction:column; 
+            background: url('bg-arena.jpg') center/cover no-repeat; /* Buraya güzel bir arena resmi koy kanka */
+            background-color: #000;
+        }
+        
+        /* Zaman Barı (Kırmızıdan Yeşile) */
+        #timer-container { width:100%; height:10px; background:#222; position:fixed; top:0; }
+        #timer-bar { width:100%; height:100%; background:linear-gradient(to right, #ff4b2b, #39FF14); transition: width 0.1s linear; }
 
-        .players-bar { display:flex; justify-content:space-between; padding:30px 20px; background:rgba(255,255,255,0.05); }
-        .p-info { display:flex; flex-direction:column; align-items:center; }
-        .score { font-size:2.5rem; color:#39FF14; text-shadow: 0 0 10px #39FF14; }
+        .players { display:flex; justify-content:space-between; padding:40px 20px 20px; background:linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
+        .score-box { text-align:center; }
+        .score-val { font-size:2.5rem; color:#39FF14; text-shadow:0 0 10px #39FF14; }
 
-        #question-area { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
-        #word-slots { display:flex; gap:5px; margin-bottom:20px; }
-        .slot { width:35px; height:45px; border:2px solid #fff; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; }
+        #q-area { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
+        #word-slots { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; justify-content:center; }
+        .slot { width:45px; height:55px; border:3px solid #fff; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; background:rgba(0,0,0,0.5); transition:0.3s; }
+        .correct { background:#39FF14 !important; border-color:#39FF14 !important; color:#000; }
 
-        /* Uzun Klavye */
-        #kb { height:35vh; background:rgba(0,0,0,0.9); display:flex; flex-direction:column; gap:5px; padding:5px; }
+        /* UZUN KLAVYE (Burada da var artık!) */
+        #kb { height:38vh; background:rgba(0,0,0,0.95); padding:8px; display:flex; flex-direction:column; gap:5px; border-top:3px solid #00d4ff; }
         .row { display:flex; gap:4px; flex:1; }
-        .key { flex:1; background:#222; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:900; border-bottom:4px solid #000; }
-        .key:active { background:#39FF14; color:#000; }
+        .key { flex:1; background:#222; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; font-weight:900; border-bottom:4px solid #000; }
+        .key:active { background:#00d4ff; color:#000; transform:translateY(3px); }
+        .key-del { flex:1.5; background:#ff4b2b; }
 
-        /* Modal / Sonuç */
-        #result-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:6000; }
+        .btn { width:100%; padding:18px; border-radius:15px; border:none; font-weight:900; font-size:1.1rem; cursor:pointer; margin-top:10px; }
     </style>
 </head>
 <body>
 
     <div id="matchmaking">
-        <h1 style="color:#39FF14; margin-bottom:30px;">1V1 ARENA</h1>
-        <div class="input-group">
-            <input type="text" id="room-id-input" placeholder="WZ-XXXXXX">
-            <button class="btn btn-join" onclick="joinRoom()">ODAYA GİR</button>
+        <div class="match-card">
+            <h2 style="color:#39FF14; margin-bottom:20px;">1V1 KAPIŞMA</h2>
+            <div id="setup-mode">
+                <input type="number" id="bet-val" class="match-input" placeholder="BAHİS JETON">
+                <button class="btn" style="background:#39FF14; color:#000;" onclick="createRoom()">ODA KUR</button>
+                <div style="margin:15px 0; color:#888;">VEYA</div>
+                <input type="text" id="room-id-in" class="match-input" placeholder="WZ-XXXXXX">
+                <button class="btn" style="background:#00d4ff; color:#000;" onclick="joinRoom()">ODAYA GİR</button>
+            </div>
+            
+            <div id="waiting-mode" style="display:none;">
+                <h3 id="display-room-id" style="color:#ffcc00; font-size:1.8rem;">WZ-000000</h3>
+                <p style="margin-top:10px;">Rakip Bekleniyor...</p>
+                <div class="searching-anim" style="display:block;"></div>
+                <button class="btn" style="background:red; color:#fff;" onclick="location.reload()">İPTAL</button>
+            </div>
         </div>
-        <div style="width:100%; height:2px; background:#333; margin:20px 0;"></div>
-        <input type="number" id="bet-amount" placeholder="BAHİS (Örn: 500)" style="font-size:1rem; padding:15px;">
-        <button class="btn btn-create" onclick="createRoom()">ODA KUR</button>
-        <button class="btn-cancel" onclick="location.href='index.html'">GERİ GİT</button>
     </div>
 
-    <div id="game-ui">
-        <div id="timer-container"><div id="timer-fill"></div></div>
-        <div class="players-bar">
-            <div class="p-info"><span id="p1-name">SEN</span><span class="score" id="p1-score">0</span></div>
-            <div style="font-size:1.5rem; color:#ff4b2b;">VS</div>
-            <div class="p-info"><span id="p2-name">RAKİP</span><span class="score" id="p2-score">0</span></div>
+    <div id="arena">
+        <div id="timer-container"><div id="timer-bar"></div></div>
+        <div class="players">
+            <div class="score-box"><p id="p1-n">SEN</p><div class="score-val" id="p1-s">0</div></div>
+            <div style="font-size:1.5rem; color:#ff4b2b; padding-top:15px;">VS</div>
+            <div class="score-box"><p id="p2-n">RAKİP</p><div class="score-val" id="p2-s">0</div></div>
         </div>
-        <div id="question-area">
-            <h3 id="q-num" style="margin-bottom:10px; color:#aaa;">SORU: 1/10</h3>
+        <div id="q-area">
             <div id="word-slots"></div>
-            <div style="background:rgba(0,0,0,0.5); padding:20px; border-radius:15px; text-align:center;" id="clue-txt">...</div>
+            <div id="clue-txt" style="background:rgba(0,0,0,0.8); padding:15px; border-radius:15px; text-align:center; width:90%; border:1px solid #333;">...</div>
         </div>
         <div id="kb"></div>
     </div>
 
-    <div id="result-modal">
-        <h1 id="winner-text" style="font-size:3rem;">KAZANDIN!</h1>
-        <p id="prize-text" style="font-size:1.5rem; color:#ffcc00; margin:20px;">+1000 🪙</p>
-        <button class="btn btn-create" onclick="location.href='index.html'">ANA MENÜ</button>
-    </div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update, onDisconnect } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
     import { wordList } from './kelimeler.js';
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCFgWqiyOv1UWfehf8zUtu4XqsXTrRdcZc",
-        authDomain: "wordzen-2e052.firebaseapp.com",
-        databaseURL: "https://wordzen-2e052-default-rtdb.firebaseio.com",
-        projectId: "wordzen-2e052",
-        appId: "1:309225718128:web:8a38717b4b6fc8f3a18fb5"
-    };
-    const app = initializeApp(firebaseConfig);
+    // Firebase Bilgilerin (Kendi bilgilerini buraya çak kanka)
+    const app = initializeApp({ databaseURL: "https://wordzen-2e052-default-rtdb.firebaseio.com" });
     const db = getDatabase(app);
+    let u = JSON.parse(localStorage.getItem('wz_user'));
+    let myRole, roomID, gameData, timerInt;
 
-    let profile = JSON.parse(localStorage.getItem('wz_profile'));
-    let myUid = localStorage.getItem('wz_uid');
-    let roomRef, myRole, gameData, timerInt;
-
-    // 1. ODA KURMA (Bahisli)
+    // 1. ODA KURMA
     window.createRoom = () => {
-        const bet = parseInt(document.getElementById('bet-amount').value);
-        if(!bet || profile.coins < bet) return alert("Yetersiz bakiye kanka!");
+        const bet = parseInt(document.getElementById('bet-val').value);
+        if(!bet || u.coins < bet) return alert("Jetonun yetmiyor kanka!");
         
-        const rid = "WZ-" + Math.floor(100000 + Math.random() * 900000);
-        const selectedWords = [];
-        for(let i=0; i<10; i++) selectedWords.push(wordList[Math.floor(Math.random()*wordList.length)]);
+        roomID = "WZ-" + Math.floor(100000 + Math.random() * 900000);
+        const qList = [];
+        for(let i=0; i<10; i++) qList.push(wordList[Math.floor(Math.random()*wordList.length)]);
 
-        roomRef = ref(db, 'rooms/' + rid);
-        set(roomRef, {
-            id: rid,
-            p1: { uid: myUid, name: profile.name, score: 0 },
-            p2: null,
-            bet: bet,
-            words: selectedWords,
-            qIndex: 0,
-            status: 'waiting',
-            lastWinner: null
+        const rRef = ref(db, 'rooms/' + roomID);
+        set(rRef, {
+            id: roomID, bet: bet, qIdx: 0, status: 'wait',
+            p1: { name: u.name, score: 0 }, p2: null, words: qList
         });
 
         myRole = 'p1';
-        listenRoom(rid);
-        alert("Oda Kuruldu: " + rid);
+        document.getElementById('setup-mode').style.display = 'none';
+        document.getElementById('waiting-mode').style.display = 'block';
+        document.getElementById('display-room-id').innerText = roomID;
+        listen();
     };
 
     // 2. ODAYA GİRİŞ
     window.joinRoom = () => {
-        const rid = document.getElementById('room-id-input').value.toUpperCase();
-        onValue(ref(db, 'rooms/' + rid), (snap) => {
-            const data = snap.val();
-            if(!data) return alert("Oda bulunamadı!");
-            if(data.p2) return;
-            if(profile.coins < data.bet) return alert("Bahis için jetonun eksik!");
+        const rid = document.getElementById('room-id-in').value.toUpperCase();
+        onValue(ref(db, 'rooms/' + rid), (s) => {
+            const d = s.val();
+            if(!d || d.p2) return alert("Oda bulunamadı veya dolu!");
+            if(u.coins < d.bet) return alert("Bahis için jetonun eksik!");
 
             update(ref(db, 'rooms/' + rid), {
-                p2: { uid: myUid, name: profile.name, score: 0 },
-                status: 'playing',
+                p2: { name: u.name, score: 0 },
+                status: 'play',
                 startTime: Date.now()
             });
             myRole = 'p2';
-            listenRoom(rid);
+            roomID = rid;
+            listen();
         }, { onlyOnce: true });
     };
 
-    // 3. OYUN MOTORU (Canlı Senkron)
-    function listenRoom(rid) {
-        onValue(ref(db, 'rooms/' + rid), (snap) => {
-            gameData = snap.val();
-            if(!gameData) return;
-
-            if(gameData.status === 'playing') {
+    function listen() {
+        onValue(ref(db, 'rooms/' + roomID), (s) => {
+            gameData = s.val();
+            if(gameData.status === 'play') {
                 document.getElementById('matchmaking').style.display = 'none';
-                document.getElementById('game-ui').style.display = 'flex';
-                renderPvP();
-            }
-
-            if(gameData.status === 'finished') {
-                showFinalResult();
+                document.getElementById('arena').style.display = 'flex';
+                startRound();
             }
         });
     }
 
-    function renderPvP() {
-        const q = gameData.words[gameData.qIndex];
-        document.getElementById('p1-name').innerText = gameData.p1.name;
-        document.getElementById('p2-name').innerText = gameData.p2 ? gameData.p2.name : "...";
-        document.getElementById('p1-score').innerText = gameData.p1.score;
-        document.getElementById('p2-score').innerText = gameData.p2.score;
-        document.getElementById('q-num').innerText = `SORU: ${gameData.qIndex + 1}/10`;
+    function startRound() {
+        const q = gameData.words[gameData.qIdx];
+        document.getElementById('p1-n').innerText = gameData.p1.name;
+        document.getElementById('p2-n').innerText = gameData.p2.name;
+        document.getElementById('p1-s').innerText = gameData.p1.score;
+        document.getElementById('p2-s').innerText = gameData.p2.score;
         document.getElementById('clue-txt').innerText = q.m;
 
-        const slots = document.getElementById('word-slots');
-        slots.innerHTML = "";
-        q.a.split('').forEach(() => {
-            const s = document.createElement('div'); s.className='slot'; slots.appendChild(s);
-        });
+        const slots = document.getElementById('word-slots'); slots.innerHTML = "";
+        q.a.split('').forEach(() => { const div = document.createElement('div'); div.className='slot'; slots.appendChild(div); });
         
-        resetTimer();
-    }
-
-    function resetTimer() {
+        // 15 Saniye Geri Sayım
+        let timeLeft = 100;
         clearInterval(timerInt);
-        let w = 100;
         timerInt = setInterval(() => {
-            w -= 0.66; // 15 Saniyeye tekabül eder
-            document.getElementById('timer-fill').style.width = w + "%";
-            if(w <= 0) {
+            timeLeft -= 0.66; // Yaklaşık 15 saniye
+            document.getElementById('timer-bar').style.width = timeLeft + "%";
+            if(timeLeft <= 0) {
                 clearInterval(timerInt);
-                if(myRole === 'p1') nextQuestion(); // Sadece oda sahibi kontrol eder
+                if(myRole === 'p1') {
+                    if(gameData.qIdx < 9) update(ref(db, 'rooms/'+roomID), { qIdx: gameData.qIdx + 1 });
+                    else alert("Oyun Bitti!");
+                }
             }
         }, 100);
     }
 
-    // 4. KELİME KONTROL
-    window.submitGuess = (guess) => {
-        const target = gameData.words[gameData.qIndex].a;
-        if(guess === target) {
-            // İlk bilen puanı alır
-            update(ref(db, `rooms/${gameData.id}/${myRole}`), {
-                score: gameData[myRole].score + 1
-            });
-            nextQuestion();
-        }
-    };
-
-    function nextQuestion() {
-        if(gameData.qIndex < 9) {
-            update(ref(db, `rooms/${gameData.id}`), { qIndex: gameData.qIndex + 1 });
-        } else {
-            update(ref(db, `rooms/${gameData.id}`), { status: 'finished' });
-        }
-    }
-
-    function showFinalResult() {
-        const modal = document.getElementById('result-modal');
-        const winTxt = document.getElementById('winner-text');
-        const prizeTxt = document.getElementById('prize-text');
-        modal.display = 'flex';
-
-        let p1S = gameData.p1.score;
-        let p2S = gameData.p2.score;
-        let totalPrize = gameData.bet * 2;
-
-        if((myRole === 'p1' && p1S > p2S) || (myRole === 'p2' && p2S > p1S)) {
-            winTxt.innerText = "KAZANDIN!";
-            prizeTxt.innerText = `+${totalPrize} 🪙`;
-            profile.coins += totalPrize;
-        } else {
-            winTxt.innerText = "KAYBETTİN!";
-            winTxt.style.color = "red";
-            prizeTxt.innerText = `-${gameData.bet} 🪙`;
-            profile.coins -= gameData.bet;
-        }
-        localStorage.setItem('wz_profile', JSON.stringify(profile));
-    }
-
-    // Klavye buraya gelecek (Normal moddaki klavyenin submitGuess tetikleyen hali)
+    // Klavye ve Kontrol (PVP için)
+    const rows = [["Q","W","E","R","T","Y","U","I","İ","O","P"],["A","S","D","F","G","Ğ","H","J","K","L","Ş"],["Z","X","C","V","B","N","M","Ö","Ç","Ü","SİL"]];
+    const kb = document.getElementById('kb');
+    rows.forEach(r => {
+        const div = document.createElement('div'); div.className='row';
+        r.forEach(k => {
+            const b = document.createElement('div'); b.className='key'; b.innerText=k;
+            b.onclick = () => {
+                const slots = document.querySelectorAll('.slot');
+                if(k === "SİL") {
+                    for(let i=slots.length-1; i>=0; i--) if(slots[i].innerText!=="") { slots[i].innerText=""; break; }
+                } else {
+                    for(let i=0; i<slots.length; i++) {
+                        if(slots[i].innerText==="") { 
+                            slots[i].innerText=k; 
+                            // Kelime doldu mu bak
+                            let res = ""; document.querySelectorAll('.slot').forEach(s => res += s.innerText);
+                            if(res === gameData.words[gameData.qIdx].a) {
+                                update(ref(db, `rooms/${roomID}/${myRole}`), { score: gameData[myRole].score + 1 });
+                                if(gameData.qIdx < 9) update(ref(db, 'rooms/'+roomID), { qIdx: gameData.qIdx + 1 });
+                            }
+                            break; 
+                        }
+                    }
+                }
+            };
+            div.appendChild(b);
+        });
+        kb.appendChild(div);
+    });
 </script>
 </body>
 </html>
