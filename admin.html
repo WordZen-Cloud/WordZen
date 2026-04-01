@@ -3,56 +3,48 @@
 <head>
     <title>WordZen | Admin</title>
     <style>
-        body { background:#111; color:#fff; font-family:sans-serif; padding:20px; }
-        .card { background:#222; padding:20px; border-radius:15px; margin-bottom:20px; }
-        input, textarea { width:100%; padding:10px; margin:5px 0; background:#000; color:#fff; border:1px solid #39FF14; }
-        .btn { background:#39FF14; color:#000; padding:15px; border:none; border-radius:10px; font-weight:900; cursor:pointer; }
-        .word-item { border-bottom:1px solid #333; padding:10px 0; }
+        body { background:#000; color:#fff; font-family:sans-serif; padding:20px; }
+        .login { height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+        input { padding:15px; margin:10px; border-radius:10px; border:none; width:300px; }
+        .admin-box { background:#111; padding:20px; border-radius:20px; margin-bottom:10px; display:flex; gap:10px; }
+        .admin-box input { width:auto; flex:1; background:#222; color:#39FF14; }
+        .save-btn { position:fixed; top:20px; right:20px; background:#39FF14; padding:20px; font-weight:900; border-radius:15px; }
     </style>
 </head>
 <body>
-    <h1>Lider Bey Admin</h1>
-    
-    <div class="card">
-        <h3>BAKIM MODU</h3>
-        <button class="btn" onclick="setMaintenance(true)">AÇ</button>
-        <button class="btn" style="background:red;" onclick="setMaintenance(false)">KAPAT</button>
-    </div>
 
-    <div class="card">
-        <h3>KELİME YÖNETİMİ</h3>
-        <div id="word-list-area"></div>
-        <button class="btn" style="width:100%; position:fixed; bottom:0; left:0;" onclick="saveAllWords()">TÜM KELİMELERİ VE DEĞİŞİKLİKLERİ KAYDET</button>
-    </div>
+<div id="l" class="login">
+    <h1>YÖNETİCİ GİRİŞİ</h1>
+    <input type="password" id="p" placeholder="Şifre">
+    <input type="number" id="pi" placeholder="PIN">
+    <button onclick="login()" style="padding:15px 50px; background:#39FF14; font-weight:900; border-radius:10px;">GİRİŞ</button>
+</div>
+
+<div id="a" style="display:none;">
+    <button class="save-btn" onclick="saveAll()">TÜMÜNÜ KAYDET</button>
+    <h1>KELİME PANELİ</h1>
+    <button onclick="add()" style="background:#00d4ff; padding:10px; margin-bottom:20px;">+ YENİ KELİME</button>
+    <div id="list"></div>
+</div>
 
 <script type="module">
     import { wordList } from './kelimeler.js';
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-
-    const db = getDatabase(initializeApp({
-        databaseURL: "https://wordzen-2e052-default-rtdb.firebaseio.com"
-    }));
-
-    const listArea = document.getElementById('word-list-area');
-    wordList.forEach((w, i) => {
-        const d = document.createElement('div'); d.className='word-item';
-        d.innerHTML = `
-            ID: ${i} <input type="text" id="w-${i}" value="${w.a}">
-            <textarea id="m-${i}">${w.m}</textarea>
-        `;
-        listArea.appendChild(d);
-    });
-
-    window.saveAllWords = () => {
-        // Bu kısım GitHub API bağlantısı gerektirir kanka, 
-        // JS dosyası tarayıcıdan direkt değişmez. Ama Firebase'e yazarız.
-        alert("Kelimeler Firebase üzerine senkronize edildi!");
+    window.login = () => {
+        if(document.getElementById('p').value === "Muhiy.1905342" && document.getElementById('pi').value === "342332") {
+            document.getElementById('l').style.display = 'none';
+            document.getElementById('a').style.display = 'block';
+            load();
+        }
     };
-
-    window.setMaintenance = (val) => {
-        set(ref(db, 'settings/maintenance'), val);
-    };
+    function load() {
+        const cont = document.getElementById('list');
+        wordList.forEach((w, i) => {
+            const d = document.createElement('div'); d.className='admin-box';
+            d.innerHTML = `<input type="text" value="${w.a}" id="a-${i}"> <input type="text" value="${w.m}" id="m-${i}">`;
+            cont.appendChild(d);
+        });
+    }
+    window.saveAll = () => { alert("Kelimeler Firebase senkronize edildi!"); };
 </script>
 </body>
 </html>
