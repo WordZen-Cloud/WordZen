@@ -4,130 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>WordZen | Oyun</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { width:100%; height:100vh; overflow:hidden; font-family:'Montserrat', sans-serif; background-size:cover; background-position:center; transition:1s ease; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { width:100%; height:100vh; overflow:hidden; font-family:sans-serif; background-size:cover; background-position:center; display:flex; flex-direction:column; transition:0.5s; }
         
-        .top-bar { position:fixed; top:10px; width:100%; display:flex; justify-content:space-between; padding:10px 20px; z-index:100; }
-        .pill { background:rgba(0,0,0,0.8); border:2px solid #39FF14; color:#fff; padding:8px 15px; border-radius:12px; font-size:0.9rem; }
-        .coin-box { border-color:#ffcc00; color:#ffcc00; font-weight:900; }
+        /* Seviyeler (Reels) Menüsü */
+        #levels-reels { position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:5000; display:none; overflow-y:scroll; scroll-snap-type:y mandatory; }
+        .lvl-page { height:100vh; scroll-snap-align:start; display:grid; grid-template-columns:repeat(2, 1fr); gap:15px; padding:100px 30px; }
+        .lvl-box { background:#111; border:2px solid #333; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#fff; position:relative; }
+        .locked::after { content:'🔒'; position:absolute; top:5px; right:5px; font-size:1rem; }
 
-        #game-area { height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-        #word-row { display:flex; gap:5px; margin-bottom:20px; }
-        .box { width:45px; height:55px; background:rgba(255,255,255,0.1); border:2px solid #fff; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:#fff; text-transform:uppercase; }
-        .clue-box { background:rgba(0,0,0,0.6); padding:15px; border-radius:15px; color:#fff; text-align:center; width:85%; }
+        .top-bar { padding:20px; display:flex; justify-content:space-between; align-items:center; }
+        .pill { background:rgba(0,0,0,0.8); border:2px solid #39FF14; color:#fff; padding:10px 20px; border-radius:15px; font-weight:900; }
+        
+        #hint-area { display:flex; justify-content:center; margin-bottom:10px; }
+        .hint-btn { background:#ffcc00; color:#000; padding:10px 30px; border-radius:50px; font-weight:900; border:none; }
+
+        /* Oyun Kutucukları */
+        #game-content { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding-bottom:38vh; }
+        #word-row { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; justify-content:center; }
+        .box { width:50px; height:60px; background:rgba(0,0,0,0.5); border:3px solid #fff; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#fff; font-weight:900; transition:0.3s; }
+        .correct { background:#39FF14 !important; border-color:#39FF14 !important; color:#000 !important; }
+        .wrong { background:#ff4b2b !important; border-color:#ff4b2b !important; }
 
         /* UZUN KLAVYE */
-        #kb { position:fixed; bottom:0; width:100%; height:35vh; background:rgba(0,0,0,0.9); padding:5px; display:flex; flex-direction:column; gap:5px; }
-        .row { display:flex; justify-content:center; gap:4px; flex:1; }
-        .key { flex:1; background:rgba(255,255,255,0.15); border-radius:8px; color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.3rem; font-weight:900; cursor:pointer; border-bottom:4px solid #000; }
-        .key:active { background:#39FF14; color:#000; transform:translateY(2px); border-bottom:0; }
-        .key-del { flex:1.5; background:#ff4b2b; }
-        .key-hint { flex:1.5; background:#ffcc00; color:#000; }
-
-        .coin-anim { position:absolute; color:#ffcc00; font-size:2rem; animation:fly 0.8s forwards; z-index:1000; pointer-events:none; }
-        @keyframes fly { 0%{opacity:1; transform:translateY(0);} 100%{opacity:0; transform:translateY(-200px);} }
+        #kb { position:fixed; bottom:0; width:100%; height:38vh; background:rgba(0,0,0,0.95); padding:8px; display:flex; flex-direction:column; gap:5px; border-top:3px solid #39FF14; }
+        .row { display:flex; gap:4px; flex:1; }
+        .key { flex:1; background:#222; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.4rem; font-weight:900; border-bottom:5px solid #000; }
+        .key:active { background:#39FF14; color:#000; transform:translateY(3px); border-bottom:1px solid #000; }
     </style>
 </head>
-<body id="game-body">
+<body id="b">
 
-    <div class="top-bar">
-        <div class="pill">BÖLÜM <span id="lvl-txt">1</span></div>
-        <div class="pill coin-box">🪙 <span id="coin-txt">0</span></div>
-    </div>
+<div id="levels-reels">
+    <button onclick="document.getElementById('levels-reels').style.display='none'" style="position:fixed; top:20px; right:20px; background:red; color:#fff; padding:10px; border-radius:50%; z-index:6000;">X</button>
+    <div id="lvl-grid"></div>
+</div>
 
-    <div id="game-area">
-        <div id="word-row"></div>
-        <div class="clue-box" id="clue-txt">...</div>
-    </div>
+<div class="top-bar">
+    <div class="pill" onclick="showLevels()">LEVELS</div>
+    <div class="pill" style="border-color:#ffcc00; color:#ffcc00;">🪙 <span id="c">0</span></div>
+</div>
 
-    <div id="kb"></div>
+<div id="hint-area"><button class="hint-btn" onclick="hint()">İPUCU (-10)</button></div>
+
+<div id="game-content">
+    <div id="word-row"></div>
+    <div id="m" style="background:rgba(0,0,0,0.7); padding:15px; border-radius:15px; color:#fff; text-align:center; width:85%;"></div>
+</div>
+
+<div id="kb"></div>
 
 <script type="module">
     import { wordList } from './kelimeler.js';
-    let profile = JSON.parse(localStorage.getItem('wz_profile'));
-    const dogruSes = new Audio('dogru.mp3');
-    const yanlisSes = new Audio('yanlis.mp3');
+    let u = JSON.parse(localStorage.getItem('wz_user'));
+    let cur = "";
 
     function render() {
-        document.getElementById('lvl-txt').innerText = profile.level;
-        document.getElementById('coin-txt').innerText = profile.coins;
-        const data = wordList[(profile.level - 1) % wordList.length];
-        document.getElementById('clue-txt').innerText = data.m;
+        const d = wordList[(u.level-1)%wordList.length];
+        document.getElementById('c').innerText = u.coins;
+        document.getElementById('m').innerText = d.m;
         
-        // 5 Bölümde bir BG değişimi (42 BG sınırı)
-        let bgIndex = Math.floor((profile.level - 1) / 5) + 1;
-        if(bgIndex > 42) bgIndex = 42;
-        document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('bg${bgIndex}.jpg')`;
+        let bg = Math.floor((u.level-1)/5)+1;
+        document.getElementById('b').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('bg${bg>42?42:bg}.jpg')`;
 
-        const row = document.getElementById('word-row');
-        row.innerHTML = "";
-        data.a.split('').forEach(() => {
-            const b = document.createElement('div'); b.className='box'; row.appendChild(b);
-        });
+        const row = document.getElementById('word-row'); row.innerHTML = "";
+        d.a.split('').forEach(() => { const b = document.createElement('div'); b.className='box'; row.appendChild(b); });
+        cur = "";
     }
 
-    // İpucu Düzeltme
-    window.useHint = () => {
-        if(profile.coins < 10) return alert("Yetersiz Jeton!");
-        const data = wordList[(profile.level - 1) % wordList.length];
+    window.hint = () => {
+        if(u.coins < 10) return;
+        const d = wordList[(u.level-1)%wordList.length];
         const boxes = document.querySelectorAll('.box');
         for(let i=0; i<boxes.length; i++) {
             if(boxes[i].innerText === "") {
-                boxes[i].innerText = data.a[i];
-                boxes[i].style.color = "#39FF14";
-                profile.coins -= 10;
-                localStorage.setItem('wz_profile', JSON.stringify(profile));
-                render(); checkWinStatus(); break;
+                boxes[i].innerText = d.a[i];
+                u.coins -= 10; save(); renderStats(); check(); break;
             }
         }
     };
 
-    function checkWinStatus() {
-        const data = wordList[(profile.level - 1) % wordList.length];
-        let current = ""; document.querySelectorAll('.box').forEach(b => current += b.innerText);
-        if(current.length === data.a.length) {
-            if(current === data.a) {
-                dogruSes.play();
-                profile.coins += 5;
-                profile.level += 1;
-                localStorage.setItem('wz_profile', JSON.stringify(profile));
-                setTimeout(render, 500);
+    function check() {
+        const d = wordList[(u.level-1)%wordList.length];
+        const boxes = document.querySelectorAll('.box');
+        let val = ""; boxes.forEach(b => val += b.innerText);
+        
+        if(val.length === d.a.length) {
+            if(val === d.a) {
+                boxes.forEach(b => b.classList.add('correct'));
+                new Audio('dogru.mp3').play();
+                u.coins += 5; u.level++; save();
+                setTimeout(render, 800);
             } else {
-                yanlisSes.play();
-                document.querySelectorAll('.box').forEach(b => b.innerText = "");
+                boxes.forEach(b => b.classList.add('wrong'));
+                new Audio('yanlis.mp3').play();
+                setTimeout(() => { boxes.forEach(b => {b.innerText=""; b.classList.remove('wrong')}); }, 500);
             }
         }
     }
 
-    // Klavye Oluşturma (Uzun)
-    const keys = [["Q","W","E","R","T","Y","U","I","İ","O","P"],["A","S","D","F","G","Ğ","H","J","K","L","Ş"],["Z","X","C","V","B","N","M","Ö","Ç","Ü"]];
+    // Klavye
+    const keys = [["Q","W","E","R","T","Y","U","I","İ","O","P"],["A","S","D","F","G","Ğ","H","J","K","L","Ş"],["Z","X","C","V","B","N","M","Ö","Ç","Ü","SİL"]];
     const kb = document.getElementById('kb');
-    keys.forEach((rowArr, i) => {
-        const r = document.createElement('div'); r.className='row';
-        rowArr.forEach(kChar => {
-            const k = document.createElement('div'); k.className='key'; k.innerText=kChar;
-            k.onclick = () => {
+    keys.forEach(r => {
+        const d = document.createElement('div'); d.className='row';
+        r.forEach(k => {
+            const b = document.createElement('div'); b.className='key'; b.innerText=k;
+            if(k === "SİL") b.style.background = "#ff4b2b";
+            b.onclick = () => {
                 const boxes = document.querySelectorAll('.box');
-                for(let b of boxes) { if(b.innerText==="") { b.innerText=kChar; checkWinStatus(); break; } }
+                if(k === "SİL") {
+                    for(let i=boxes.length-1; i>=0; i--) if(boxes[i].innerText!=="") { boxes[i].innerText=""; break; }
+                } else {
+                    for(let i=0; i<boxes.length; i++) if(boxes[i].innerText==="") { boxes[i].innerText=k; check(); break; }
+                }
             };
-            r.appendChild(k);
+            d.appendChild(b);
         });
-        if(i===2) {
-            const del = document.createElement('div'); del.className='key key-del'; del.innerText='SİL';
-            del.onclick = () => {
-                const boxes = document.querySelectorAll('.box');
-                for(let j=boxes.length-1; j>=0; j--) { if(boxes[j].innerText!=="") { boxes[j].innerText=""; break; } }
-            };
-            r.appendChild(del);
-            const hnt = document.createElement('div'); hnt.className='key key-hint'; hnt.innerText='İPUCU';
-            hnt.onclick = useHint;
-            r.appendChild(hnt);
-        }
-        kb.appendChild(r);
+        kb.appendChild(d);
     });
 
+    window.showLevels = () => {
+        const g = document.getElementById('lvl-grid'); g.innerHTML = "";
+        let page;
+        for(let i=1; i<=100; i++) {
+            if((i-1)%6 === 0) { page = document.createElement('div'); page.className='lvl-page'; g.appendChild(page); }
+            const b = document.createElement('div'); b.className = 'lvl-box' + (i > u.level ? ' locked' : '');
+            b.innerText = i;
+            if(i <= u.level) b.onclick = () => { u.level = i; save(); location.reload(); };
+            page.appendChild(b);
+        }
+        document.getElementById('levels-reels').style.display = 'block';
+    }
+
+    function save() { localStorage.setItem('wz_user', JSON.stringify(u)); }
+    function renderStats() { document.getElementById('c').innerText = u.coins; }
     render();
 </script>
 </body>
