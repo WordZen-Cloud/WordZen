@@ -3,31 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WordZen | Başlangıç</title>
+    <title>WordZen</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { background:#000; color:#fff; font-family:'Montserrat', sans-serif; overflow:hidden; }
         
-        /* Splash Ekranı */
-        #splash { position:fixed; top:0; left:0; width:100%; height:100%; z-index:10000; background:#000; display:flex; align-items:center; justify-content:center; transition: opacity 0.8s ease; }
+        /* Splash - Atla Butonu Yok */
+        #splash { position:fixed; top:0; left:0; width:100%; height:100%; z-index:10000; background:#000; }
         #splash-vid { width:100%; height:100%; object-fit:cover; }
 
-        /* Ana Uygulama Panelleri */
-        .container { display:none; height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:20px; background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
-        .active { display:flex; }
+        .container { display:none; height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:20px; background:radial-gradient(circle, #1a2a6c, #000); }
+        .active { display:flex !important; }
 
-        /* Kart Tasarımları (Hacker Değil, Premium) */
-        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 30px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); margin-bottom: 15px; }
-        
-        .btn-main { width:100%; padding:18px; border-radius:15px; border:none; font-weight:900; cursor:pointer; font-size:1.1rem; transition:0.3s; text-transform: uppercase; }
-        .btn-normal { background:#39FF14; color:#000; box-shadow: 0 10px 20px rgba(57,255,20,0.3); }
-        .btn-pvp { background:#00d4ff; color:#000; box-shadow: 0 10px 20px rgba(0,212,255,0.3); }
-        
-        input, select { width:100%; padding:15px; margin:10px 0; border-radius:12px; background:rgba(0,0,0,0.5); border:1px solid #444; color:#fff; text-align:center; font-weight: 800; outline: none; }
-        
-        /* Safety Skip Button */
-        #skip-btn { position:fixed; bottom:40px; right:30px; z-index:10001; background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); padding:12px 20px; border-radius:15px; font-weight:900; display:none; backdrop-filter: blur(5px); }
+        /* Ayarlar Butonu ve Paneli */
+        .settings-btn { position:fixed; top:20px; right:20px; font-size:1.8rem; color:#fff; z-index:100; cursor:pointer; }
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:200; align-items:center; justify-content:center; }
+        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 30px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
+
+        /* MOD EKRANI (DOKUNULMADI - GÖRSELDEKİ GİBİ) */
+        .btn-main { width:100%; padding:18px; border-radius:20px; border:none; font-weight:900; margin-bottom:15px; cursor:pointer; text-transform:uppercase; }
+        .card-normal { background: #111; border: 2px solid #39FF14; }
+        .card-pvp { background: #111; border: 2px solid #00d4ff; }
+
+        /* Levels Sayfası - 16 Level */
+        #level-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; padding:20px; width:100%; }
+        .lvl-box { aspect-ratio:1; background:rgba(255,255,255,0.1); border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; border:2px solid rgba(255,255,255,0.1); }
+        .locked { opacity: 0.5; }
+
+        input[type="range"] { width:100%; margin:15px 0; accent-color:#39FF14; }
     </style>
 </head>
 <body>
@@ -36,86 +41,123 @@
     <video id="splash-vid" autoplay muted playsinline>
         <source src="video.mp4" type="video/mp4">
     </video>
-    <button id="skip-btn" onclick="openApp()">ATLA ➔</button>
+</div>
+
+<div id="settings-trigger" class="settings-btn" onclick="openSettings()" style="display:none;"><i class="fas fa-cog"></i></div>
+
+<div id="settings-modal" class="modal">
+    <div class="glass-card">
+        <h2 style="color:#39FF14">AYARLAR</h2>
+        <div style="margin:20px 0; text-align:left;">
+            <p>Müzik Sesi</p>
+            <input type="range" id="m-vol" min="0" max="100" value="50" oninput="setVol()">
+            <p>Efekt Sesi</p>
+            <input type="range" id="s-vol" min="0" max="100" value="80" oninput="setVol()">
+        </div>
+        <button class="btn-main" style="background:#39FF14; color:#000;" onclick="closeSettings()">KAPAT</button>
+    </div>
 </div>
 
 <div id="profile-screen" class="container">
     <div class="glass-card">
-        <h1 style="color:#39FF14; margin-bottom:20px;">HOŞ GELDİN</h1>
-        <input type="text" id="uname" placeholder="KULLANICI ADI">
-        <input type="number" id="uage" placeholder="YAŞINIZ">
-        <select id="ugender">
-            <option value="Erkek">ERKEK</option>
-            <option value="Kadın">KADIN</option>
-        </select>
-        <button class="btn-main btn-normal" onclick="saveProfile()">KAYDET VE GİRİŞ YAP</button>
+        <h2 style="margin-bottom:15px;">PROFİL</h2>
+        <div onclick="document.getElementById('f').click()" style="width:80px; height:80px; border-radius:50%; background:#222; margin:0 auto 15px; border:2px solid #39FF14; overflow:hidden;">
+            <img id="p-view" src="avatar.png" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <input type="file" id="f" hidden onchange="loadImg(this)">
+        <input type="text" id="nn" placeholder="ADINIZ" style="width:100%; padding:12px; border-radius:10px; margin-bottom:10px; text-align:center;">
+        <button class="btn-main" style="background:#39FF14; color:#000;" onclick="saveP()">KAYDET</button>
     </div>
 </div>
 
 <div id="mode-screen" class="container">
-    <div class="glass-card">
-        <h2 style="color:#39FF14; margin-bottom:10px;">NORMAL MOD</h2>
-        <p style="color:#aaa; font-size:0.9rem; margin-bottom:15px;">Seviyeleri Geç, Jetonları Topla!</p>
-        <button class="btn-main btn-normal" onclick="location.href='normal.html'">OYNA</button>
+    <div class="glass-card card-normal">
+        <h2 style="color:#39FF14">NORMAL MOD</h2>
+        <button class="btn-main" style="background:#39FF14" onclick="showLvls()">OYNA</button>
     </div>
-    <div class="glass-card">
-        <h2 style="color:#00d4ff; margin-bottom:10px;">1V1 ARENA</h2>
-        <p style="color:#aaa; font-size:0.9rem; margin-bottom:15px;">Arkadaşınla Bahisli Kapış!</p>
-        <button class="btn-main btn-pvp" onclick="location.href='pvp.html'">MEYDAN OKU</button>
+    <div class="glass-card card-pvp" style="border-color:#ff4b2b">
+        <h2 style="color:#ff4b2b">OTO EŞLEŞME</h2>
+        <button class="btn-main" style="background:#ff4b2b" onclick="location.href='pvp.html?auto=1'">HIZLI BUL</button>
+    </div>
+    <div class="glass-card card-pvp">
+        <h2 style="color:#00d4ff">1V1 ODA</h2>
+        <button class="btn-main" style="background:#00d4ff" onclick="location.href='pvp.html'">GİRİŞ YAP</button>
     </div>
 </div>
 
-<audio id="bg-music" loop src="fon-muzigi.mp3"></audio>
+<div id="level-screen" class="container">
+    <h2 style="margin-bottom:20px;">BÖLÜMLER</h2>
+    <div id="level-grid"></div>
+    <button class="btn-main" style="background:red; width:auto; padding:10px 40px; margin-top:20px;" onclick="backToModes()">GERİ</button>
+</div>
+
+<audio id="msc" loop src="fon-muzigi.mp3"></audio>
 
 <script>
-    const vid = document.getElementById('splash-vid');
-    const music = document.getElementById('bg-music');
-    const splash = document.getElementById('splash');
-    const skipBtn = document.getElementById('skip-btn');
+    const v = document.getElementById('splash-vid');
+    const m = document.getElementById('msc');
+    let u = JSON.parse(localStorage.getItem('wz_user'));
 
-    // Güvenlik kilidi: Video yüklenmezse veya takılırsa 3sn sonra Atla butonu çıkar
-    setTimeout(() => { skipBtn.style.display = 'block'; }, 3000);
-
-    // Ekrana ilk dokunuşta her şeyi serbest bırak
-    document.addEventListener('click', () => {
-        vid.muted = false; // Videonun sesini açar
-        if(splash.style.display === 'none' && music.paused) {
-            music.play();
-        }
-    }, { once: false });
-
-    // Video biter bitmez içeri al
-    vid.onended = () => { openApp(); };
-
-    function openApp() {
-        splash.style.opacity = '0';
-        setTimeout(() => {
-            splash.style.display = 'none';
-            // Müzik çalmaya başlasın
-            music.play().catch(() => { console.log("İlk dokunuş bekleniyor..."); });
-            
-            // Kullanıcı verisi kontrolü
-            if(localStorage.getItem('wz_user')) {
-                document.getElementById('mode-screen').classList.add('active');
-            } else {
+    // Otomatik Müzik Başlatma (Her yerde çalması için)
+    window.onload = () => {
+        const savedVol = localStorage.getItem('wz_mvol') || 0.5;
+        m.volume = savedVol;
+        if(u) {
+            // Kayıtlıysa direkt mod ekranına ama splash izleterek
+            v.onended = () => {
+                document.getElementById('splash').style.display = 'none';
+                m.play();
+                backToModes();
+            };
+        } else {
+            v.onended = () => {
+                document.getElementById('splash').style.display = 'none';
+                m.play();
                 document.getElementById('profile-screen').classList.add('active');
-            }
-        }, 800);
+            };
+        }
+    };
+
+    function saveP() {
+        const name = document.getElementById('nn').value;
+        if(!name) return alert("İsim yaz kanka!");
+        u = { name: name, coins: 500, level: 1, img: document.getElementById('p-view').src };
+        localStorage.setItem('wz_user', JSON.stringify(u));
+        location.reload();
     }
 
-    function saveProfile() {
-        const uName = document.getElementById('uname').value;
-        const uAge = document.getElementById('uage').value;
-        if(!uName || !uAge) return alert("Bilgileri doldur kanka!");
+    function backToModes() {
+        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+        document.getElementById('mode-screen').classList.add('active');
+        document.getElementById('settings-trigger').style.display = 'block';
+    }
 
-        const user = { 
-            name: uName, 
-            age: uAge,
-            gender: document.getElementById('ugender').value,
-            coins: 500, level: 1
-        };
-        localStorage.setItem('wz_user', JSON.stringify(user));
-        location.reload();
+    function showLvls() {
+        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+        const g = document.getElementById('level-grid'); g.innerHTML = "";
+        for(let i=1; i<=16; i++) {
+            const b = document.createElement('div');
+            b.className = i <= u.level ? 'lvl-box' : 'lvl-box locked';
+            b.innerText = i;
+            if(i <= u.level) b.onclick = () => location.href = `game.html?lvl=${i}`;
+            g.appendChild(b);
+        }
+        document.getElementById('level-screen').classList.add('active');
+    }
+
+    function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
+    function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
+    function setVol() {
+        const vol = document.getElementById('m-vol').value / 100;
+        m.volume = vol;
+        localStorage.setItem('wz_mvol', vol);
+    }
+    function loadImg(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { document.getElementById('p-view').src = e.target.result; };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 </script>
 </body>
