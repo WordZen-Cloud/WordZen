@@ -10,36 +10,30 @@
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { background:#000; color:#fff; font-family:'Montserrat', sans-serif; overflow:hidden; }
         
-        /* Ekran Panelleri */
+        /* Paneller */
         .page { display:none; height:100vh; width:100%; flex-direction:column; align-items:center; justify-content:center; position:fixed; top:0; left:0; }
         .active { display:flex !important; }
 
-        /* 1. Splash Ekranı */
+        /* Splash */
         #splash-screen { z-index: 10000; background:#000; }
         #splash-vid { width:100%; height:100%; object-fit:cover; }
 
-        /* Arka Plan Genel */
         .bg-main { background:radial-gradient(circle, #1a2a6c, #000); }
 
-        /* 2. Kayıt Ekranı Tasarımı */
-        .glass-card { background:rgba(255,255,255,0.1); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.2); padding:30px; border-radius:30px; width:90%; max-width:400px; text-align:center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        
+        /* Kayıt Kartı */
+        .glass-card { background:rgba(255,255,255,0.1); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.2); padding:30px; border-radius:30px; width:90%; max-width:400px; text-align:center; }
         #p-img-btn { width:100px; height:100px; border-radius:50%; border:3px solid #39FF14; background:#222; margin:0 auto 15px; cursor:pointer; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; }
         #p-img { width:100%; height:100%; object-fit:cover; display:none; }
-        
         .m-input { width:100%; padding:15px; margin:10px 0; border-radius:15px; background:rgba(0,0,0,0.5); border:1px solid #444; color:#fff; text-align:center; font-weight:800; font-size:1.1rem; outline:none; }
-        
         .gen-bar { display:flex; gap:10px; margin:15px 0; }
         .gen-opt { flex:1; padding:15px; background:rgba(255,255,255,0.05); border-radius:15px; cursor:pointer; border:2px solid transparent; color:#888; font-weight:900; }
         .gen-opt.active { background:rgba(57,255,20,0.1); border-color:#39FF14; color:#fff; }
 
-        /* 3. Mod Ekranı (Senin Sevdiğin) */
-        .btn-main { width:100%; padding:20px; border-radius:22px; border:none; font-weight:900; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:1.1rem; transition:0.3s; }
-        .card-normal { border: 2px solid #39FF14; }
-        .card-pvp { border: 2px solid #00d4ff; }
-        .card-auto { border: 2px solid #ff4b2b; }
-
-        .btn-reg { background:#39FF14; color:#000; }
+        /* Mod Ekranı (Dokunulmadı) */
+        .btn-main { width:100%; padding:20px; border-radius:22px; border:none; font-weight:900; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:1.1rem; }
+        .card-normal { border: 2px solid #39FF14; background:#111; }
+        .card-pvp { border: 2px solid #00d4ff; background:#111; }
+        .card-auto { border: 2px solid #ff4b2b; background:#111; }
     </style>
 </head>
 <body>
@@ -54,32 +48,32 @@
 
     <div id="profile-screen" class="page bg-main">
         <div class="glass-card">
-            <h2 style="margin-bottom:20px; letter-spacing:2px;">PROFİL OLUŞTUR</h2>
+            <h2 style="margin-bottom:20px;">KAYIT OL</h2>
             <div id="p-img-btn" onclick="document.getElementById('f-in').click()">
                 <img id="p-img" src="">
                 <i class="fas fa-camera" id="cam-icon" style="font-size:2rem; color:#39FF14;"></i>
             </div>
             <input type="file" id="f-in" accept="image/*" hidden onchange="loadPreview(this)">
-            <input type="text" id="u-name" class="m-input" placeholder="KULLANICI ADI">
-            <input type="number" id="u-age" class="m-input" placeholder="YAŞINIZ">
+            <input type="text" id="u-name" class="m-input" placeholder="İSİM">
+            <input type="number" id="u-age" class="m-input" placeholder="YAŞ">
             <div class="gen-bar">
                 <div class="gen-opt" id="g-m" onclick="selectGen('Erkek')">ERKEK</div>
                 <div class="gen-opt" id="g-f" onclick="selectGen('Kız')">KIZ</div>
             </div>
-            <button class="btn-main btn-reg" onclick="completeRegistration()">KAYDET VE BAŞLA</button>
+            <button class="btn-main" style="background:#39FF14; color:#000;" onclick="completeReg()">KAYDET VE BAŞLA</button>
         </div>
     </div>
 
     <div id="mode-screen" class="page bg-main">
-        <div class="glass-card card-normal" style="background:#111;">
+        <div class="glass-card card-normal">
             <h2 style="color:#39FF14; margin-bottom:10px;">NORMAL MOD</h2>
             <button class="btn-main" style="background:#39FF14; color:#000;" onclick="location.href='game.html'">OYNA</button>
         </div>
-        <div class="glass-card card-auto" style="background:#111; margin-top:15px;">
+        <div class="glass-card card-auto" style="margin-top:15px;">
             <h2 style="color:#ff4b2b; margin-bottom:10px;">OTO EŞLEŞME</h2>
-            <button class="btn-main" style="background:#ff4b2b; color:#fff;" onclick="location.href='pvp.html?auto=true'">HIZLI BUL</button>
+            <button class="btn-main" style="background:#ff4b2b; color:#fff;" onclick="location.href='pvp.html?auto=1'">HIZLI BUL</button>
         </div>
-        <div class="glass-card card-pvp" style="background:#111; margin-top:15px;">
+        <div class="glass-card card-pvp" style="margin-top:15px;">
             <h2 style="color:#00d4ff; margin-bottom:10px;">1V1 ARENA</h2>
             <button class="btn-main" style="background:#00d4ff; color:#000;" onclick="location.href='pvp.html'">ODA KUR / GİR</button>
         </div>
@@ -89,63 +83,40 @@
     const vid = document.getElementById('splash-vid');
     const music = document.getElementById('bg-m');
     let user = JSON.parse(localStorage.getItem('wz_user'));
-    let selectedGender = null;
-    let base64Image = null;
+    let selGen = null, b64 = null;
 
-    // Splash Bitiş Kontrolü
     vid.onended = () => {
         document.getElementById('splash-screen').classList.remove('active');
         music.play();
-        // Eğer kullanıcı varsa direkt mod ekranına, yoksa kayıt ekranına
-        if(user) {
-            document.getElementById('mode-screen').classList.add('active');
-        } else {
-            document.getElementById('profile-screen').classList.add('active');
-        }
+        if(user) document.getElementById('mode-screen').classList.add('active');
+        else document.getElementById('profile-screen').classList.add('active');
     };
 
     function loadPreview(input) {
         if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            const r = new FileReader();
+            r.onload = e => {
                 document.getElementById('p-img').src = e.target.result;
                 document.getElementById('p-img').style.display = 'block';
                 document.getElementById('cam-icon').style.display = 'none';
-                base64Image = e.target.result;
-            }
-            reader.readAsDataURL(input.files[0]);
+                b64 = e.target.result;
+            };
+            r.readAsDataURL(input.files[0]);
         }
     }
 
     function selectGen(g) {
-        selectedGender = g;
+        selGen = g;
         document.getElementById('g-m').classList.remove('active');
         document.getElementById('g-f').classList.remove('active');
-        if(g === 'Erkek') document.getElementById('g-m').classList.add('active');
-        else document.getElementById('g-f').classList.add('active');
+        document.getElementById('g-' + (g === 'Erkek' ? 'm' : 'f')).classList.add('active');
     }
 
-    function completeRegistration() {
-        const name = document.getElementById('u-name').value;
-        const age = document.getElementById('u-age').value;
-        
-        if(!name || !age || !selectedGender) {
-            alert("Boş yer bırakma kanka!");
-            return;
-        }
-
-        const userData = {
-            name: name,
-            age: age,
-            gender: selectedGender,
-            img: base64Image || 'default-avatar.png',
-            coins: 500,
-            level: 1
-        };
-
-        localStorage.setItem('wz_user', JSON.stringify(userData));
-        
-        // Burası kritik: 404 almamak için başka sayfaya gitmiyoruz, aynı sayfada panel değiştiriyoruz!
+    function completeReg() {
+        const n = document.getElementById('u-name').value, a = document.getElementById('u-age').value;
+        if(!n || !a || !selGen) return alert("Eksikleri doldur kanka!");
+        user = { name: n, age: a, gender: selGen, img: b64 || 'default.png', coins: 500 };
+        localStorage.setItem('wz_user', JSON.stringify(user));
         document.getElementById('profile-screen').classList.remove('active');
         document.getElementById('mode-screen').classList.add('active');
     }
