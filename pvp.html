@@ -224,7 +224,7 @@
         const win = gData[mRole].score > gData[opponent].score;
         new Audio(win ? 'winner.mp3' : 'lose.mp3').play();
         document.getElementById('res-img').src = win ? 'winner.jpg' : 'lose.jpg';
-        document.getElementById('res-msg').innerText = win ? "KRAL SENSİN!" : "KIZ KAZANDI...";
+        document.getElementById('res-msg').innerText = win ? "KRAL SENSİN!" : "RAKİP KAZANDI...";
     }
 
     window.requestReplay = () => {
