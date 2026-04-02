@@ -3,97 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WordZen | Master</title>
+    <title>WordZen | Başlangıç</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { background:#000; color:#fff; font-family:'Montserrat', sans-serif; overflow:hidden; }
         
-        .page { display:none; height:100vh; width:100%; flex-direction:column; align-items:center; position:fixed; top:0; left:0; }
-        .active { display:flex !important; }
+        /* Splash Ekranı */
+        #splash { position:fixed; top:0; left:0; width:100%; height:100%; z-index:10000; background:#000; display:flex; align-items:center; justify-content:center; transition: opacity 0.8s ease; }
+        #splash-vid { width:100%; height:100%; object-fit:cover; }
 
-        /* SPLASH ORTALAMA FİX */
-        #splash-screen { z-index: 10000; background:#000; justify-content:center; align-items:center; }
-        #splash-vid { width:auto; height:100%; max-width:100%; object-fit:contain; }
+        /* Ana Uygulama Panelleri */
+        .container { display:none; height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:20px; background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
+        .active { display:flex; }
 
-        /* ARKA PLAN (MOD EKRANI RENGİ) */
-        .bg-gradient { background: linear-gradient(135deg, #10062a 0%, #0d1a49 100%); }
-
-        /* KAYIT KARTI (Mükemmel Glass Tasarım) */
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 30px; width: 90%; max-width: 420px; text-align: center; }
+        /* Kart Tasarımları (Hacker Değil, Premium) */
+        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 30px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); margin-bottom: 15px; }
         
-        .m-input { width:100%; padding:15px; margin:10px 0; border-radius:15px; background:rgba(0,0,0,0.5); border:1px solid #333; color:#fff; text-align:center; font-weight:800; font-size:1rem; outline:none; }
-        .gen-bar { display:flex; gap:10px; margin:10px 0; }
-        .gen-opt { flex:1; padding:15px; background:rgba(255,255,255,0.03); border-radius:15px; cursor:pointer; border:2px solid transparent; color:#888; font-weight:900; }
-        .gen-opt.active { background:rgba(57,255,20,0.08); border-color:#39FF14; color:#fff; }
-
-        /* SENİN BAYILDIĞIN MOD EKRANI (TAM AYNISI) */
-        .mode-container { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 35px; border-radius: 40px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 15px 35px rgba(0,0,0,0.4); margin-bottom: 20px; }
-        .btn-mode { width:100%; padding:20px; border-radius:20px; border:none; font-weight:900; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:1.1rem; transition:0.3s; }
+        .btn-main { width:100%; padding:18px; border-radius:15px; border:none; font-weight:900; cursor:pointer; font-size:1.1rem; transition:0.3s; text-transform: uppercase; }
+        .btn-normal { background:#39FF14; color:#000; box-shadow: 0 10px 20px rgba(57,255,20,0.3); }
+        .btn-pvp { background:#00d4ff; color:#000; box-shadow: 0 10px 20px rgba(0,212,255,0.3); }
+        
+        input, select { width:100%; padding:15px; margin:10px 0; border-radius:12px; background:rgba(0,0,0,0.5); border:1px solid #444; color:#fff; text-align:center; font-weight: 800; outline: none; }
+        
+        /* Safety Skip Button */
+        #skip-btn { position:fixed; bottom:40px; right:30px; z-index:10001; background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); padding:12px 20px; border-radius:15px; font-weight:900; display:none; backdrop-filter: blur(5px); }
     </style>
 </head>
 <body>
 
-    <audio id="bg-m" loop src="fon-muzigi.mp3"></audio>
+<div id="splash">
+    <video id="splash-vid" autoplay muted playsinline>
+        <source src="video.mp4" type="video/mp4">
+    </video>
+    <button id="skip-btn" onclick="openApp()">ATLA ➔</button>
+</div>
 
-    <div id="splash-screen" class="page active">
-        <video id="splash-vid" autoplay muted playsinline>
-            <source src="video.mp4" type="video/mp4">
-        </video>
+<div id="profile-screen" class="container">
+    <div class="glass-card">
+        <h1 style="color:#39FF14; margin-bottom:20px;">HOŞ GELDİN</h1>
+        <input type="text" id="uname" placeholder="KULLANICI ADI">
+        <input type="number" id="uage" placeholder="YAŞINIZ">
+        <select id="ugender">
+            <option value="Erkek">ERKEK</option>
+            <option value="Kadın">KADIN</option>
+        </select>
+        <button class="btn-main btn-normal" onclick="saveProfile()">KAYDET VE GİRİŞ YAP</button>
     </div>
+</div>
 
-    <div id="profile-screen" class="page bg-gradient">
-        <div class="glass-card">
-            <h2 style="margin-bottom:20px;">KAYIT OL KANKA</h2>
-            <input type="text" id="u-name" class="m-input" placeholder="İSİM">
-            <div class="gen-bar">
-                <div class="gen-opt" id="g-m" onclick="selectGen('Erkek')">ERKEK</div>
-                <div class="gen-opt" id="g-f" onclick="selectGen('Kız')">KIZ</div>
-            </div>
-            <button class="btn-mode" style="background:#39FF14; color:#000;" onclick="completeReg()">KAYDET VE BAŞLA</button>
-        </div>
+<div id="mode-screen" class="container">
+    <div class="glass-card">
+        <h2 style="color:#39FF14; margin-bottom:10px;">NORMAL MOD</h2>
+        <p style="color:#aaa; font-size:0.9rem; margin-bottom:15px;">Seviyeleri Geç, Jetonları Topla!</p>
+        <button class="btn-main btn-normal" onclick="location.href='normal.html'">OYNA</button>
     </div>
+    <div class="glass-card">
+        <h2 style="color:#00d4ff; margin-bottom:10px;">1V1 ARENA</h2>
+        <p style="color:#aaa; font-size:0.9rem; margin-bottom:15px;">Arkadaşınla Bahisli Kapış!</p>
+        <button class="btn-main btn-pvp" onclick="location.href='pvp.html'">MEYDAN OKU</button>
+    </div>
+</div>
 
-    <div id="mode-screen" class="page bg-gradient">
-        <div class="mode-container" style="border-color:#39FF14">
-            <h2 style="color:#39FF14; font-size:1.8rem;">NORMAL MOD</h2>
-            <p style="color:#aaa; font-size:0.9rem; margin:10px 0 20px;">Seviyeleri Geç, Jetonları Topla!</p>
-            <button class="btn-mode" style="background:#39FF14; color:#000;" onclick="location.href='game.html'">OYNA</button>
-        </div>
-        <div class="mode-container" style="border-color:#00d4ff">
-            <h2 style="color:#00d4ff; font-size:1.8rem;">1V1 ARENA</h2>
-            <p style="color:#aaa; font-size:0.9rem; margin:10px 0 20px;">Arkadaşınla Bahisli Kapış!</p>
-            <button class="btn-mode" style="background:#00d4ff; color:#000;" onclick="location.href='pvp.html'">MEYDAN OKU</button>
-        </div>
-    </div>
+<audio id="bg-music" loop src="fon-muzigi.mp3"></audio>
 
 <script>
     const vid = document.getElementById('splash-vid');
-    const music = document.getElementById('bg-m');
-    let user = JSON.parse(localStorage.getItem('wz_user'));
-    let selGen = null;
+    const music = document.getElementById('bg-music');
+    const splash = document.getElementById('splash');
+    const skipBtn = document.getElementById('skip-btn');
 
-    vid.onended = () => {
-        document.getElementById('splash-screen').classList.remove('active');
-        music.play();
-        if(user) document.getElementById('mode-screen').classList.add('active');
-        else document.getElementById('profile-screen').classList.add('active');
-    };
+    // Güvenlik kilidi: Video yüklenmezse veya takılırsa 3sn sonra Atla butonu çıkar
+    setTimeout(() => { skipBtn.style.display = 'block'; }, 3000);
 
-    function selectGen(g) {
-        selGen = g;
-        document.getElementById('g-m').classList.remove('active');
-        document.getElementById('g-f').classList.remove('active');
-        document.getElementById('g-' + (g === 'Erkek' ? 'm' : 'f')).classList.add('active');
+    // Ekrana ilk dokunuşta her şeyi serbest bırak
+    document.addEventListener('click', () => {
+        vid.muted = false; // Videonun sesini açar
+        if(splash.style.display === 'none' && music.paused) {
+            music.play();
+        }
+    }, { once: false });
+
+    // Video biter bitmez içeri al
+    vid.onended = () => { openApp(); };
+
+    function openApp() {
+        splash.style.opacity = '0';
+        setTimeout(() => {
+            splash.style.display = 'none';
+            // Müzik çalmaya başlasın
+            music.play().catch(() => { console.log("İlk dokunuş bekleniyor..."); });
+            
+            // Kullanıcı verisi kontrolü
+            if(localStorage.getItem('wz_user')) {
+                document.getElementById('mode-screen').classList.add('active');
+            } else {
+                document.getElementById('profile-screen').classList.add('active');
+            }
+        }, 800);
     }
 
-    function completeReg() {
-        const n = document.getElementById('u-name').value;
-        if(!n || !selGen) return alert("İsim ve Cinsiyet seç kanka!");
-        user = { name: n, gender: selGen, coins: 500 };
+    function saveProfile() {
+        const uName = document.getElementById('uname').value;
+        const uAge = document.getElementById('uage').value;
+        if(!uName || !uAge) return alert("Bilgileri doldur kanka!");
+
+        const user = { 
+            name: uName, 
+            age: uAge,
+            gender: document.getElementById('ugender').value,
+            coins: 500, level: 1
+        };
         localStorage.setItem('wz_user', JSON.stringify(user));
-        document.getElementById('profile-screen').classList.remove('active');
-        document.getElementById('mode-screen').classList.add('active');
+        location.reload();
     }
 </script>
 </body>
