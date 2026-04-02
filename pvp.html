@@ -3,87 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WordZen Arena</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <title>Arena | Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { background:#050505; color:#fff; font-family:'Montserrat', sans-serif; overflow:hidden; }
+        body { background:#0a0a0a; color:#fff; font-family:'Montserrat', sans-serif; overflow:hidden; }
         
-        /* ATMOSFERİK UZAY VE NEON SİS ARKA PLANI */
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
-
+        /* Ortak Panel Yapısı */
         .wz-panel { display:none; height:100vh; width:100%; flex-direction:column; align-items:center; justify-content:center; position:fixed; top:0; left:0; z-index: 10; }
         .active { display:flex !important; }
 
+        /* Kayıt Ekranı ve Giriş Kartları */
         .glass-card { 
-            background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(25px); 
-            border: 1px solid rgba(0, 212, 255, 0.3); padding: 35px; 
-            border-radius: 40px; width: 92%; max-width: 420px; text-align: center; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(0, 212, 255, 0.1);
+            background: rgba(20, 20, 20, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); 
+            padding: 30px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
         }
         
-        .m-in { width:100%; padding:18px; margin:12px 0; border-radius:20px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; text-align:center; font-weight:800; font-size:1.3rem; outline:none; transition: 0.3s; }
-        .m-in:focus { border-color: #00d4ff; background: rgba(0, 212, 255, 0.05); }
+        .profile-upload { width: 100px; height: 100px; border-radius: 50%; border: 3px dashed #00d4ff; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
+        .profile-upload img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-upload span { font-size: 0.7rem; color: #00d4ff; }
 
-        .btn-panel { width:100%; padding:20px; border-radius:22px; border:none; font-weight:900; cursor:pointer; margin-top:10px; text-transform:uppercase; font-size:1.1rem; transition: 0.3s; transform: scale(1); }
-        .btn-panel:active { transform: scale(0.95); }
-
-        #arena { background: none; justify-content: flex-start; padding-top: 30px; display:none; flex-direction:column; align-items:center; height:100vh; }
-        #start-timer { position:absolute; top:20px; left:50%; transform:translateX(-50%); font-size:2.8rem; color:#fff; font-weight:900; z-index:200; display:none; }
-
-        .p-heads { display:flex; justify-content:space-between; padding:20px 30px; width:100%; z-index: 10; }
-        .p-sc { font-size:3.5rem; font-weight:900; filter: drop-shadow(0 0 10px currentColor); }
+        .m-in { width:100%; padding:15px; margin:8px 0; border-radius:15px; background:#1a1a1a; border:1px solid #333; color:#fff; text-align:center; font-weight:700; outline:none; }
+        .m-in:focus { border-color: #00d4ff; }
         
-        #word-row { display:flex; gap:12px; margin: 25px 0; justify-content:center; flex-wrap:wrap; width:95%; z-index: 10; }
-        
-        /* ŞIK KONTRASTLI KUTUCUKLAR */
-        .slot { width:52px; height:68px; border:2px solid rgba(255,255,255,0.2); border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:2.2rem; background:rgba(255,255,255,0.03); font-weight:900; color: #fff; transition: 0.2s; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-        .slot.filled { border-color: #39FF14; box-shadow: 0 0 15px rgba(57, 255, 20, 0.4); }
-        
-        #cl-box { background:rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding:25px; border-radius:25px; text-align:center; width:90%; border:1px solid rgba(255,255,255,0.1); font-size:1.2rem; font-weight: 500; min-height: 80px; z-index: 10; }
+        .btn-act { width:100%; padding:18px; border-radius:15px; border:none; font-weight:800; cursor:pointer; margin-top:10px; text-transform:uppercase; background: #00d4ff; color: #000; }
 
+        /* ARENA ARKA PLANI (Senin Fotoğrafın) */
+        #arena { 
+            background: url('arkaplan.jpg') no-repeat center center; 
+            background-size: cover; 
+            justify-content: flex-start; padding-top: 30px; display:none; flex-direction:column; align-items:center; height:100vh; 
+        }
+        #arena::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 0; }
+
+        /* Oyun Elementleri */
+        .p-heads { display:flex; justify-content:space-between; padding:20px; width:100%; z-index: 10; position: relative; }
+        .p-sc { font-size:3.5rem; font-weight:900; }
+        .p-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #fff; margin-bottom: 5px; }
+
+        #word-row { display:flex; gap:10px; margin: 30px 0; justify-content:center; flex-wrap:wrap; width:95%; z-index: 10; position: relative; }
+        .slot { width:50px; height:65px; border:2px solid rgba(255,255,255,0.4); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:2rem; background:rgba(0,0,0,0.5); font-weight:900; color: #fff; }
+        .slot.active { border-color: #00d4ff; box-shadow: 0 0 10px #00d4ff; }
+
+        #cl-box { background:rgba(0,0,0,0.8); padding:20px; border-radius:20px; text-align:center; width:90%; border:1px solid rgba(255,255,255,0.1); font-size:1.1rem; z-index: 10; position: relative; }
         #k-in { position:absolute; top:-1000px; opacity:0; }
-        #res-img { width:80%; max-width:300px; margin-bottom: 20px; }
     </style>
 </head>
 <body onclick="document.getElementById('k-in').focus()">
 
-    <canvas id="bg-canvas"></canvas>
-
-    <div id="matchmaking-screen" class="wz-panel active">
-        <div class="glass-card" id="ui-setup">
-            <h1 style="color:#00d4ff; font-size:2.2rem; margin-bottom:10px;">ARENA</h1>
-            <input type="number" id="bet-amount" class="m-in" placeholder="BAHİS">
-            <button class="btn-panel" style="background:linear-gradient(45deg, #00d4ff, #0047ff); color:#fff;" onclick="createRoom()">ODA OLUŞTUR</button>
-            <div style="margin:20px; color:rgba(255,255,255,0.2); font-weight:900;">VEYA</div>
-            <input type="number" id="room-code-in" class="m-in" placeholder="6 HANELİ KOD">
-            <button class="btn-panel" style="background:#39FF14; color:#000;" onclick="joinRoom()">ODAYA KATIL</button>
+    <div id="register-screen" class="wz-panel">
+        <div class="glass-card">
+            <h2 style="margin-bottom:20px;">KAYIT OL</h2>
+            <div class="profile-upload" onclick="document.getElementById('p-file').click()">
+                <img id="p-preview" src="" style="display:none;">
+                <span id="p-text">FOTO SEÇ</span>
+            </div>
+            <input type="file" id="p-file" hidden accept="image/*" onchange="previewImg(this)">
+            <input type="text" id="reg-name" class="m-in" placeholder="İSİM">
+            <input type="number" id="reg-age" class="m-in" placeholder="YAŞ">
+            <select id="reg-gender" class="m-in">
+                <option value="Erkek">ERKEK</option>
+                <option value="Kadın">KADIN</option>
+            </select>
+            <button class="btn-act" onclick="saveUser()">KAYDET</button>
         </div>
+    </div>
 
+    <div id="matchmaking-screen" class="wz-panel">
+        <div class="glass-card" id="ui-setup">
+            <div id="user-info" style="margin-bottom: 20px;">
+                <img id="my-avatar" src="" style="width:60px; height:60px; border-radius:50%; border:2px solid #00d4ff;">
+                <h3 id="my-name">...</h3>
+            </div>
+            <h2 style="color:#00d4ff;">ODA KUR</h2>
+            <input type="number" id="bet-amount" class="m-in" placeholder="BAHİS">
+            <button class="btn-act" onclick="createRoom()">ODA OLUŞTUR</button>
+            <div style="margin:15px; opacity:0.3;">-- VEYA --</div>
+            <input type="number" id="room-code-in" class="m-in" placeholder="KOD GİRİN">
+            <button class="btn-act" style="background:#fff;" onclick="joinRoom()">KATIL</button>
+        </div>
+        
         <div class="glass-card" id="ui-wait" style="display:none;">
-            <h2 style="color:#39FF14; letter-spacing:2px;">ODA HAZIR</h2>
-            <h1 id="room-code-display" style="color:#fff; font-size:3.5rem; margin:15px 0; letter-spacing:5px;">000000</h1>
-            <p style="color:rgba(255,255,255,0.4);">Rakip bekleniyor...</p>
-            <button class="btn-panel" style="background:#ff4b2b; color:#fff; margin-top:25px;" onclick="location.reload()">İPTAL ET</button>
+            <h2 style="color:#00d4ff;">ODA HAZIR!</h2>
+            <h1 id="room-code-display" style="font-size:3.5rem; letter-spacing:5px;">000000</h1>
+            <p style="opacity:0.5;">Rakip bekleniyor...</p>
+            <button class="btn-act" style="background:#ff4b2b; color:#fff;" onclick="location.reload()">İPTAL</button>
         </div>
     </div>
 
     <div id="arena">
-        <div id="start-timer">5</div>
+        <div id="start-timer" style="position:absolute; top:20px; font-size:3rem; z-index:100;"></div>
         <div class="p-heads">
-            <div style="text-align:center;"><div class="p-sc" id="p1-s" style="color:#39FF14;">0</div><div style="font-size:0.7rem; opacity:0.6; margin-top:5px;">OYUNCU 1</div></div>
-            <div style="font-size:2rem; color:#ff4b2b; align-self:center; font-weight:900; opacity:0.8;">VS</div>
-            <div style="text-align:center;"><div class="p-sc" id="p2-s" style="color:#ff4b2b;">0</div><div style="font-size:0.7rem; opacity:0.6; margin-top:5px;">OYUNCU 2</div></div>
+            <div style="text-align:center;">
+                <img id="p1-img" class="p-img" src="">
+                <div class="p-sc" id="p1-s" style="color:#00d4ff;">0</div>
+            </div>
+            <div style="font-size:2rem; align-self:center; font-weight:900; z-index:10;">VS</div>
+            <div style="text-align:center;">
+                <img id="p2-img" class="p-img" src="">
+                <div class="p-sc" id="p2-s" style="color:#ff4b2b;">0</div>
+            </div>
         </div>
         <div id="word-row"></div>
         <div id="cl-box">Soru Yükleniyor...</div>
         <input type="text" id="k-in" autocorrect="off" autocapitalize="on" spellcheck="false">
-    </div>
-
-    <div id="end-screen" class="wz-panel">
-        <img id="res-img" src="">
-        <h1 id="res-msg" style="font-size:3.5rem; text-shadow: 0 0 20px rgba(255,255,255,0.3);">BİTTİ</h1>
-        <button class="btn-panel" style="background:#39FF14; color:#000; width:80%; margin-top:40px;" onclick="location.reload()">ANA MENÜ</button>
     </div>
 
 <script type="module">
@@ -94,61 +118,57 @@
     const firebaseConfig = { databaseURL: "https://wordzen-2e052-default-rtdb.firebaseio.com" };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    let u = JSON.parse(localStorage.getItem('wz_user')) || {name:"Muhammed"};
-    let rID, mRole, gData, preTimer;
 
-    // --- ARKA PLAN SİSTEMİ (Yıldızlar ve Hareketli Işıklar) ---
-    const canvas = document.getElementById('bg-canvas');
-    const ctx = canvas.getContext('2d');
-    let stars = [];
-    
-    function initBg() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        stars = [];
-        for(let i=0; i<150; i++) {
-            stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 2,
-                speed: Math.random() * 0.5 + 0.1
-            });
+    let user = JSON.parse(localStorage.getItem('wz_pro_user'));
+    let rID, mRole, gData;
+
+    // Fotoğraf Önizleme
+    window.previewImg = (input) => {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('p-preview').src = e.target.result;
+                document.getElementById('p-preview').style.display = 'block';
+                document.getElementById('p-text').style.display = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+
+    // Kullanıcı Kaydı
+    window.saveUser = () => {
+        const name = document.getElementById('reg-name').value;
+        const age = document.getElementById('reg-age').value;
+        const gender = document.getElementById('reg-gender').value;
+        const img = document.getElementById('p-preview').src;
+
+        if(!name || !age || !img || img === "") return alert("Tüm alanlar ve profil resmi zorunlu!");
+
+        user = { name, age, gender, img };
+        localStorage.setItem('wz_pro_user', JSON.stringify(user));
+        initApp();
+    };
+
+    function initApp() {
+        if(!user) {
+            document.getElementById('register-screen').classList.add('active');
+        } else {
+            document.getElementById('register-screen').classList.remove('active');
+            document.getElementById('matchmaking-screen').classList.add('active');
+            document.getElementById('my-name').innerText = user.name;
+            document.getElementById('my-avatar').src = user.img;
         }
     }
 
-    function animate() {
-        ctx.fillStyle = '#050505';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Yıldızları Hareket Ettir
-        ctx.fillStyle = '#fff';
-        stars.forEach(s => {
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
-            ctx.fill();
-            s.y += s.speed;
-            if(s.y > canvas.height) s.y = 0;
-        });
-
-        // Parlayan Neon Bulutlar Efekti (Statik ama derinlik verir)
-        let gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.width);
-        gradient.addColorStop(0, 'rgba(0, 212, 255, 0.05)');
-        gradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        requestAnimationFrame(animate);
-    }
-    window.addEventListener('resize', initBg);
-    initBg(); animate();
-
-    // --- OYUN MANTIĞI ---
+    // Oda Kurma
     window.createRoom = () => {
         const bet = document.getElementById('bet-amount').value || 0;
         rID = Math.floor(100000 + Math.random() * 900000).toString();
         const qs = wordList.sort(() => Math.random() - 0.5);
-        set(ref(db, 'rooms/' + rID), { id: rID, bet: bet, qIdx: 0, status: 'wait', p1: { name: u.name, score: 0 }, p2: null, words: qs })
-        .then(() => { 
+        set(ref(db, 'rooms/' + rID), {
+            id: rID, bet: bet, qIdx: 0, status: 'wait',
+            p1: { name: user.name, score: 0, img: user.img }, p2: null, words: qs
+        }).then(() => { 
             mRole = 'p1'; listen(); 
             document.getElementById('ui-setup').style.display='none'; 
             document.getElementById('ui-wait').style.display='block'; 
@@ -156,11 +176,12 @@
         });
     };
 
+    // Katılma
     window.joinRoom = () => {
         const code = document.getElementById('room-code-in').value;
         onValue(ref(db, 'rooms/' + code), (s) => {
-            const d = s.val(); if(!d || d.p2) return;
-            update(ref(db, 'rooms/' + code), { p2: { name: u.name, score: 0 }, status: 'play' });
+            const d = s.val(); if(!d || d.p2) return alert("Oda bulunamadı!");
+            update(ref(db, 'rooms/' + code), { p2: { name: user.name, score: 0, img: user.img }, status: 'play' });
             rID = code; mRole = 'p2'; listen();
         }, {onlyOnce: true});
     };
@@ -170,63 +191,27 @@
             gData = s.val(); if(!gData) return;
             if(gData.status === 'play' && document.getElementById('arena').style.display !== 'flex') {
                 document.getElementById('matchmaking-screen').classList.remove('active');
-                document.getElementById('arena').style.display='flex'; startPreTimer();
+                document.getElementById('arena').style.display='flex';
+                startCountdown();
             }
             if(gData.status === 'play' && gData.words[gData.qIdx]) {
-                const currentSlotIdx = document.querySelector('.slot')?.dataset.idx;
-                if(currentSlotIdx != gData.qIdx) renderRound();
+                if(!document.querySelector('.slot') || document.querySelector('.slot').dataset.idx != gData.qIdx) renderRound();
             }
-            if(gData.status === 'end') showResults();
+            if(gData.status === 'end') { /* Sonuç ekranı */ }
         });
     }
 
-    function startPreTimer() {
-        if(preTimer) return;
-        let c = 5; const st = document.getElementById('start-timer');
-        st.innerText = c; st.style.display = 'block';
-        preTimer = setInterval(() => { c--; st.innerText = c; if(c <= 0) { clearInterval(preTimer); st.style.display='none'; } }, 1000);
+    function startCountdown() {
+        let c = 5;
+        const timer = document.getElementById('start-timer');
+        const itv = setInterval(() => {
+            timer.innerText = c; c--;
+            if(c < 0) { clearInterval(itv); timer.style.display='none'; }
+        }, 1000);
     }
 
     function renderRound() {
         const q = gData.words[gData.qIdx];
-        document.getElementById('p1-s').innerText = gData.p1.score;
-        document.getElementById('p2-s').innerText = gData.p2.score;
-        document.getElementById('cl-box').innerText = q.m;
-        const row = document.getElementById('word-row'); row.innerHTML = "";
-        q.a.split('').forEach(() => { row.innerHTML += `<div class="slot" data-idx="${gData.qIdx}"></div>`; });
-        document.getElementById('k-in').value = ""; document.getElementById('k-in').focus();
-    }
-
-    document.getElementById('k-in').oninput = function() {
-        const q = gData.words[gData.qIdx]; const val = this.value.toUpperCase();
-        const slots = document.querySelectorAll('.slot');
-        q.a.split('').forEach((h, i) => { 
-            if(slots[i]) {
-                slots[i].innerText = val[i] || ""; 
-                if(val[i]) slots[i].classList.add('filled'); else slots[i].classList.remove('filled');
-            }
-        });
-        
-        if(val.length >= q.a.length) {
-            if(val === q.a) {
-                update(ref(db, `rooms/${rID}/${mRole}`), { score: gData[mRole].score + 1 });
-                this.value = "";
-                if(gData.qIdx < (gData.words.length - 1)) update(ref(db, 'rooms/'+rID), { qIdx: gData.qIdx + 1 });
-                else update(ref(db, 'rooms/'+rID), { status: 'end' });
-            } else {
-                this.value = "";
-                slots.forEach(s => { s.innerText = ""; s.classList.remove('filled'); });
-            }
-        }
-    };
-
-    function showResults() {
-        document.getElementById('arena').style.display='none';
-        document.getElementById('end-screen').classList.add('active');
-        const win = gData[mRole].score > gData[mRole === 'p1' ? 'p2' : 'p1'].score;
-        document.getElementById('res-img').src = win ? 'winner.jpg' : 'lose.jpg';
-        document.getElementById('res-msg').innerText = win ? "KRAL SENSİN!" : "KAYBETTİN";
-    }
-</script>
-</body>
-</html>
+        document.getElementById('p1-img').src = gData.p1.img;
+        document.getElementById('p2-img').src = gData.p2.img;
+        document.getElementById('p1-s
