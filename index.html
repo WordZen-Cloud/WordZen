@@ -2,209 +2,148 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WordZen Arena</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WordZen PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        * { margin:0; padding:0; box-sizing:border-box; }
         body { background:#000; color:#fff; font-family:'Montserrat', sans-serif; overflow:hidden; }
         
-        /* HAREKETLİ NEON MATRIX ARKA PLAN */
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.6; }
+        /* 1. Splash Screen */
+        #splash { position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:999; display:flex; align-items:center; justify-content:center; }
+        #splash video { width:100%; height:100%; object-fit:cover; }
 
-        .wz-panel { display:none; height:100vh; width:100%; flex-direction:column; align-items:center; justify-content:center; position:fixed; top:0; left:0; z-index: 10; }
+        /* 2. Kayıt & Mod Seçimi */
+        .screen { display:none; height:100vh; width:100%; flex-direction:column; align-items:center; justify-content:center; position:absolute; }
         .active { display:flex !important; }
-
-        .glass-card { 
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); 
-            border: 2px solid #39FF14; padding: 35px; 
-            border-radius: 30px; width: 90%; max-width: 400px; text-align: center; 
-            box-shadow: 0 0 25px rgba(57, 255, 20, 0.4);
-        }
-        .m-in { width:100%; padding:15px; margin:10px 0; border-radius:15px; background:rgba(0,0,0,0.9); border:1px solid #444; color:#39FF14; text-align:center; font-weight:800; font-size:1.2rem; outline:none; }
-        .btn-panel { width:100%; padding:18px; border-radius:15px; border:none; font-weight:900; cursor:pointer; margin-top:10px; text-transform:uppercase; font-size:1.1rem; }
-
-        #arena { background: none; justify-content: flex-start; padding-top: 20px; display:none; flex-direction:column; align-items:center; height:100vh; }
         
-        /* KÜÇÜLTÜLMÜŞ GERİ SAYIM */
-        #start-timer { position:absolute; top:15px; left:50%; transform:translateX(-50%); font-size:2.2rem; color:#39FF14; text-shadow:0 0 10px #39FF14; z-index:200; display:none; }
+        .card { background:rgba(20,20,20,0.9); padding:30px; border-radius:30px; width:90%; max-width:400px; text-align:center; border:1px solid #333; }
+        input, select { width:100%; padding:15px; margin:10px 0; border-radius:15px; background:#111; border:1px solid #444; color:#fff; text-align:center; }
+        button { width:100%; padding:20px; border-radius:20px; border:none; font-weight:900; cursor:pointer; margin-top:10px; text-transform:uppercase; transition:0.3s; }
+        
+        /* Mod Butonları */
+        .btn-normal { background:#39FF14; color:#000; }
+        .btn-1v1 { background:#00d4ff; color:#000; }
+        .btn-random { background:#ffcc00; color:#000; }
 
-        .p-heads { display:flex; justify-content:space-between; padding:15px 25px; width:100%; z-index: 10; }
-        .p-sc { font-size:3.2rem; font-weight:900; text-shadow: 0 0 15px rgba(57,255,20,0.6); }
-        
-        #word-row { display:flex; gap:10px; margin: 15px 0; justify-content:center; flex-wrap:wrap; width:95%; z-index: 10; }
-        
-        /* NEON YEŞİL KUTUCUKLAR */
-        .slot { width:48px; height:65px; border:2.5px solid #39FF14; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:2rem; background:rgba(0,0,0,0.7); font-weight:900; color: #fff; box-shadow: 0 0 10px rgba(57,255,20,0.4); }
-        
-        #cl-box { background:rgba(0,0,0,0.85); padding:22px; border-radius:22px; text-align:center; width:90%; border:1px solid rgba(57,255,20,0.3); font-size:1.1rem; min-height: 75px; z-index: 10; }
+        /* Jeton Animasyonu Barı */
+        #coin-bar { position:fixed; top:10px; right:10px; background:rgba(0,0,0,0.8); padding:10px 20px; border-radius:30px; border:1px solid #ffcc00; z-index:100; display:flex; align-items:center; }
+        .flying-coin { position:fixed; width:25px; height:25px; background:#ffcc00; border-radius:50%; z-index:200; pointer-events:none; box-shadow:0 0 10px #ffcc00; }
 
-        #k-in { position:absolute; top:-1000px; opacity:0; }
+        /* Arena Arka Planı */
+        #arena-bg { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; transition: opacity 0.5s ease-in-out; background-size: cover; background-position: center; }
 
-        /* RESİMLERİN ARKA PLANINI YOK EDEN STİL */
-        #res-img { width:75%; max-width:280px; mix-blend-mode: screen; background: none; filter: drop-shadow(0 0 15px #39FF14); }
-        
-        #loading-circle { border: 5px solid #111; border-top: 5px solid #39FF14; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Zaman Barı */
+        #time-container { width:100%; height:8px; background:#222; position:absolute; top:0; left:0; }
+        #time-bar { width:100%; height:100%; background:#ff4b2b; transition: width 1s linear; }
+
+        /* Klavye Boyu Ayarı */
+        #k-in { width:100%; height:60px; font-size:1.5rem; text-align:center; background:#111; border:2px solid #00d4ff; color:#fff; position:fixed; bottom:20px; width:90%; left:5%; border-radius:15px; }
     </style>
 </head>
-<body onclick="document.getElementById('k-in').focus()">
+<body>
 
-    <canvas id="bg-canvas"></canvas>
+    <div id="splash">
+        <video id="intro-vid" muted playsinline>
+            <source src="video.mp4" type="video/mp4">
+        </video>
+    </div>
 
-    <div id="matchmaking-screen" class="wz-panel active">
-        <div class="glass-card" id="ui-setup">
-            <h2 style="color:#00d4ff;">ODA KUR</h2>
-            <input type="number" id="bet-amount" class="m-in" placeholder="Miktar Girin">
-            <button class="btn-panel" style="background:#00d4ff; color:#000;" onclick="createRoom()">ODA OLUŞTUR</button>
-            <div style="margin:15px; color:#555; font-weight:900;">-- VEYA --</div>
-            <input type="number" id="room-code-in" class="m-in" placeholder="KOD GİRİN">
-            <button class="btn-panel" style="background:#39FF14; color:#000;" onclick="joinRoom()">ODAYA KATIL</button>
-        </div>
+    <div id="coin-bar">💰 <span id="user-coins">0</span></div>
 
-        <div class="glass-card" id="ui-wait" style="display:none;">
-            <h2 style="color:#39FF14;">HAZIR!</h2>
-            <h1 id="room-code-display" style="color:#ffcc00; font-size:2.8rem; margin:10px 0;">000000</h1>
-            <p style="color:#aaa;">Rakip bekleniyor...</p>
-            <div id="loading-circle"></div>
-            <button class="btn-panel" style="background:#ff4b2b; color:#fff;" onclick="location.reload()">İPTAL ET</button>
+    <div id="reg-screen" class="screen">
+        <div class="card">
+            <h2>HOŞ GELDİN</h2>
+            <input type="text" id="u-name" placeholder="KULLANICI ADI">
+            <input type="number" id="u-age" placeholder="YAŞ">
+            <select id="u-gen">
+                <option value="Erkek">ERKEK</option>
+                <option value="Kadın">KADIN</option>
+            </select>
+            <button class="btn-normal" onclick="completeReg()">KAYDET</button>
         </div>
     </div>
 
-    <div id="arena">
-        <div id="start-timer">5</div>
-        <div class="p-heads">
-            <div style="text-align:center;"><div class="p-sc" id="p1-s" style="color:#39FF14;">0</div><div id="p1-n" style="font-size:0.7rem; color:#39FF14;">SEN</div></div>
-            <div style="font-size:1.8rem; color:#ff4b2b; align-self:center; font-weight:900;">VS</div>
-            <div style="text-align:center;"><div class="p-sc" id="p2-s" style="color:#ff4b2b;">0</div><div id="p2-n" style="font-size:0.7rem; color:#ff4b2b;">RAKİP</div></div>
+    <div id="mode-screen" class="screen">
+        <div class="card">
+            <h2>MOD SEÇ</h2>
+            <button class="btn-normal" onclick="startNormal()">NORMAL MOD</button>
+            <button class="btn-1v1" onclick="open1v1Lobby()">1V1 ÖZEL ODA</button>
+            <button class="btn-random" onclick="startRandom()">1V1 RANDOM</button>
         </div>
-        <div id="word-row"></div>
-        <div id="cl-box">Soru Yükleniyor...</div>
-        <input type="text" id="k-in" autocorrect="off" autocapitalize="on" spellcheck="false">
     </div>
 
-    <div id="end-screen" class="wz-panel">
-        <img id="res-img" src="">
-        <h1 id="res-msg" style="font-size:3.2rem;">SONUÇ</h1>
-        <button class="btn-panel" style="background:#39FF14; color:#000; width:80%; margin-top:30px;" onclick="location.reload()">ANA MENÜ</button>
+    <div id="lobby-1v1" class="screen">
+        <div class="card">
+            <h2>1V1 ARENA</h2>
+            <input type="number" id="bet-coin" placeholder="BAHİS JETON (Örn: 500)">
+            <button class="btn-1v1" onclick="createRoom()">ODA KUR</button>
+            <div style="margin:10px;">- VEYA -</div>
+            <input type="text" id="room-id-in" placeholder="WZ-XXXXXX">
+            <button class="btn-normal" onclick="joinRoom()">ODAYA GİR</button>
+            <button style="background:none; color:#aaa;" onclick="showModes()">GERİ</button>
+        </div>
     </div>
 
-<audio id="bg-m" loop src="fon-muzigi.mp3"></audio>
+    <div id="arena-bg"></div>
+
+    <div id="game-arena" class="screen" style="justify-content:flex-start; padding-top:50px;">
+        <div id="time-container"><div id="time-bar"></div></div>
+        <div id="q-hint" style="padding:20px; font-size:1.2rem; text-align:center;">Soru Yükleniyor...</div>
+        <div id="word-slots" style="display:flex; gap:10px; margin-top:20px;"></div>
+        <input type="text" id="k-in" maxlength="15" placeholder="BURAYA YAZ">
+        <button id="hint-btn" onclick="useHint()" style="width:auto; padding:10px 20px; background:#ffcc00; position:fixed; bottom:100px;">İPUCU (-50 Jeton)</button>
+    </div>
+
+    <audio id="snd-bg" loop src="fon-muzigi.mp3"></audio>
+    <audio id="snd-true" src="dogru.mp3"></audio>
+    <audio id="snd-false" src="yanlis.mp3"></audio>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
     import { wordList } from './kelimeler.js';
 
     const firebaseConfig = { databaseURL: "https://wordzen-2e052-default-rtdb.firebaseio.com" };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    let u = JSON.parse(localStorage.getItem('wz_user')) || {name:"Muhammed"};
-    let rID, mRole, gData, preTimer;
 
-    const sndDogru = new Audio('dogru.mp3');
-    const sndYanlis = new Audio('yanlis.mp3');
+    let user = JSON.parse(localStorage.getItem('wz_pro')) || null;
+    let bgIndex = 1;
+    let wordCounter = 0;
+    let timerInterval;
 
-    // MATRIX ARKA PLAN SCRIPT
-    const canvas = document.getElementById('bg-canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    const drops = Array(Math.floor(canvas.width / 15)).fill(1);
-    function draw() {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#39FF14'; ctx.font = '15px arial';
-        drops.forEach((y, i) => {
-            const text = String.fromCharCode(Math.random() * 128);
-            ctx.fillText(text, i * 15, y * 15);
-            if (y * 15 > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        });
-    }
-    setInterval(draw, 40);
-
-    window.createRoom = () => {
-        const bet = document.getElementById('bet-amount').value || 0;
-        rID = Math.floor(100000 + Math.random() * 900000).toString();
-        const qs = wordList.sort(() => Math.random() - 0.5);
-        set(ref(db, 'rooms/' + rID), { id: rID, bet: bet, qIdx: 0, status: 'wait', p1: { name: u.name, score: 0 }, p2: null, words: qs })
-        .then(() => { 
-            mRole = 'p1'; listen(); 
-            document.getElementById('ui-setup').style.display='none'; 
-            document.getElementById('ui-wait').style.display='block'; 
-            document.getElementById('room-code-display').innerText = rID; 
-        });
+    // --- 1. SPLASH VE GİRİŞ ---
+    const vid = document.getElementById('intro-vid');
+    vid.play();
+    vid.onended = () => {
+        document.getElementById('splash').style.display = 'none';
+        document.getElementById('snd-bg').play();
+        if(!user) showScreen('reg-screen'); else showScreen('mode-screen');
     };
 
-    window.joinRoom = () => {
-        const code = document.getElementById('room-code-in').value;
-        onValue(ref(db, 'rooms/' + code), (s) => {
-            const d = s.val(); if(!d || d.p2) return alert("Oda bulunamadı!");
-            update(ref(db, 'rooms/' + code), { p2: { name: u.name, score: 0 }, status: 'play' });
-            rID = code; mRole = 'p2'; listen();
-        }, {onlyOnce: true});
+    window.completeReg = () => {
+        const name = document.getElementById('u-name').value;
+        const age = document.getElementById('u-age').value;
+        if(!name || !age) return alert("Bilgileri gir!");
+        user = { name, age, gender: document.getElementById('u-gen').value, coins: 1000, lv: 1 };
+        localStorage.setItem('wz_pro', JSON.stringify(user));
+        showScreen('mode-screen');
+        updateCoinUI();
     };
 
-    function listen() {
-        onValue(ref(db, 'rooms/' + rID), (s) => {
-            gData = s.val(); if(!gData) return;
-            if(gData.status === 'play' && document.getElementById('arena').style.display !== 'flex') {
-                document.getElementById('matchmaking-screen').classList.remove('active');
-                document.getElementById('arena').style.display='flex'; startPreTimer();
-            }
-            if(gData.status === 'play' && gData.words[gData.qIdx]) {
-                const currentSlotIdx = document.querySelector('.slot')?.dataset.idx;
-                if(currentSlotIdx != gData.qIdx) renderRound();
-            }
-            if(gData.status === 'end') showResults();
-        });
+    // --- 2. FONKSİYONLAR ---
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
     }
 
-    function startPreTimer() {
-        if(preTimer) return;
-        let c = 5; const st = document.getElementById('start-timer');
-        st.innerText = c; st.style.display = 'block'; document.getElementById('bg-m').play();
-        preTimer = setInterval(() => { c--; st.innerText = c; if(c <= 0) { clearInterval(preTimer); st.style.display='none'; } }, 1000);
+    function updateCoinUI() {
+        document.getElementById('user-coins').innerText = user.coins;
     }
 
-    function renderRound() {
-        const q = gData.words[gData.qIdx];
-        document.getElementById('p1-n').innerText = gData.p1.name;
-        document.getElementById('p2-n').innerText = gData.p2.name;
-        document.getElementById('p1-s').innerText = gData.p1.score;
-        document.getElementById('p2-s').innerText = gData.p2.score;
-        document.getElementById('cl-box').innerText = q.m;
-        const row = document.getElementById('word-row'); row.innerHTML = "";
-        q.a.split('').forEach(() => { row.innerHTML += `<div class="slot" data-idx="${gData.qIdx}"></div>`; });
-        document.getElementById('k-in').value = ""; document.getElementById('k-in').focus();
-    }
-
-    document.getElementById('k-in').oninput = function() {
-        const q = gData.words[gData.qIdx]; const val = this.value.toUpperCase();
-        const slots = document.querySelectorAll('.slot');
-        q.a.split('').forEach((h, i) => { if(slots[i]) slots[i].innerText = val[i] || ""; });
-        
-        if(val.length >= q.a.length) {
-            if(val === q.a) {
-                sndDogru.play(); 
-                update(ref(db, `rooms/${rID}/${mRole}`), { score: gData[mRole].score + 1 });
-                this.value = "";
-                if(gData.qIdx < (gData.words.length - 1)) update(ref(db, 'rooms/'+rID), { qIdx: gData.qIdx + 1 });
-                else update(ref(db, 'rooms/'+rID), { status: 'end' });
-            } else {
-                sndYanlis.play(); this.value = "";
-                q.a.split('').forEach((h, i) => { if(slots[i]) slots[i].innerText = ""; });
-            }
-        }
-    };
-
-    function showResults() {
-        document.getElementById('arena').style.display='none';
-        document.getElementById('end-screen').classList.add('active');
-        document.getElementById('bg-m').pause();
-        const win = gData[mRole].score > gData[mRole === 'p1' ? 'p2' : 'p1'].score;
-        if(win) { new Audio('winner.mp3').play(); document.getElementById('res-img').src='winner.jpg'; document.getElementById('res-msg').innerText="KRAL SENSİN!"; }
-        else { new Audio('lose.mp3').play(); document.getElementById('res-img').src='lose.jpg'; document.getElementById('res-msg').innerText="KAYBETTİN..."; }
-    }
-</script>
-</body>
-</html>
+    // Arka Plan Önizleme (Kasmasız Değişim)
+    function changeBg() {
+        const bg = document.getElementById('arena-bg');
+        bg.style.backgroundImage = `url('bg${bgIndex}.jpg')`;
+        bgIndex++; if
