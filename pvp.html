@@ -9,11 +9,17 @@
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { width:100%; height:100vh; overflow:hidden; font-family:'Montserrat', sans-serif; background:#000; color:#fff; }
         
-        /* 1. EŞLEŞME EKRANI */
+        /* 1. KAYIT EKRANI (Yenge İçin İsim Girişi) */
+        #registration {
+            position:fixed; top:0; left:0; width:100%; height:100%; 
+            background: #000; display:flex; align-items:center; justify-content:center; z-index:6000;
+        }
+
+        /* 2. EŞLEŞME EKRANI */
         #matchmaking { 
             position:fixed; top:0; left:0; width:100%; height:100%; 
             background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); 
-            display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:5000; padding:20px;
+            display:none; flex-direction:column; align-items:center; justify-content:center; z-index:5000; padding:20px;
         }
         .glass-card { 
             background: rgba(255, 255, 255, 0.1); 
@@ -27,14 +33,12 @@
             text-align:center; margin:15px 0; font-weight: 800;
         }
 
-        /* 2. OYUN ARENASI (Arka Plan Senin Resmin) */
+        /* 3. OYUN ARENASI (Kutucuklar Yukarıda) */
         #arena { 
             display:none; height:100vh; flex-direction:column; 
             background: url('arkaplan.jpg') no-repeat center center; 
-            background-size: cover; 
-            position: relative;
+            background-size: cover; position: relative;
         }
-        /* Resim üzerinde yazılar okunsun diye hafif karartma */
         #arena::before {
             content: ""; position: absolute; top:0; left:0; width:100%; height:100%;
             background: rgba(0,0,0,0.5); z-index: 0;
@@ -44,25 +48,42 @@
         #timer-container { width:100%; height:12px; background:rgba(255,255,255,0.1); position:fixed; top:0; }
         #timer-bar { width:100%; height:100%; background:linear-gradient(90deg, #00d4ff, #39FF14); transition: width 0.1s linear; }
 
-        .p-header { display:flex; justify-content:space-between; padding:40px 25px; }
-        .score { font-size:3rem; font-weight:900; color: #39FF14; text-shadow: 0 0 10px #000; }
+        .p-header { display:flex; justify-content:space-between; padding:30px 25px 10px; }
+        .score { font-size:2.5rem; font-weight:900; color: #39FF14; }
 
-        #word-row { display:flex; gap:10px; margin: 30px 0; flex-wrap:wrap; justify-content:center; }
-        .box { width:50px; height:65px; background:rgba(0,0,0,0.6); border:3px solid #39FF14; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-weight:900; }
-
-        /* GİZLİ INPUT (Kendi Klavyeni Açan Şey) */
-        #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
-
-        /* MAÇ SONU EKRANI */
-        #end-screen { 
-            display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
-            background:rgba(0,0,0,0.95); z-index:6000; flex-direction:column; align-items:center; justify-content:center; 
+        /* KUTUCUKLAR VE ANLAM YUKARI TAŞINDI */
+        #game-play-area { margin-top: 10px; display: flex; flex-direction: column; align-items: center; }
+        #word-row { display:flex; gap:8px; margin: 15px 0; flex-wrap:wrap; justify-content:center; }
+        .box { 
+            width:45px; height:60px; background:rgba(255,255,255,0.1); 
+            border:2px solid rgba(255,255,255,0.3); border-radius:10px; 
+            display:flex; align-items:center; justify-content:center; 
+            font-size:1.6rem; font-weight:900; color: #fff;
+        }
+        #clue { 
+            background:rgba(0,0,0,0.6); padding:15px; border-radius:15px; 
+            width:90%; text-align:center; border:1px solid rgba(255,255,255,0.2);
+            font-size:1.1rem;
         }
 
+        #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
+
+        #end-screen { 
+            display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+            background:rgba(0,0,0,0.95); z-index:7000; flex-direction:column; align-items:center; justify-content:center; 
+        }
         .btn { width:100%; padding:18px; border-radius:15px; border:none; font-weight:900; cursor:pointer; margin-top:10px; }
     </style>
 </head>
 <body onclick="focusInput()">
+
+    <div id="registration">
+        <div class="glass-card">
+            <h2 style="margin-bottom:20px;">ARENA GİRİŞİ</h2>
+            <input type="text" id="user-name-input" class="m-input" placeholder="İSMİNİZİ YAZIN">
+            <button class="btn" style="background:#39FF14; color:#000;" onclick="startRegistration()">GİRİŞ YAP</button>
+        </div>
+    </div>
 
     <div id="matchmaking">
         <div class="glass-card">
@@ -87,15 +108,17 @@
         <div id="arena-content">
             <div id="timer-container"><div id="timer-bar"></div></div>
             <div class="p-header">
-                <div style="text-align:center;"><p id="p1-n">SEN</p><div class="score" id="p1-s">0</div></div>
-                <div style="font-size:1.5rem; color:red; padding-top:20px;">VS</div>
-                <div style="text-align:center;"><p id="p2-n">RAKİP</p><div class="score" id="p2-s">0</div></div>
+                <div style="text-align:center;"><p id="p1-n">...</p><div class="score" id="p1-s">0</div></div>
+                <div style="font-size:1.5rem; color:red; padding-top:10px;">VS</div>
+                <div style="text-align:center;"><p id="p2-n">...</p><div class="score" id="p2-s">0</div></div>
             </div>
-            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            
+            <div id="game-play-area">
                 <div id="word-row"></div>
-                <div id="clue" style="background:rgba(0,0,0,0.7); padding:20px; border-radius:20px; width:85%; text-align:center; border:1px solid #39FF14;">...</div>
+                <div id="clue">...</div>
             </div>
-            <input type="text" id="hidden-input" autocomplete="off" autofocus>
+            
+            <input type="text" id="hidden-input" autocomplete="off">
         </div>
     </div>
 
@@ -115,20 +138,27 @@
 
     const app = initializeApp({ databaseURL: "https://wordzen-2e052-default-rtdb.firebaseio.com" });
     const db = getDatabase(app);
-    let u = JSON.parse(localStorage.getItem('wz_user')) || {name:"Oyuncu", coins:500};
+    let currentUser = {name: "Oyuncu", coins: 500};
     let myRole, roomID, game, timer;
 
-    // Telefon klavyesini sürekli aktif tutar
+    window.startRegistration = () => {
+        const name = document.getElementById('user-name-input').value;
+        if(!name) return alert("İsim lazım kanka!");
+        currentUser.name = name;
+        document.getElementById('registration').style.display = 'none';
+        document.getElementById('matchmaking').style.display = 'flex';
+    };
+
     window.focusInput = () => { document.getElementById('hidden-input').focus(); };
 
     window.createRoom = () => {
         const betVal = parseInt(document.getElementById('bet').value);
-        if(!betVal || u.coins < betVal) return alert("Jeton yetersiz!");
+        if(!betVal) return alert("Bahis miktarını gir!");
         roomID = "WZ-" + Math.floor(100000 + Math.random() * 900000);
         const q = wordList.sort(() => 0.5 - Math.random()).slice(0, 10);
         set(ref(db, 'rooms/' + roomID), {
             id: roomID, bet: betVal, qIdx: 0, status: 'wait',
-            p1: { name: u.name, score: 0 }, p2: null, words: q, rematch: {p1:false, p2:false}
+            p1: { name: currentUser.name, score: 0 }, p2: null, words: q, rematch: {p1:false, p2:false}
         }).then(() => {
             myRole = 'p1';
             document.getElementById('ui-setup').style.display = 'none';
@@ -143,7 +173,7 @@
         onValue(ref(db, 'rooms/' + code), (s) => {
             const d = s.val();
             if(!d || d.p2) return alert("Oda geçersiz!");
-            update(ref(db, 'rooms/' + code), { p2: { name: u.name, score: 0 }, status: 'play' });
+            update(ref(db, 'rooms/' + code), { p2: { name: currentUser.name, score: 0 }, status: 'play' });
             myRole = 'p2'; roomID = code; listen();
         }, { onlyOnce: true });
     };
@@ -156,10 +186,11 @@
                 document.getElementById('matchmaking').style.display = 'none';
                 document.getElementById('arena').style.display = 'flex';
                 document.getElementById('end-screen').style.display = 'none';
+                document.getElementById('p1-n').innerText = game.p1.name;
+                document.getElementById('p2-n').innerText = game.p2 ? game.p2.name : "...";
                 startRound();
             }
             if(game.status === 'end') showEnd();
-            // Tekrar oynama mantığı
             if(game.rematch && game.rematch.p1 && game.rematch.p2) {
                 const newQ = wordList.sort(() => 0.5 - Math.random()).slice(0, 10);
                 update(ref(db, 'rooms/'+roomID), { status:'play', qIdx:0, 'p1/score':0, 'p2/score':0, words:newQ, rematch:{p1:false, p2:false} });
@@ -185,15 +216,11 @@
         }, 100);
     }
 
-    // Telefon klavyesi inputu kontrolü
     document.getElementById('hidden-input').oninput = function() {
         const val = this.value.toUpperCase();
         const boxes = document.querySelectorAll('.box');
         const targetWord = game.words[game.qIdx].a;
-        
-        // Harfleri kutulara yaz
         boxes.forEach((box, i) => { box.innerText = val[i] || ""; });
-
         if(val === targetWord) {
             update(ref(db, `rooms/${roomID}/${myRole}`), { score: game[myRole].score + 1 });
             this.value = "";
@@ -211,17 +238,14 @@
         document.getElementById('end-screen').style.display = 'flex';
         const s1 = game.p1.score; const s2 = game.p2.score;
         const msg = document.getElementById('end-msg');
-        
         if(s1 === s2) msg.innerText = "BERABERE BİTTİ!";
-        else if((myRole === 'p1' && s1 > s2) || (myRole === 'p2' && s2 > s1)) {
-            msg.innerText = "TEBRİKLER KAZANDINIZ!";
-            // Buraya jeton ekleme kodu gelebilir
-        } else msg.innerText = "MAALESEF KAYBETTİNİZ!";
+        else if((myRole === 'p1' && s1 > s2) || (myRole === 'p2' && s2 > s1)) msg.innerText = "TEBRİKLER KAZANDINIZ!";
+        else msg.innerText = "MAALESEF KAYBETTİNİZ!";
     }
 
     window.rematch = () => {
-        alert("Tekrar oynama isteği gönderildi...");
         update(ref(db, `rooms/${roomID}/rematch/${myRole}`), true);
+        alert("Tekrar oynama isteği gönderildi...");
     };
 </script>
 </body>
