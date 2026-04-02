@@ -2,148 +2,147 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WordZen PRO</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>WordZen | Master</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { background:#000; color:#fff; font-family:'Montserrat', sans-serif; overflow:hidden; }
         
-        /* 1. Splash Screen */
-        #splash { position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:999; display:flex; align-items:center; justify-content:center; }
-        #splash video { width:100%; height:100%; object-fit:cover; }
+        /* Splash - Atla Butonu Kaldırıldı */
+        #splash { position:fixed; top:0; left:0; width:100%; height:100%; z-index:10000; background:#000; display:flex; align-items:center; justify-content:center; }
+        #splash-vid { width:100%; height:100%; object-fit:cover; }
 
-        /* 2. Kayıt & Mod Seçimi */
-        .screen { display:none; height:100vh; width:100%; flex-direction:column; align-items:center; justify-content:center; position:absolute; }
+        .container { display:none; height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:20px; background: radial-gradient(circle, #1a2a6c, #000); }
         .active { display:flex !important; }
+
+        /* Profil & Ayarlar */
+        .settings-btn { position:fixed; top:20px; right:20px; font-size:1.8rem; color:#fff; z-index:100; cursor:pointer; }
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:200; align-items:center; justify-content:center; }
+        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 30px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
+
+        /* Mod Ekranı Tasarımı (Değişmedi, Sadece Ekleme Yapıldı) */
+        .btn-main { width:100%; padding:18px; border-radius:20px; border:none; font-weight:900; margin-bottom:15px; cursor:pointer; text-transform:uppercase; transition:0.3s; }
         
-        .card { background:rgba(20,20,20,0.9); padding:30px; border-radius:30px; width:90%; max-width:400px; text-align:center; border:1px solid #333; }
-        input, select { width:100%; padding:15px; margin:10px 0; border-radius:15px; background:#111; border:1px solid #444; color:#fff; text-align:center; }
-        button { width:100%; padding:20px; border-radius:20px; border:none; font-weight:900; cursor:pointer; margin-top:10px; text-transform:uppercase; transition:0.3s; }
-        
-        /* Mod Butonları */
-        .btn-normal { background:#39FF14; color:#000; }
-        .btn-1v1 { background:#00d4ff; color:#000; }
-        .btn-random { background:#ffcc00; color:#000; }
+        /* Slider (Ses Ayarı) */
+        .slider { width: 100%; margin: 15px 0; accent-color: #39FF14; }
 
-        /* Jeton Animasyonu Barı */
-        #coin-bar { position:fixed; top:10px; right:10px; background:rgba(0,0,0,0.8); padding:10px 20px; border-radius:30px; border:1px solid #ffcc00; z-index:100; display:flex; align-items:center; }
-        .flying-coin { position:fixed; width:25px; height:25px; background:#ffcc00; border-radius:50%; z-index:200; pointer-events:none; box-shadow:0 0 10px #ffcc00; }
-
-        /* Arena Arka Planı */
-        #arena-bg { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; transition: opacity 0.5s ease-in-out; background-size: cover; background-position: center; }
-
-        /* Zaman Barı */
-        #time-container { width:100%; height:8px; background:#222; position:absolute; top:0; left:0; }
-        #time-bar { width:100%; height:100%; background:#ff4b2b; transition: width 1s linear; }
-
-        /* Klavye Boyu Ayarı */
-        #k-in { width:100%; height:60px; font-size:1.5rem; text-align:center; background:#111; border:2px solid #00d4ff; color:#fff; position:fixed; bottom:20px; width:90%; left:5%; border-radius:15px; }
+        /* Level Sayfası */
+        #level-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; padding:20px; width:100%; max-height:70vh; overflow-y:auto; }
+        .lvl-box { aspect-ratio: 1; background:rgba(255,255,255,0.1); border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; position:relative; border: 2px solid rgba(255,255,255,0.1); }
+        .lvl-locked::after { content:'\f023'; font-family:'Font Awesome 5 Free'; font-weight:900; position:absolute; top:5px; right:5px; font-size:0.8rem; color:#ffcc00; }
     </style>
 </head>
 <body>
 
-    <div id="splash">
-        <video id="intro-vid" muted playsinline>
-            <source src="video.mp4" type="video/mp4">
-        </video>
-    </div>
+<div id="splash">
+    <video id="splash-vid" autoplay muted playsinline>
+        <source src="video.mp4" type="video/mp4">
+    </video>
+</div>
 
-    <div id="coin-bar">💰 <span id="user-coins">0</span></div>
+<div id="settings-trigger" class="settings-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></div>
 
-    <div id="reg-screen" class="screen">
-        <div class="card">
-            <h2>HOŞ GELDİN</h2>
-            <input type="text" id="u-name" placeholder="KULLANICI ADI">
-            <input type="number" id="u-age" placeholder="YAŞ">
-            <select id="u-gen">
-                <option value="Erkek">ERKEK</option>
-                <option value="Kadın">KADIN</option>
-            </select>
-            <button class="btn-normal" onclick="completeReg()">KAYDET</button>
+<div id="settings-modal" class="modal">
+    <div class="glass-card">
+        <h2>AYARLAR</h2>
+        <div style="margin-top:20px; text-align:left;">
+            <label>Müzik Sesi</label>
+            <input type="range" id="music-vol" class="slider" oninput="updateVol()">
+            <label>Efekt Sesi</label>
+            <input type="range" id="sfx-vol" class="slider" oninput="updateVol()">
         </div>
+        <button class="btn-main" style="background:#39FF14; margin-top:20px;" onclick="toggleSettings()">KAPAT</button>
     </div>
+</div>
 
-    <div id="mode-screen" class="screen">
-        <div class="card">
-            <h2>MOD SEÇ</h2>
-            <button class="btn-normal" onclick="startNormal()">NORMAL MOD</button>
-            <button class="btn-1v1" onclick="open1v1Lobby()">1V1 ÖZEL ODA</button>
-            <button class="btn-random" onclick="startRandom()">1V1 RANDOM</button>
+<div id="profile-screen" class="container">
+    <div class="glass-card">
+        <div id="p-img-box" style="width:100px; height:100px; border-radius:50%; background:#333; margin:0 auto 15px; overflow:hidden; border:3px solid #39FF14;">
+            <img id="p-img" src="default-avatar.png" style="width:100%; height:100%; object-fit:cover;">
         </div>
+        <input type="file" id="img-input" style="display:none" onchange="uploadImg(this)">
+        <button onclick="document.getElementById('img-input').click()" style="background:none; border:none; color:#39FF14; margin-bottom:10px; cursor:pointer;">RESİM SEÇ</button>
+        <input type="text" id="uname" style="width:100%; padding:12px; border-radius:10px; margin-bottom:10px; text-align:center;" placeholder="ADINIZ">
+        <button class="btn-main" style="background:#39FF14;" onclick="saveProfile()">KAYDET</button>
+    </div>
+</div>
+
+<div id="mode-screen" class="container">
+    <div class="glass-card" style="background:#111; border-color:#39FF14;">
+        <h2 style="color:#39FF14">NORMAL MOD</h2>
+        <button class="btn-main" style="background:#39FF14" onclick="showLevels()">OYNA</button>
     </div>
 
-    <div id="lobby-1v1" class="screen">
-        <div class="card">
-            <h2>1V1 ARENA</h2>
-            <input type="number" id="bet-coin" placeholder="BAHİS JETON (Örn: 500)">
-            <button class="btn-1v1" onclick="createRoom()">ODA KUR</button>
-            <div style="margin:10px;">- VEYA -</div>
-            <input type="text" id="room-id-in" placeholder="WZ-XXXXXX">
-            <button class="btn-normal" onclick="joinRoom()">ODAYA GİR</button>
-            <button style="background:none; color:#aaa;" onclick="showModes()">GERİ</button>
-        </div>
+    <div class="glass-card" style="background:#111; border-color:#00d4ff;">
+        <h2 style="color:#00d4ff">OTO EŞLEŞME</h2>
+        <button class="btn-main" style="background:#00d4ff" onclick="autoMatch()">HIZLI BUL</button>
     </div>
 
-    <div id="arena-bg"></div>
-
-    <div id="game-arena" class="screen" style="justify-content:flex-start; padding-top:50px;">
-        <div id="time-container"><div id="time-bar"></div></div>
-        <div id="q-hint" style="padding:20px; font-size:1.2rem; text-align:center;">Soru Yükleniyor...</div>
-        <div id="word-slots" style="display:flex; gap:10px; margin-top:20px;"></div>
-        <input type="text" id="k-in" maxlength="15" placeholder="BURAYA YAZ">
-        <button id="hint-btn" onclick="useHint()" style="width:auto; padding:10px 20px; background:#ffcc00; position:fixed; bottom:100px;">İPUCU (-50 Jeton)</button>
+    <div class="glass-card" style="background:#111; border-color:#ffcc00;">
+        <h2 style="color:#ffcc00">1V1 ODA</h2>
+        <button class="btn-main" style="background:#ffcc00" onclick="location.href='pvp.html'">ODA KUR/GİR</button>
     </div>
+</div>
 
-    <audio id="snd-bg" loop src="fon-muzigi.mp3"></audio>
-    <audio id="snd-true" src="dogru.mp3"></audio>
-    <audio id="snd-false" src="yanlis.mp3"></audio>
+<div id="level-screen" class="container">
+    <h2 style="margin-bottom:20px;">SEVİYELER</h2>
+    <div id="level-grid"></div>
+    <button class="btn-main" style="background:#ff4b2b; width:auto; padding:10px 40px;" onclick="showModes()">GERİ</button>
+</div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-    import { wordList } from './kelimeler.js';
+<audio id="bg-music" loop src="fon-muzigi.mp3"></audio>
 
-    const firebaseConfig = { databaseURL: "https://wordzen-2e052-default-rtdb.firebaseio.com" };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+<script>
+    const vid = document.getElementById('splash-vid');
+    const music = document.getElementById('bg-music');
+    let user = JSON.parse(localStorage.getItem('wz_user'));
 
-    let user = JSON.parse(localStorage.getItem('wz_pro')) || null;
-    let bgIndex = 1;
-    let wordCounter = 0;
-    let timerInterval;
-
-    // --- 1. SPLASH VE GİRİŞ ---
-    const vid = document.getElementById('intro-vid');
-    vid.play();
+    // Splash Bitişi
     vid.onended = () => {
         document.getElementById('splash').style.display = 'none';
-        document.getElementById('snd-bg').play();
-        if(!user) showScreen('reg-screen'); else showScreen('mode-screen');
+        music.play();
+        if(user) showModes(); else document.getElementById('profile-screen').classList.add('active');
     };
 
-    window.completeReg = () => {
-        const name = document.getElementById('u-name').value;
-        const age = document.getElementById('u-age').value;
-        if(!name || !age) return alert("Bilgileri gir!");
-        user = { name, age, gender: document.getElementById('u-gen').value, coins: 1000, lv: 1 };
-        localStorage.setItem('wz_pro', JSON.stringify(user));
-        showScreen('mode-screen');
-        updateCoinUI();
-    };
-
-    // --- 2. FONKSİYONLAR ---
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+    function saveProfile() {
+        const name = document.getElementById('uname').value;
+        if(!name) return alert("İsim yaz kanka!");
+        user = { name: name, coins: 500, level: 1, img: document.getElementById('p-img').src };
+        localStorage.setItem('wz_user', JSON.stringify(user));
+        location.reload();
     }
 
-    function updateCoinUI() {
-        document.getElementById('user-coins').innerText = user.coins;
+    function showModes() {
+        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+        document.getElementById('mode-screen').classList.add('active');
+        document.getElementById('settings-trigger').style.display = 'block';
     }
 
-    // Arka Plan Önizleme (Kasmasız Değişim)
-    function changeBg() {
-        const bg = document.getElementById('arena-bg');
-        bg.style.backgroundImage = `url('bg${bgIndex}.jpg')`;
-        bgIndex++; if
+    function showLevels() {
+        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+        const grid = document.getElementById('level-grid');
+        grid.innerHTML = "";
+        for(let i=1; i<=16; i++) {
+            const box = document.createElement('div');
+            box.className = i <= user.level ? 'lvl-box' : 'lvl-box lvl-locked';
+            box.innerText = i;
+            if(i <= user.level) box.onclick = () => location.href = `game.html?lvl=${i}`;
+            grid.appendChild(box);
+        }
+        document.getElementById('level-screen').classList.add('active');
+    }
+
+    function toggleSettings() {
+        const modal = document.getElementById('settings-modal');
+        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function updateVol() {
+        music.volume = document.getElementById('music-vol').value / 100;
+        localStorage.setItem('wz_vol', music.volume);
+    }
+</script>
+</body>
+</html>
