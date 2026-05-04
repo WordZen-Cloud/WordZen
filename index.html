@@ -9,87 +9,44 @@
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
         
         html, body { 
-            width: 100%; 
-            height: 100%; 
-            margin: 0; 
-            padding: 0; 
-            overflow: hidden; 
-            background: #000; 
-            font-family: 'Montserrat', sans-serif; 
+            width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Montserrat', sans-serif; 
         }
 
-        body { 
-            background-size: cover; 
-            background-position: center; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            transition: background 1.2s ease; 
-        }
+        body { background-size: cover; background-position: center; display: flex; flex-direction: column; align-items: center; transition: background 1.2s ease; }
 
         /* VIDEO SPLASH SCREEN */
         #splash-screen { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: #000; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 9999; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; 
+            display: flex; align-items: center; justify-content: center; z-index: 9999; 
         }
-        #splash-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        #splash-video { width: 100%; height: 100%; object-fit: cover; }
         
-        /* ÜST UI VE SEVİYE GÖSTERGESİ */
+        /* Video Atlama Butonu (Siyah ekranda kalırsan diye) */
+        #skip-video-btn {
+            position: absolute; top: 30px; right: 20px; padding: 10px 15px; 
+            background: rgba(255,255,255,0.1); color: #fff; border-radius: 5px; 
+            z-index: 10000; font-size: 0.7rem; border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* ÜST UI */
         .top-ui { position: fixed; top: 20px; width: 90%; display: flex; justify-content: space-between; align-items: flex-start; z-index: 100; }
-        
         #lvl-indicator { 
-            position: fixed; 
-            top: 25px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            color: #39FF14; 
-            font-size: 1.4rem; 
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
-            z-index: 110;
+            position: fixed; top: 25px; left: 50%; transform: translateX(-50%); 
+            color: #39FF14; font-size: 1.4rem; text-shadow: 0 0 10px rgba(0,0,0,0.8); z-index: 110;
         }
 
         .stat-box { background: rgba(0,0,0,0.7); color: #fff; padding: 8px 15px; border-radius: 12px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.1); }
-        
         .action-buttons { display: flex; flex-direction: column; gap: 8px; }
-        .btn-game { padding: 10px 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 0.65rem; color: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn-game { padding: 10px 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 0.65rem; color: #000; }
         .btn-hint { background: #39FF14; }
         .btn-skip { background: #ffcc00; }
 
         /* OYUN ALANI */
-        #game-area { 
-            width: 100%; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            height: 55vh; 
-            margin-top: 60px;
-        }
-
+        #game-area { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 55vh; margin-top: 60px; }
         #word-display { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 25px; }
         .letter-box { width: 42px; height: 52px; background: #fff; color: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 900; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
 
-        #clue-container { 
-            color: #fff; 
-            text-align: center; 
-            padding: 20px; 
-            background: rgba(0,0,0,0.5); 
-            border-radius: 15px; 
-            width: 85%; 
-            border: 1px solid rgba(57,255,20,0.2);
-        }
+        #clue-container { color: #fff; text-align: center; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 15px; width: 85%; border: 1px solid rgba(57,255,20,0.2); }
 
         /* ANIMASYONLAR */
         .correct-anim { transform: scale(1.15); background: #39FF14 !important; color: #000; }
@@ -99,20 +56,19 @@
         /* MODAL */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9000; flex-direction: column; align-items: center; justify-content: center; }
         .modal-card { background: #111; padding: 25px; border-radius: 20px; border: 2px solid #333; width: 290px; text-align: center; }
-        .btn-modal { padding: 12px 25px; border-radius: 12px; border: none; font-weight: bold; margin: 10px; cursor: pointer; font-size: 1rem; }
+        .btn-modal { padding: 12px 25px; border-radius: 12px; border: none; font-weight: bold; margin: 10px; cursor: pointer; }
         .btn-yes { background: #39FF14; color: #000; }
         .btn-no { background: #ff4b2b; color: #fff; }
 
-        /* GİZLİ INPUT */
         #hidden-input { position: absolute; bottom: 0; left: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
 
     <div id="splash-screen">
+        <div id="skip-video-btn" onclick="startGame()">GEÇ</div>
         <video id="splash-video" autoplay muted playsinline>
             <source src="video.mp4" type="video/mp4">
-            Tarayıcınız video etiketini desteklemiyor.
         </video>
     </div>
 
@@ -142,7 +98,7 @@
     <div id="skip-modal" class="modal-overlay">
         <div class="modal-card">
             <h3 style="color:#fff">Seviye Atlansın mı?</h3>
-            <p style="color:#aaa; font-size: 0.85rem;">25 Jeton karşılığında bu bölümü geçmek istediğinize emin misiniz?</p>
+            <p style="color:#aaa; font-size: 0.85rem;">25 Jeton karşılığında atla?</p>
             <button class="btn-modal btn-yes" onclick="confirmSkip()">EVET</button>
             <button class="btn-modal btn-no" onclick="closeModal()">HAYIR</button>
         </div>
@@ -152,8 +108,6 @@
 
     <script type="module">
         import { levels as rawData } from './kelimeler.js';
-        
-        // KESİN SIRALAMA: 2 harfliler bitmeden 3'e geçmez
         const sortedLevels = [...rawData].sort((a, b) => a.a.length - b.a.length);
 
         let userData = JSON.parse(localStorage.getItem('wordzen_pro_data')) || { level: 0, coins: 30 };
@@ -164,31 +118,39 @@
         const splashScreen = document.getElementById('splash-screen');
         const bgMusic = document.getElementById('bg-music');
 
-        // Video bittiğinde oyunu başlat
-        splashVideo.onended = () => {
-            splashScreen.style.transition = "0.8s";
+        // GÜVENLİ BAŞLATICI (Siyah ekranı engelleyen ana fonksiyon)
+        window.startGame = function() {
+            if (splashScreen.dataset.started === "true") return;
+            splashScreen.dataset.started = "true";
+            
+            splashScreen.style.transition = "opacity 0.6s ease";
             splashScreen.style.opacity = "0";
+            
             setTimeout(() => {
                 splashScreen.style.display = "none";
-                bgMusic.volume = 0.5;
+                bgMusic.volume = 0.4;
                 bgMusic.play().catch(() => {
-                    document.body.addEventListener('click', () => bgMusic.play(), { once: true });
+                    document.body.addEventListener('touchstart', () => bgMusic.play(), { once: true });
                 });
                 initGame();
-            }, 800);
-        };
+            }, 600);
+        }
 
-        // Eğer video autoplay hatası verirse veya yüklenemezse manuel geçiş
+        // 1. Video bittiğinde başlat
+        splashVideo.onended = window.startGame;
+
+        // 2. Video yüklenirken hata oluşursa başlat
+        splashVideo.onerror = window.startGame;
+
+        // 3. ZAMAN AŞIMI (Kesin çözüm): Video ne olursa olsun 4 saniye sonra oyunu açar
         setTimeout(() => {
-            if(splashScreen.style.display !== "none") {
-                splashScreen.style.display = "none";
-                initGame();
+            if (splashScreen.style.display !== "none") {
+                window.startGame();
             }
-        }, 6000); 
+        }, 4000);
 
         function initGame() {
             if(userData.level >= sortedLevels.length) userData.level = 0; 
-            
             const data = sortedLevels[userData.level];
             currentWord = data.a.toUpperCase();
             
@@ -207,13 +169,13 @@
             });
             
             isProcessing = false;
-            document.getElementById('hidden-input').focus();
+            setTimeout(() => document.getElementById('hidden-input').focus(), 300);
         }
 
         const input = document.getElementById('hidden-input');
-        document.body.onclick = (e) => {
+        document.body.ontouchstart = (e) => {
             if(e.target.tagName !== 'BUTTON') {
-                input.focus();
+                setTimeout(() => input.focus(), 100);
             }
         };
 
@@ -221,7 +183,6 @@
             if(isProcessing) return;
             const char = e.target.value.toUpperCase().slice(-1);
             e.target.value = "";
-            
             if (char.match(/[A-ZĞÜŞİÖÇ]/)) {
                 const boxes = document.querySelectorAll('.letter-box');
                 for (let b of boxes) {
@@ -238,10 +199,7 @@
             if (e.key === "Backspace") {
                 const boxes = document.querySelectorAll('.letter-box');
                 for (let i = boxes.length - 1; i >= 0; i--) {
-                    if (boxes[i].innerText !== "") {
-                        boxes[i].innerText = "";
-                        break;
-                    }
+                    if (boxes[i].innerText !== "") { boxes[i].innerText = ""; break; }
                 }
             }
         };
@@ -254,28 +212,17 @@
             if (typed.length === currentWord.length) {
                 isProcessing = true;
                 if (typed === currentWord) {
-                    const sndCorrect = document.getElementById('snd-correct');
-                    sndCorrect.currentTime = 0;
-                    sndCorrect.play();
-                    
+                    document.getElementById('snd-correct').play();
                     boxes.forEach(b => b.classList.add('correct-anim'));
-                    
                     userData.level++;
                     userData.coins += 3;
                     save();
-                    setTimeout(initGame, 1000);
+                    setTimeout(initGame, 800);
                 } else {
-                    const sndWrong = document.getElementById('snd-wrong');
-                    sndWrong.currentTime = 0;
-                    sndWrong.play();
-                    
+                    document.getElementById('snd-wrong').play();
                     boxes.forEach(b => {
                         b.classList.add('wrong-anim');
-                        setTimeout(() => {
-                            b.classList.remove('wrong-anim');
-                            b.innerText = "";
-                            isProcessing = false;
-                        }, 500);
+                        setTimeout(() => { b.classList.remove('wrong-anim'); b.innerText = ""; isProcessing = false; }, 500);
                     });
                 }
             }
@@ -286,33 +233,18 @@
             const boxes = document.querySelectorAll('.letter-box');
             let emptyIndexes = [];
             boxes.forEach((b, i) => { if(b.innerText === "") emptyIndexes.push(i); });
-            
             if(emptyIndexes.length > 0) {
-                let randIdx = emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
-                boxes[randIdx].innerText = currentWord[randIdx];
-                userData.coins -= 10;
-                save();
-                checkResult();
+                let r = emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
+                boxes[r].innerText = currentWord[r];
+                userData.coins -= 10; save(); checkResult();
             }
         };
 
-        window.askSkip = () => {
-            document.getElementById('skip-modal').style.display = 'flex';
-        };
-
+        window.askSkip = () => document.getElementById('skip-modal').style.display = 'flex';
         window.confirmSkip = () => {
-            if(userData.coins < 25) {
-                alert("Yetersiz Jeton!");
-                closeModal();
-                return;
-            }
-            userData.coins -= 25;
-            userData.level++;
-            save();
-            closeModal();
-            initGame();
+            if(userData.coins < 25) { alert("Yetersiz!"); closeModal(); return; }
+            userData.coins -= 25; userData.level++; save(); closeModal(); initGame();
         };
-
         window.closeModal = () => document.getElementById('skip-modal').style.display = 'none';
 
         function save() {
@@ -321,9 +253,9 @@
         }
 
         function updateBackground() {
-            let bgNum = Math.floor(userData.level / 10) + 1;
-            if(bgNum > 45) bgNum = 45;
-            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('bg${bgNum}.jpg')`;
+            let n = Math.floor(userData.level / 10) + 1;
+            if(n > 45) n = 45;
+            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('bg${n}.jpg')`;
         }
     </script>
 </body>
