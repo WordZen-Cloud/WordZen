@@ -2,147 +2,319 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WordZen | Master</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+    <title>WordZen Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { background:#000; color:#fff; font-family:'Montserrat', sans-serif; overflow:hidden; }
+        * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
         
-        /* Splash - Atla Butonu Kaldırıldı */
-        #splash { position:fixed; top:0; left:0; width:100%; height:100%; z-index:10000; background:#000; display:flex; align-items:center; justify-content:center; }
-        #splash-vid { width:100%; height:100%; object-fit:cover; }
+        /* Klavye açıldığında taşmayı önlemek için height 100vh sabitlendi */
+        html, body { 
+            width: 100%; 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            background: #000; 
+            font-family: 'Montserrat', sans-serif; 
+        }
 
-        .container { display:none; height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:20px; background: radial-gradient(circle, #1a2a6c, #000); }
-        .active { display:flex !important; }
+        body { 
+            background-size: cover; 
+            background-position: center; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            transition: background 1.2s ease; 
+        }
 
-        /* Profil & Ayarlar */
-        .settings-btn { position:fixed; top:20px; right:20px; font-size:1.8rem; color:#fff; z-index:100; cursor:pointer; }
-        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:200; align-items:center; justify-content:center; }
-        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 30px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
-
-        /* Mod Ekranı Tasarımı (Değişmedi, Sadece Ekleme Yapıldı) */
-        .btn-main { width:100%; padding:18px; border-radius:20px; border:none; font-weight:900; margin-bottom:15px; cursor:pointer; text-transform:uppercase; transition:0.3s; }
+        /* SPLASH SCREEN */
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.8s; }
+        .splash-logo { font-size: 2.5rem; color: #fff; text-shadow: 0 0 20px #39FF14; animation: pulse 2s infinite; }
         
-        /* Slider (Ses Ayarı) */
-        .slider { width: 100%; margin: 15px 0; accent-color: #39FF14; }
+        /* ÜST UI VE SEVİYE GÖSTERGESİ */
+        .top-ui { position: fixed; top: 20px; width: 90%; display: flex; justify-content: space-between; align-items: flex-start; z-index: 100; }
+        
+        #lvl-indicator { 
+            position: fixed; 
+            top: 25px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            color: #39FF14; 
+            font-size: 1.4rem; 
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+            z-index: 110;
+        }
 
-        /* Level Sayfası */
-        #level-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:15px; padding:20px; width:100%; max-height:70vh; overflow-y:auto; }
-        .lvl-box { aspect-ratio: 1; background:rgba(255,255,255,0.1); border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; position:relative; border: 2px solid rgba(255,255,255,0.1); }
-        .lvl-locked::after { content:'\f023'; font-family:'Font Awesome 5 Free'; font-weight:900; position:absolute; top:5px; right:5px; font-size:0.8rem; color:#ffcc00; }
+        .stat-box { background: rgba(0,0,0,0.7); color: #fff; padding: 8px 15px; border-radius: 12px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .action-buttons { display: flex; flex-direction: column; gap: 8px; }
+        .btn-game { padding: 10px 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 0.65rem; color: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn-hint { background: #39FF14; }
+        .btn-skip { background: #ffcc00; }
+
+        /* OYUN ALANI - Klavyenin altında kalmaması için yukarı konumlandırıldı */
+        #game-area { 
+            width: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            height: 60vh; /* Ekranın üst %60'lık kısmına sabitlendi */
+            margin-top: 50px;
+        }
+
+        #word-display { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 25px; }
+        .letter-box { width: 42px; height: 52px; background: #fff; color: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 900; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+
+        #clue-container { 
+            color: #fff; 
+            text-align: center; 
+            padding: 20px; 
+            background: rgba(0,0,0,0.5); 
+            border-radius: 15px; 
+            width: 85%; 
+            border: 1px solid rgba(57,255,20,0.2);
+            backdrop-filter: blur(2px); /* Arka planı çok kapatmadan hafif okunurluk */
+        }
+
+        /* ANIMASYONLAR */
+        .correct-anim { transform: scale(1.15); background: #39FF14 !important; color: #000; }
+        .wrong-anim { animation: shake 0.4s; background: #ff4b2b !important; color: #fff; }
+        @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+        /* MODAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9000; flex-direction: column; align-items: center; justify-content: center; }
+        .modal-card { background: #111; padding: 25px; border-radius: 20px; border: 2px solid #333; width: 290px; text-align: center; }
+        .btn-modal { padding: 12px 25px; border-radius: 12px; border: none; font-weight: bold; margin: 10px; cursor: pointer; font-size: 1rem; }
+        .btn-yes { background: #39FF14; color: #000; }
+        .btn-no { background: #ff4b2b; color: #fff; }
+
+        /* SİSTEM KLAVYESİ TETİKLEYİCİ */
+        #hidden-input { position: absolute; bottom: 0; left: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
 
-<div id="splash">
-    <video id="splash-vid" autoplay muted playsinline>
-        <source src="video.mp4" type="video/mp4">
-    </video>
-</div>
+    <div id="splash-screen">
+        <div class="splash-logo">WordZen</div>
+    </div>
 
-<div id="settings-trigger" class="settings-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></div>
+    <audio id="bg-music" src="fon-muzigi.mp3" loop preload="auto"></audio>
+    <audio id="snd-correct" src="dogru.mp3" preload="auto"></audio>
+    <audio id="snd-wrong" src="yanlis.mp3" preload="auto"></audio>
 
-<div id="settings-modal" class="modal">
-    <div class="glass-card">
-        <h2>AYARLAR</h2>
-        <div style="margin-top:20px; text-align:left;">
-            <label>Müzik Sesi</label>
-            <input type="range" id="music-vol" class="slider" oninput="updateVol()">
-            <label>Efekt Sesi</label>
-            <input type="range" id="sfx-vol" class="slider" oninput="updateVol()">
+    <div id="lvl-indicator">LVL 1</div>
+
+    <div class="top-ui">
+        <div class="stats">
+            <div class="stat-box">🪙 <span id="coin-txt">30</span></div>
         </div>
-        <button class="btn-main" style="background:#39FF14; margin-top:20px;" onclick="toggleSettings()">KAPAT</button>
-    </div>
-</div>
-
-<div id="profile-screen" class="container">
-    <div class="glass-card">
-        <div id="p-img-box" style="width:100px; height:100px; border-radius:50%; background:#333; margin:0 auto 15px; overflow:hidden; border:3px solid #39FF14;">
-            <img id="p-img" src="default-avatar.png" style="width:100%; height:100%; object-fit:cover;">
+        <div class="action-buttons">
+            <button class="btn-game btn-hint" onclick="useHint()">İPUCU (10)</button>
+            <button class="btn-game btn-skip" onclick="askSkip()">ATLA (25)</button>
         </div>
-        <input type="file" id="img-input" style="display:none" onchange="uploadImg(this)">
-        <button onclick="document.getElementById('img-input').click()" style="background:none; border:none; color:#39FF14; margin-bottom:10px; cursor:pointer;">RESİM SEÇ</button>
-        <input type="text" id="uname" style="width:100%; padding:12px; border-radius:10px; margin-bottom:10px; text-align:center;" placeholder="ADINIZ">
-        <button class="btn-main" style="background:#39FF14;" onclick="saveProfile()">KAYDET</button>
-    </div>
-</div>
-
-<div id="mode-screen" class="container">
-    <div class="glass-card" style="background:#111; border-color:#39FF14;">
-        <h2 style="color:#39FF14">NORMAL MOD</h2>
-        <button class="btn-main" style="background:#39FF14" onclick="showLevels()">OYNA</button>
     </div>
 
-    <div class="glass-card" style="background:#111; border-color:#00d4ff;">
-        <h2 style="color:#00d4ff">OTO EŞLEŞME</h2>
-        <button class="btn-main" style="background:#00d4ff" onclick="autoMatch()">HIZLI BUL</button>
+    <div id="game-area">
+        <div id="word-display"></div>
+        <div id="clue-container">
+            <div id="clue-text" style="font-size: 0.9rem; line-height: 1.4;">...</div>
+        </div>
     </div>
 
-    <div class="glass-card" style="background:#111; border-color:#ffcc00;">
-        <h2 style="color:#ffcc00">1V1 ODA</h2>
-        <button class="btn-main" style="background:#ffcc00" onclick="location.href='pvp.html'">ODA KUR/GİR</button>
+    <div id="skip-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 style="color:#fff">Seviye Atlansın mı?</h3>
+            <p style="color:#aaa; font-size: 0.85rem;">25 Jeton karşılığında bu bölümü geçmek istediğinize emin misiniz?</p>
+            <button class="btn-modal btn-yes" onclick="confirmSkip()">EVET</button>
+            <button class="btn-modal btn-no" onclick="closeModal()">HAYIR</button>
+        </div>
     </div>
-</div>
 
-<div id="level-screen" class="container">
-    <h2 style="margin-bottom:20px;">SEVİYELER</h2>
-    <div id="level-grid"></div>
-    <button class="btn-main" style="background:#ff4b2b; width:auto; padding:10px 40px;" onclick="showModes()">GERİ</button>
-</div>
+    <input type="text" id="hidden-input" autocomplete="off" spellcheck="false">
 
-<audio id="bg-music" loop src="fon-muzigi.mp3"></audio>
+    <script type="module">
+        // kelimeler.js'den veriyi alıp harf sayısına göre KESİN SIRALAMA yapıyoruz
+        import { levels as rawData } from './kelimeler.js';
+        const sortedLevels = [...rawData].sort((a, b) => a.a.length - b.a.length);
 
-<script>
-    const vid = document.getElementById('splash-vid');
-    const music = document.getElementById('bg-music');
-    let user = JSON.parse(localStorage.getItem('wz_user'));
+        let userData = JSON.parse(localStorage.getItem('wordzen_pro_data')) || { level: 0, coins: 30 };
+        let currentWord = "";
+        let isProcessing = false;
 
-    // Splash Bitişi
-    vid.onended = () => {
-        document.getElementById('splash').style.display = 'none';
-        music.play();
-        if(user) showModes(); else document.getElementById('profile-screen').classList.add('active');
-    };
+        // Başlangıç Ayarları
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.display = 'none';
+                // Müzik çalma başlat
+                const music = document.getElementById('bg-music');
+                music.volume = 0.5;
+                music.play().catch(() => {
+                    // Kullanıcı etkileşimi gerekirse gövdeye tıklandığında başlar
+                    document.body.addEventListener('click', () => music.play(), { once: true });
+                });
+                initGame();
+            }, 2000);
+        };
 
-    function saveProfile() {
-        const name = document.getElementById('uname').value;
-        if(!name) return alert("İsim yaz kanka!");
-        user = { name: name, coins: 500, level: 1, img: document.getElementById('p-img').src };
-        localStorage.setItem('wz_user', JSON.stringify(user));
-        location.reload();
-    }
-
-    function showModes() {
-        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-        document.getElementById('mode-screen').classList.add('active');
-        document.getElementById('settings-trigger').style.display = 'block';
-    }
-
-    function showLevels() {
-        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-        const grid = document.getElementById('level-grid');
-        grid.innerHTML = "";
-        for(let i=1; i<=16; i++) {
-            const box = document.createElement('div');
-            box.className = i <= user.level ? 'lvl-box' : 'lvl-box lvl-locked';
-            box.innerText = i;
-            if(i <= user.level) box.onclick = () => location.href = `game.html?lvl=${i}`;
-            grid.appendChild(box);
+        function initGame() {
+            if(userData.level >= sortedLevels.length) userData.level = 0; 
+            
+            const data = sortedLevels[userData.level];
+            currentWord = data.a.toUpperCase();
+            
+            // UI Güncelleme
+            document.getElementById('lvl-indicator').innerText = "LVL " + (userData.level + 1);
+            document.getElementById('coin-txt').innerText = userData.coins;
+            document.getElementById('clue-text').innerText = data.m;
+            
+            updateBackground();
+            
+            const container = document.getElementById('word-display');
+            container.innerHTML = "";
+            [...currentWord].forEach(() => {
+                const b = document.createElement('div');
+                b.className = 'letter-box';
+                container.appendChild(b);
+            });
+            
+            isProcessing = false;
+            document.getElementById('hidden-input').focus();
         }
-        document.getElementById('level-screen').classList.add('active');
-    }
 
-    function toggleSettings() {
-        const modal = document.getElementById('settings-modal');
-        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
-    }
+        // Klavye ve Giriş Yönetimi
+        const input = document.getElementById('hidden-input');
+        
+        // Ekrana tıklandığında klavyeyi aç ama sayfa kaymasını engellemek için inputu odakla
+        document.body.onclick = (e) => {
+            if(e.target.tagName !== 'BUTTON') {
+                input.focus();
+            }
+        };
 
-    function updateVol() {
-        music.volume = document.getElementById('music-vol').value / 100;
-        localStorage.setItem('wz_vol', music.volume);
-    }
-</script>
+        input.oninput = (e) => {
+            if(isProcessing) return;
+            const char = e.target.value.toUpperCase().slice(-1);
+            e.target.value = "";
+            
+            // Sadece Türkçe ve Latin harfleri kabul et
+            if (char.match(/[A-ZĞÜŞİÖÇ]/)) {
+                const boxes = document.querySelectorAll('.letter-box');
+                for (let b of boxes) {
+                    if (b.innerText === "") {
+                        b.innerText = char;
+                        checkResult();
+                        break;
+                    }
+                }
+            }
+        };
+
+        input.onkeydown = (e) => {
+            if (e.key === "Backspace") {
+                const boxes = document.querySelectorAll('.letter-box');
+                for (let i = boxes.length - 1; i >= 0; i--) {
+                    if (boxes[i].innerText !== "") {
+                        boxes[i].innerText = "";
+                        break;
+                    }
+                }
+            }
+        };
+
+        function checkResult() {
+            const boxes = document.querySelectorAll('.letter-box');
+            let typed = "";
+            boxes.forEach(b => typed += b.innerText);
+
+            if (typed.length === currentWord.length) {
+                isProcessing = true;
+                if (typed === currentWord) {
+                    // DOĞRU CEVAP
+                    const sndCorrect = document.getElementById('snd-correct');
+                    sndCorrect.currentTime = 0;
+                    sndCorrect.play();
+                    
+                    boxes.forEach(b => b.classList.add('correct-anim'));
+                    
+                    userData.level++;
+                    userData.coins += 3;
+                    save();
+                    setTimeout(initGame, 1000);
+                } else {
+                    // YANLIŞ CEVAP
+                    const sndWrong = document.getElementById('snd-wrong');
+                    sndWrong.currentTime = 0;
+                    sndWrong.play();
+                    
+                    boxes.forEach(b => {
+                        b.classList.add('wrong-anim');
+                        setTimeout(() => {
+                            b.classList.remove('wrong-anim');
+                            b.innerText = "";
+                            isProcessing = false;
+                        }, 500);
+                    });
+                }
+            }
+        }
+
+        // İPUCU SİSTEMİ (10 Jeton)
+        window.useHint = () => {
+            if(userData.coins < 10) {
+                alert("Yetersiz Jeton!");
+                return;
+            }
+            const boxes = document.querySelectorAll('.letter-box');
+            let emptyIndexes = [];
+            boxes.forEach((b, i) => { if(b.innerText === "") emptyIndexes.push(i); });
+            
+            if(emptyIndexes.length > 0) {
+                let randIdx = emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
+                boxes[randIdx].innerText = currentWord[randIdx];
+                userData.coins -= 10;
+                save();
+                checkResult();
+            }
+        };
+
+        // SEVİYE ATLA SİSTEMİ (25 Jeton)
+        window.askSkip = () => {
+            document.getElementById('skip-modal').style.display = 'flex';
+        };
+
+        window.confirmSkip = () => {
+            if(userData.coins < 25) {
+                alert("Yetersiz Jeton!");
+                closeModal();
+                return;
+            }
+            userData.coins -= 25;
+            userData.level++;
+            save();
+            closeModal();
+            initGame();
+        };
+
+        window.closeModal = () => {
+            document.getElementById('skip-modal').style.display = 'none';
+        };
+
+        function save() {
+            localStorage.setItem('wordzen_pro_data', JSON.stringify(userData));
+            document.getElementById('coin-txt').innerText = userData.coins;
+        }
+
+        function updateBackground() {
+            // Her 10 seviyede bir arka plan değiştir (bg1.jpg'den bg45.jpg'ye)
+            let bgNum = Math.floor(userData.level / 10) + 1;
+            if(bgNum > 45) bgNum = 45;
+            
+            // Arka planı karartma oranını (0.6) düşürdüm ki görseller daha net olsun
+            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('bg${bgNum}.jpg')`;
+        }
+    </script>
 </body>
 </html>
